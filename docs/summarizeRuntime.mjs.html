@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    
+    <meta charset="utf-8">
+    <title>summarizeRuntime.mjs - Documentation</title>
+    
+    
+    <script src="scripts/prettify/prettify.js"></script>
+    <script src="scripts/prettify/lang-css.js"></script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc.css">
+    <script src="scripts/nav.js" defer></script>
+    
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+</head>
+<body>
+
+<input type="checkbox" id="nav-trigger" class="nav-trigger" />
+<label for="nav-trigger" class="navicon-button x">
+  <div class="navicon"></div>
+</label>
+
+<label for="nav-trigger" class="overlay"></label>
+
+<nav >
+    
+    
+    <h2><a href="index.html">Home</a></h2><h3>Global</h3><ul><li><a href="global.html#AI_ADAPTER_OPT">AI_ADAPTER_OPT</a></li><li><a href="global.html#AI_BATCH_LOG_KNOWN">AI_BATCH_LOG_KNOWN</a></li><li><a href="global.html#AI_BATCH_LOG_MUST_SEE">AI_BATCH_LOG_MUST_SEE</a></li><li><a href="global.html#AI_BATCH_REVIEW_LOG_KNOWN">AI_BATCH_REVIEW_LOG_KNOWN</a></li><li><a href="global.html#AI_PENDING_SOURCE">AI_PENDING_SOURCE</a></li><li><a href="global.html#CACHE">CACHE</a></li><li><a href="global.html#CFG_KEYS">CFG_KEYS</a></li><li><a href="global.html#CLAUSE_SPLIT">CLAUSE_SPLIT</a></li><li><a href="global.html#CLI">CLI</a></li><li><a href="global.html#COLLECTION_KEYS">COLLECTION_KEYS</a></li><li><a href="global.html#COMPILED">COMPILED</a></li><li><a href="global.html#CONCEPT_COUNT">CONCEPT_COUNT</a></li><li><a href="global.html#CONFIRM_SCHEMA">CONFIRM_SCHEMA</a></li><li><a href="global.html#CONTRACT_FIELD_TYPES">CONTRACT_FIELD_TYPES</a></li><li><a href="global.html#DATA_KEYS">DATA_KEYS</a></li><li><a href="global.html#DIGEST_DEFAULT">DIGEST_DEFAULT</a></li><li><a href="global.html#DIGEST_PROMPT_SIGS">DIGEST_PROMPT_SIGS</a></li><li><a href="global.html#DISABLED">DISABLED</a></li><li><a href="global.html#DOC_HOLD_NEXT">DOC_HOLD_NEXT</a></li><li><a href="global.html#DOC_STDS">DOC_STDS</a></li><li><a href="global.html#DOMAIN_FACTORY">DOMAIN_FACTORY</a></li><li><a href="global.html#DOMAIN_PROMPT_SIGS">DOMAIN_PROMPT_SIGS</a></li><li><a href="global.html#EVIDENCE_RULE_DEFAULT">EVIDENCE_RULE_DEFAULT</a></li><li><a href="global.html#EVIDENCE_RULE_KEYS">EVIDENCE_RULE_KEYS</a></li><li><a href="global.html#EVIDENCE_STD">EVIDENCE_STD</a></li><li><a href="global.html#FAITH_BLANK">FAITH_BLANK</a></li><li><a href="global.html#FAITH_HOLD_NEXT">FAITH_HOLD_NEXT</a></li><li><a href="global.html#FAITH_PAGE">FAITH_PAGE</a></li><li><a href="global.html#FAITH_VERDICTS">FAITH_VERDICTS</a></li><li><a href="global.html#GATE_STDS">GATE_STDS</a></li><li><a href="global.html#HOLD_OBJECT">HOLD_OBJECT</a></li><li><a href="global.html#LINE_BREAKS">LINE_BREAKS</a></li><li><a href="global.html#MATERIAL_EXCLUDE_PATTERNS_DEFAULT">MATERIAL_EXCLUDE_PATTERNS_DEFAULT</a></li><li><a href="global.html#MATERIAL_PROBLEM_PATTERNS_DEFAULT">MATERIAL_PROBLEM_PATTERNS_DEFAULT</a></li><li><a href="global.html#MIN_START_MS">MIN_START_MS</a></li><li><a href="global.html#NAMESPACES">NAMESPACES</a></li><li><a href="global.html#NON_CONTENT_SECTIONS">NON_CONTENT_SECTIONS</a></li><li><a href="global.html#NOTES_DIR">NOTES_DIR</a></li><li><a href="global.html#NOTE_ARRAY_FIELDS">NOTE_ARRAY_FIELDS</a></li><li><a href="global.html#NOTE_CONTRACT_FIELDS">NOTE_CONTRACT_FIELDS</a></li><li><a href="global.html#NOTE_CONTRACT_STANDARDS">NOTE_CONTRACT_STANDARDS</a></li><li><a href="global.html#NOTE_ENTRIES">NOTE_ENTRIES</a></li><li><a href="global.html#NOTE_FIELD_LABELS">NOTE_FIELD_LABELS</a></li><li><a href="global.html#NOTE_FIELD_LIMITS">NOTE_FIELD_LIMITS</a></li><li><a href="global.html#NOTE_FIX_STDS">NOTE_FIX_STDS</a></li><li><a href="global.html#NOTE_HOLD_DEADLINE_DAYS">NOTE_HOLD_DEADLINE_DAYS</a></li><li><a href="global.html#NOTE_HOLD_NEXT">NOTE_HOLD_NEXT</a></li><li><a href="global.html#NOTE_LIST_FIELDS">NOTE_LIST_FIELDS</a></li><li><a href="global.html#NOTE_PLACEHOLDERS">NOTE_PLACEHOLDERS</a></li><li><a href="global.html#NOTE_PROMPT_SIGS">NOTE_PROMPT_SIGS</a></li><li><a href="global.html#NOTE_QUALITY_LABELS">NOTE_QUALITY_LABELS</a></li><li><a href="global.html#NOTE_SECTION_ORDER">NOTE_SECTION_ORDER</a></li><li><a href="global.html#NOTE_SECTION_TITLES">NOTE_SECTION_TITLES</a></li><li><a href="global.html#NOTE_SOURCE_LABELS">NOTE_SOURCE_LABELS</a></li><li><a href="global.html#NOTE_STANDARDS">NOTE_STANDARDS</a></li><li><a href="global.html#NOTE_SYNC_STATE">NOTE_SYNC_STATE</a></li><li><a href="global.html#NOTE_TEXT_FIELDS">NOTE_TEXT_FIELDS</a></li><li><a href="global.html#NO_KNOWN_CONCEPT">NO_KNOWN_CONCEPT</a></li><li><a href="global.html#NO_MATERIAL_DETAIL">NO_MATERIAL_DETAIL</a></li><li><a href="global.html#OPTIONAL_DOMAIN_MEMBERS">OPTIONAL_DOMAIN_MEMBERS</a></li><li><a href="global.html#OPT_KEYS">OPT_KEYS</a></li><li><a href="global.html#PANEL_DEFS">PANEL_DEFS</a></li><li><a href="global.html#PANEL_SCHEMA">PANEL_SCHEMA</a></li><li><a href="global.html#PANEL_STAGES">PANEL_STAGES</a></li><li><a href="global.html#PANEL_THIRD_STOP">PANEL_THIRD_STOP</a></li><li><a href="global.html#PANEL_UNSURE">PANEL_UNSURE</a></li><li><a href="global.html#PANEL_WHY">PANEL_WHY</a></li><li><a href="global.html#PANEL_WHY_LABELS">PANEL_WHY_LABELS</a></li><li><a href="global.html#PIPELINE_NAME">PIPELINE_NAME</a></li><li><a href="global.html#PROJECTION_SECTION_TITLES">PROJECTION_SECTION_TITLES</a></li><li><a href="global.html#PROMPT_DOMAIN">PROMPT_DOMAIN</a></li><li><a href="global.html#PROMPT_KEYS">PROMPT_KEYS</a></li><li><a href="global.html#REJUDGE_REASON_LABELS">REJUDGE_REASON_LABELS</a></li><li><a href="global.html#RENAME_FIELDS">RENAME_FIELDS</a></li><li><a href="global.html#REPAIR_BLANK">REPAIR_BLANK</a></li><li><a href="global.html#RETAG_BLANK">RETAG_BLANK</a></li><li><a href="global.html#RETAG_HOLD_NEXT">RETAG_HOLD_NEXT</a></li><li><a href="global.html#RETAG_HOLD_STD">RETAG_HOLD_STD</a></li><li><a href="global.html#RETAG_MAX_FAILS">RETAG_MAX_FAILS</a></li><li><a href="global.html#RETAG_PROMPT_SIGS">RETAG_PROMPT_SIGS</a></li><li><a href="global.html#RETAG_REASONS">RETAG_REASONS</a></li><li><a href="global.html#S">S</a></li><li><a href="global.html#SEAT_FALLBACK_STAGES">SEAT_FALLBACK_STAGES</a></li><li><a href="global.html#SECTIONS">SECTIONS</a></li><li><a href="global.html#SHAPE_DOMAIN">SHAPE_DOMAIN</a></li><li><a href="global.html#SS14">SS14</a></li><li><a href="global.html#SS14_OBJECT">SS14_OBJECT</a></li><li><a href="global.html#SUMMARIZE_AI_DEFAULT">SUMMARIZE_AI_DEFAULT</a></li><li><a href="global.html#SUMMARIZE_AI_PENDING_STANDARD_IDS">SUMMARIZE_AI_PENDING_STANDARD_IDS</a></li><li><a href="global.html#SUMMARIZE_AI_SCHEMA">SUMMARIZE_AI_SCHEMA</a></li><li><a href="global.html#SUMMARIZE_AUDITED_STANDARD_IDS">SUMMARIZE_AUDITED_STANDARD_IDS</a></li><li><a href="global.html#SUMMARIZE_BENCH_CASES_FILES">SUMMARIZE_BENCH_CASES_FILES</a></li><li><a href="global.html#SUMMARIZE_BENCH_MODELS">SUMMARIZE_BENCH_MODELS</a></li><li><a href="global.html#SUMMARIZE_BENCH_ROLES">SUMMARIZE_BENCH_ROLES</a></li><li><a href="global.html#SUMMARIZE_BENCH_USAGE">SUMMARIZE_BENCH_USAGE</a></li><li><a href="global.html#SUMMARIZE_BLANK">SUMMARIZE_BLANK</a></li><li><a href="global.html#SUMMARIZE_CAPACITY_DESC">SUMMARIZE_CAPACITY_DESC</a></li><li><a href="global.html#SUMMARIZE_CTX_FLAGS">SUMMARIZE_CTX_FLAGS</a></li><li><a href="global.html#SUMMARIZE_DATA_KEYS">SUMMARIZE_DATA_KEYS</a></li><li><a href="global.html#SUMMARIZE_DEFAULT">SUMMARIZE_DEFAULT</a></li><li><a href="global.html#SUMMARIZE_DIRS">SUMMARIZE_DIRS</a></li><li><a href="global.html#SUMMARIZE_DOC_STATUS">SUMMARIZE_DOC_STATUS</a></li><li><a href="global.html#SUMMARIZE_DOMAIN_KEYS">SUMMARIZE_DOMAIN_KEYS</a></li><li><a href="global.html#SUMMARIZE_FEATURES">SUMMARIZE_FEATURES</a></li><li><a href="global.html#SUMMARIZE_GUIDE_FIELDS">SUMMARIZE_GUIDE_FIELDS</a></li><li><a href="global.html#SUMMARIZE_LOG_KNOWN">SUMMARIZE_LOG_KNOWN</a></li><li><a href="global.html#SUMMARIZE_LOG_MUST_SEE">SUMMARIZE_LOG_MUST_SEE</a></li><li><a href="global.html#SUMMARIZE_LOG_PARSE">SUMMARIZE_LOG_PARSE</a></li><li><a href="global.html#SUMMARIZE_PROMPT_SIGS">SUMMARIZE_PROMPT_SIGS</a></li><li><a href="global.html#SUMMARIZE_REPORT_KEYS">SUMMARIZE_REPORT_KEYS</a></li><li><a href="global.html#SUMMARIZE_SCAN_OBJECT">SUMMARIZE_SCAN_OBJECT</a></li><li><a href="global.html#SUMMARIZE_SCHEMA">SUMMARIZE_SCHEMA</a></li><li><a href="global.html#SUMMARIZE_SEATS">SUMMARIZE_SEATS</a></li><li><a href="global.html#SUMMARIZE_SEAT_LABELS">SUMMARIZE_SEAT_LABELS</a></li><li><a href="global.html#SUMMARIZE_SHARED_KEYS">SUMMARIZE_SHARED_KEYS</a></li><li><a href="global.html#SUMMARIZE_SKIP_KIND">SUMMARIZE_SKIP_KIND</a></li><li><a href="global.html#SUMMARIZE_STAGE_KEYS">SUMMARIZE_STAGE_KEYS</a></li><li><a href="global.html#SUMMARIZE_STANDARDS">SUMMARIZE_STANDARDS</a></li><li><a href="global.html#SUMMARIZE_STORE_KEYS">SUMMARIZE_STORE_KEYS</a></li><li><a href="global.html#SUMMARIZE_TAP_STAGE_KEYS">SUMMARIZE_TAP_STAGE_KEYS</a></li><li><a href="global.html#SUMMARIZE_VOCAB_DEFAULT">SUMMARIZE_VOCAB_DEFAULT</a></li><li><a href="global.html#SUMMARIZE_VOCAB_KEYS">SUMMARIZE_VOCAB_KEYS</a></li><li><a href="global.html#SUMMARIZE_VOCAB_NULL_AS">SUMMARIZE_VOCAB_NULL_AS</a></li><li><a href="global.html#SUMMARY_SECTION">SUMMARY_SECTION</a></li><li><a href="global.html#SYNC_KEYS">SYNC_KEYS</a></li><li><a href="global.html#TAXONOMY_STATE_FILE">TAXONOMY_STATE_FILE</a></li><li><a href="global.html#TAXONOMY_STATE_VERSION">TAXONOMY_STATE_VERSION</a></li><li><a href="global.html#TRIAGE_BLANK">TRIAGE_BLANK</a></li><li><a href="global.html#TRIAGE_PROMPT_SIGS">TRIAGE_PROMPT_SIGS</a></li><li><a href="global.html#TRIAGE_SKIP_PREFIX">TRIAGE_SKIP_PREFIX</a></li><li><a href="global.html#TRIAGE_STATE">TRIAGE_STATE</a></li><li><a href="global.html#WKnowledgeSummarize">WKnowledgeSummarize</a></li><li><a href="global.html#annotationOf">annotationOf</a></li><li><a href="global.html#applyNoteStockFix">applyNoteStockFix</a></li><li><a href="global.html#applyRepairs">applyRepairs</a></li><li><a href="global.html#assertSummarizeVocab">assertSummarizeVocab</a></li><li><a href="global.html#auditSummarizeStandards">auditSummarizeStandards</a></li><li><a href="global.html#benchAdmitNoteItem">benchAdmitNoteItem</a></li><li><a href="global.html#bodyPartsOf">bodyPartsOf</a></li><li><a href="global.html#buildNote">buildNote</a></li><li><a href="global.html#capacityWarningsOf">capacityWarningsOf</a></li><li><a href="global.html#categoryOf">categoryOf</a></li><li><a href="global.html#categoryProposals">categoryProposals</a></li><li><a href="global.html#changedUnitsOf">changedUnitsOf</a></li><li><a href="global.html#check">check</a></li><li><a href="global.html#checkFaithChecks">checkFaithChecks</a></li><li><a href="global.html#checkFaithVerdictOf">checkFaithVerdictOf</a></li><li><a href="global.html#checkNote">checkNote</a></li><li><a href="global.html#checkRepairReply">checkRepairReply</a></li><li><a href="global.html#cleanStrList">cleanStrList</a></li><li><a href="global.html#cnValue">cnValue</a></li><li><a href="global.html#compile">compile</a></li><li><a href="global.html#composeNoteMd">composeNoteMd</a></li><li><a href="global.html#conceptCountDetail">conceptCountDetail</a></li><li><a href="global.html#conceptLabelProblem">conceptLabelProblem</a></li><li><a href="global.html#conceptVocabulary">conceptVocabulary</a></li><li><a href="global.html#contractFieldProblems">contractFieldProblems</a></li><li><a href="global.html#contractOf">contractOf</a></li><li><a href="global.html#contractProblem">contractProblem</a></li><li><a href="global.html#createDigestDomain">createDigestDomain</a></li><li><a href="global.html#createKnowledgeSummarize">createKnowledgeSummarize</a></li><li><a href="global.html#createMaterialPolicy">createMaterialPolicy</a></li><li><a href="global.html#createNoteRestoreGate">createNoteRestoreGate</a></li><li><a href="global.html#createRetagDomain">createRetagDomain</a></li><li><a href="global.html#createSummarizeDomain">createSummarizeDomain</a></li><li><a href="global.html#createSummarizeObject">createSummarizeObject</a></li><li><a href="global.html#createSummarizeRuntime">createSummarizeRuntime</a></li><li><a href="global.html#createTaxonomyStore">createTaxonomyStore</a></li><li><a href="global.html#createTriageDomain">createTriageDomain</a></li><li><a href="global.html#decidePanel">decidePanel</a></li><li><a href="global.html#deepFreeze">deepFreeze</a></li><li><a href="global.html#describe">describe</a></li><li><a href="global.html#diffLabelOf">diffLabelOf</a></li><li><a href="global.html#diffTaxonomy">diffTaxonomy</a></li><li><a href="global.html#domainNeeds">domainNeeds</a></li><li><a href="global.html#dropSection">dropSection</a></li><li><a href="global.html#dropUngrounded">dropUngrounded</a></li><li><a href="global.html#escalateDocHolds">escalateDocHolds</a></li><li><a href="global.html#evidenceCaveatsOf">evidenceCaveatsOf</a></li><li><a href="global.html#evidenceMessagesOf">evidenceMessagesOf</a></li><li><a href="global.html#evidenceNoteOf">evidenceNoteOf</a></li><li><a href="global.html#evidenceRuleOf">evidenceRuleOf</a></li><li><a href="global.html#evidenceTexts">evidenceTexts</a></li><li><a href="global.html#faithBenchRole">faithBenchRole</a></li><li><a href="global.html#faithCaseProblems">faithCaseProblems</a></li><li><a href="global.html#faithMissingOf">faithMissingOf</a></li><li><a href="global.html#faithNoteText">faithNoteText</a></li><li><a href="global.html#faithVerdictOf">faithVerdictOf</a></li><li><a href="global.html#fieldPlaceOf">fieldPlaceOf</a></li><li><a href="global.html#flattenEl">flattenEl</a></li><li><a href="global.html#gateNoteItem">gateNoteItem</a></li><li><a href="global.html#guideDefaultOf">guideDefaultOf</a></li><li><a href="global.html#hold">hold</a></li><li><a href="global.html#inAddScope">inAddScope</a></li><li><a href="global.html#indexedArrayCheck">indexedArrayCheck</a></li><li><a href="global.html#info">info</a></li><li><a href="global.html#ingestNotes">ingestNotes</a></li><li><a href="global.html#inputVocabProblems">inputVocabProblems</a></li><li><a href="global.html#isEvidenceRule">isEvidenceRule</a></li><li><a href="global.html#isNoteRow">isNoteRow</a></li><li><a href="global.html#jobForRemoved">jobForRemoved</a></li><li><a href="global.html#jobIdOf">jobIdOf</a></li><li><a href="global.html#jobScope">jobScope</a></li><li><a href="global.html#knownConceptOf">knownConceptOf</a></li><li><a href="global.html#levelMapOf">levelMapOf</a></li><li><a href="global.html#load">load</a></li><li><a href="global.html#mapContentSections">mapContentSections</a></li><li><a href="global.html#materialDocOf">materialDocOf</a></li><li><a href="global.html#materialExactValues">materialExactValues</a></li><li><a href="global.html#materialProblems">materialProblems</a></li><li><a href="global.html#materialValues">materialValues</a></li><li><a href="global.html#mdOf">mdOf</a></li><li><a href="global.html#mdText">mdText</a></li><li><a href="global.html#mergeContractLimits">mergeContractLimits</a></li><li><a href="global.html#mwGateNote">mwGateNote</a></li><li><a href="global.html#mwMarkDoc">mwMarkDoc</a></li><li><a href="global.html#mwPersistNote">mwPersistNote</a></li><li><a href="global.html#mwRenderNote">mwRenderNote</a></li><li><a href="global.html#mwSaveClues">mwSaveClues</a></li><li><a href="global.html#mwSettleTriage">mwSettleTriage</a></li><li><a href="global.html#mwSkipGate">mwSkipGate</a></li><li><a href="global.html#needThird">needThird</a></li><li><a href="global.html#noTopEvidenceOf">noTopEvidenceOf</a></li><li><a href="global.html#normConcepts">normConcepts</a></li><li><a href="global.html#normalizeNoteItem">normalizeNoteItem</a></li><li><a href="global.html#noteContentText">noteContentText</a></li><li><a href="global.html#noteContractOf">noteContractOf</a></li><li><a href="global.html#noteFeedbackOf">noteFeedbackOf</a></li><li><a href="global.html#noteFixOf">noteFixOf</a></li><li><a href="global.html#noteHoldDeadlineOf">noteHoldDeadlineOf</a></li><li><a href="global.html#noteItemFieldProblems">noteItemFieldProblems</a></li><li><a href="global.html#noteItemProblems">noteItemProblems</a></li><li><a href="global.html#noteMaterialFor">noteMaterialFor</a></li><li><a href="global.html#noteMaterialOf">noteMaterialOf</a></li><li><a href="global.html#noteMaterialText">noteMaterialText</a></li><li><a href="global.html#noteStd">noteStd</a></li><li><a href="global.html#noteUnitsOf">noteUnitsOf</a></li><li><a href="global.html#notesInflowOf">notesInflowOf</a></li><li><a href="global.html#notesInflowProblem">notesInflowProblem</a></li><li><a href="global.html#numberSet">numberSet</a></li><li><a href="global.html#openDocHolds">openDocHolds</a></li><li><a href="global.html#openStores">openStores</a></li><li><a href="global.html#originalTitleOf">originalTitleOf</a></li><li><a href="global.html#outputNumbers">outputNumbers</a></li><li><a href="global.html#packDocsByChars">packDocsByChars</a></li><li><a href="global.html#packOptOf">packOptOf</a></li><li><a href="global.html#panelFindingsOf">panelFindingsOf</a></li><li><a href="global.html#panelGroupOf">panelGroupOf</a></li><li><a href="global.html#panelSameProviderWarnings">panelSameProviderWarnings</a></li><li><a href="global.html#panelSeatRowsOf">panelSeatRowsOf</a></li><li><a href="global.html#panelSeats">panelSeats</a></li><li><a href="global.html#parseFrontmatter">parseFrontmatter</a></li><li><a href="global.html#parseSummarizeBenchArgs">parseSummarizeBenchArgs</a></li><li><a href="global.html#patchNoteRecord">patchNoteRecord</a></li><li><a href="global.html#patternsOf">patternsOf</a></li><li><a href="global.html#pickSummarizeVocab">pickSummarizeVocab</a></li><li><a href="global.html#planNoteStockFix">planNoteStockFix</a></li><li><a href="global.html#planSummarizeBench">planSummarizeBench</a></li><li><a href="global.html#proposalsOf">proposalsOf</a></li><li><a href="global.html#publishedOf">publishedOf</a></li><li><a href="global.html#putDocHold">putDocHold</a></li><li><a href="global.html#putRetagHold">putRetagHold</a></li><li><a href="global.html#queueRejudge">queueRejudge</a></li><li><a href="global.html#quote">quote</a></li><li><a href="global.html#rawPoolSplitOf">rawPoolSplitOf</a></li><li><a href="global.html#reEscape">reEscape</a></li><li><a href="global.html#readMd">readMd</a></li><li><a href="global.html#readNoteStockLedger">readNoteStockLedger</a></li><li><a href="global.html#readWatermark">readWatermark</a></li><li><a href="global.html#recordPatchOf">recordPatchOf</a></li><li><a href="global.html#renameKeysObsoleteOf">renameKeysObsoleteOf</a></li><li><a href="global.html#renderFrontmatter">renderFrontmatter</a></li><li><a href="global.html#repairBenchRole">repairBenchRole</a></li><li><a href="global.html#repairCaseProblems">repairCaseProblems</a></li><li><a href="global.html#repairPlanOf">repairPlanOf</a></li><li><a href="global.html#repairProblemsOf">repairProblemsOf</a></li><li><a href="global.html#repairVerdictOf">repairVerdictOf</a></li><li><a href="global.html#requeueCategory">requeueCategory</a></li><li><a href="global.html#resolveDocHolds">resolveDocHolds</a></li><li><a href="global.html#resolveJob">resolveJob</a></li><li><a href="global.html#resolveNoteHolds">resolveNoteHolds</a></li><li><a href="global.html#resolveSummarizeData">resolveSummarizeData</a></li><li><a href="global.html#resolveSummarizeSettings">resolveSummarizeSettings</a></li><li><a href="global.html#resolveSummarizeVocab">resolveSummarizeVocab</a></li><li><a href="global.html#retagBenchRole">retagBenchRole</a></li><li><a href="global.html#retagCaseProblems">retagCaseProblems</a></li><li><a href="global.html#retagJobLabelOf">retagJobLabelOf</a></li><li><a href="global.html#retagPageProblems">retagPageProblems</a></li><li><a href="global.html#retagTargetOf">retagTargetOf</a></li><li><a href="global.html#retagVerdictOf">retagVerdictOf</a></li><li><a href="global.html#reviveFailedDocs">reviveFailedDocs</a></li><li><a href="global.html#rewriteFieldOf">rewriteFieldOf</a></li><li><a href="global.html#rewriteMdField">rewriteMdField</a></li><li><a href="global.html#rollbackNoteRow">rollbackNoteRow</a></li><li><a href="global.html#rollbackNoteStockFix">rollbackNoteStockFix</a></li><li><a href="global.html#runAiBatchStage">runAiBatchStage</a></li><li><a href="global.html#runFaithCheck">runFaithCheck</a></li><li><a href="global.html#runPanelPage">runPanelPage</a></li><li><a href="global.html#runSummarizeBench">runSummarizeBench</a></li><li><a href="global.html#runSummarizeBenchCli">runSummarizeBenchCli</a></li><li><a href="global.html#save">save</a></li><li><a href="global.html#seatFaithVotesOf">seatFaithVotesOf</a></li><li><a href="global.html#section">section</a></li><li><a href="global.html#sectionBodyOf">sectionBodyOf</a></li><li><a href="global.html#sectionItemsOf">sectionItemsOf</a></li><li><a href="global.html#sectionOf">sectionOf</a></li><li><a href="global.html#settleRetagHolds">settleRetagHolds</a></li><li><a href="global.html#shortText">shortText</a></li><li><a href="global.html#splitTopLevel">splitTopLevel</a></li><li><a href="global.html#stageRetag">stageRetag</a></li><li><a href="global.html#stageSummarize">stageSummarize</a></li><li><a href="global.html#stageSync">stageSync</a></li><li><a href="global.html#stageTriage">stageTriage</a></li><li><a href="global.html#standardsVocabOf">standardsVocabOf</a></li><li><a href="global.html#stateFileOf">stateFileOf</a></li><li><a href="global.html#strArr">strArr</a></li><li><a href="global.html#stripIdentifiers">stripIdentifiers</a></li><li><a href="global.html#stripPatternsOf">stripPatternsOf</a></li><li><a href="global.html#stripSlugs">stripSlugs</a></li><li><a href="global.html#suggestConceptRenames">suggestConceptRenames</a></li><li><a href="global.html#summarizeBenchRole">summarizeBenchRole</a></li><li><a href="global.html#summarizeBenchRoleOf">summarizeBenchRoleOf</a></li><li><a href="global.html#summarizeCapacityOf">summarizeCapacityOf</a></li><li><a href="global.html#summarizeCaseProblems">summarizeCaseProblems</a></li><li><a href="global.html#summarizeFeatureProblems">summarizeFeatureProblems</a></li><li><a href="global.html#summarizePanelsOf">summarizePanelsOf</a></li><li><a href="global.html#summarizeScanOf">summarizeScanOf</a></li><li><a href="global.html#summarizeSeatOf">summarizeSeatOf</a></li><li><a href="global.html#summarizeSeatsOf">summarizeSeatsOf</a></li><li><a href="global.html#summarizeSummaryOf">summarizeSummaryOf</a></li><li><a href="global.html#summarizeVerdictOf">summarizeVerdictOf</a></li><li><a href="global.html#summarizeVocabProblem">summarizeVocabProblem</a></li><li><a href="global.html#summarizeWarningsOf">summarizeWarningsOf</a></li><li><a href="global.html#summaryTextOf">summaryTextOf</a></li><li><a href="global.html#syncFieldsOf">syncFieldsOf</a></li><li><a href="global.html#syncHashOf">syncHashOf</a></li><li><a href="global.html#syncNoteHolds">syncNoteHolds</a></li><li><a href="global.html#syncNotes">syncNotes</a></li><li><a href="global.html#syncTaxonomy">syncTaxonomy</a></li><li><a href="global.html#syncVocabOf">syncVocabOf</a></li><li><a href="global.html#tagSuspects">tagSuspects</a></li><li><a href="global.html#taxonomyFixOf">taxonomyFixOf</a></li><li><a href="global.html#taxonomyOf">taxonomyOf</a></li><li><a href="global.html#taxonomySnapshotOf">taxonomySnapshotOf</a></li><li><a href="global.html#taxonomyStatus">taxonomyStatus</a></li><li><a href="global.html#taxonomyVersion">taxonomyVersion</a></li><li><a href="global.html#triageBenchRole">triageBenchRole</a></li><li><a href="global.html#triageCaseProblems">triageCaseProblems</a></li><li><a href="global.html#triageEnabledOf">triageEnabledOf</a></li><li><a href="global.html#triagePendingOf">triagePendingOf</a></li><li><a href="global.html#triageReadyOf">triageReadyOf</a></li><li><a href="global.html#triageVerdictOf">triageVerdictOf</a></li><li><a href="global.html#trimItem">trimItem</a></li><li><a href="global.html#ungroundedLinesOf">ungroundedLinesOf</a></li><li><a href="global.html#ungroundedNumbers">ungroundedNumbers</a></li><li><a href="global.html#unquote">unquote</a></li><li><a href="global.html#verifyNoteStockChain">verifyNoteStockChain</a></li><li><a href="global.html#wordsOf">wordsOf</a></li><li><a href="global.html#writeMd">writeMd</a></li></ul>
+    
+</nav>
+
+<div id="main">
+    
+    <h1 class="page-title">summarizeRuntime.mjs</h1>
+    
+
+    
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>// summarizeRuntime.mjs — 摘要執行期件之組裝(唯一一份):本套件之總組裝 createKnowledgeSummarize 與他總組裝(多工作之知識套件)共用,
+//   呼叫端不另組任何摘要件
+//
+// 【組裝之件】資料檢核(cfg.data 之 vocab)、詞彙解析、概念鍵之折疊(與抓取套件同一單例、同一規則)、素材問題樣式於建構期編譯、
+//   預篩／摘要／重標之 domain(內建三工廠＋提示詞覆寫 → 與 opt.domains 合併)、啟用之功能所需之 domain 成員與判定小組席位之啟動期檢核、
+//   去重身分(與抓取同一身分)、本機網路判斷(交 AI 調度層之 isNetDown)。資料之解析、折疊之套用、提示詞覆寫之驗證與其和注入 domain 之衝突、
+//   domain 之合併取抓取套件之共用件(各工作之執行期件同一份)。
+// 【為何獨立】總組裝各自逐段同型實作時,任一側新增 domain 成員、檢核條件或依賴,另一側即漂移;他總組裝以本函數組出同一組摘要件。
+// 【呼叫端負責】cfg 之鍵集檢核(含 cfg.data、cfg.prompts 之鍵)、設定解析(resolveSummarizeSettings 或同形之設定)、AI 調度層、
+//   集合之開關與每輪管線——摘要以外之件不在此。
+// 【生效之 domain 只有一份】回傳之 domains 即每輪依賴之 deps.domains 與總組裝之 info().domains:管線與維運工具(人工匯入、評分)用同一套
+//   提示詞;子階段 opt.domain 仍可另給(屬自組)。提示詞覆寫(opt.prompts)作用於內建 domain;注入整組 domain(opt.domains)者即不經
+//   提示詞覆寫——兩者給在同一 domain 即拋(其一會靜默失效)。
+// 【domain 之注入只經 opt.domains】本函數不讀 cfg.domains:獨立總組裝把其 cfg.domains 交 opt.domains;他總組裝交其 cfg.domains 中屬本套件之子集
+//   (SUMMARIZE_DOMAIN_KEYS;無注入時不給或給 {})——他工作之 domain 不會被誤認。
+// 【提示詞覆寫之形式唯一來源為各 domain 檔】SUMMARIZE_PROMPT_SIGS 由三個 domain 檔之 SIGS 組成,各鍵所屬之 domain 由組成之來源推導。
+// 【設定錯誤一律啟動期拋錯】修補／忠實性覆核開啟而 domain 缺對應之提示詞、判定小組開啟而缺必填席位、注入之 domain 缺成員或其詞彙表
+//   未經本套件解析(納入閘與證據規則只收本套件解析後之詞彙,不在此擋即於每批驗證時拋錯而燒掉 AI 呼叫)、素材問題樣式無法編譯——
+//   皆在建構期拋,不等到第一輪才爆。
+// 【概念鍵之折疊為模組級單例】本函數以 cfg.conceptFold 之決定與詞彙表之概念改名／別名設定抓取套件之折疊(線索鍵與概念分群鍵);
+//   同行程多個實例以最後建構者為準。
+
+import isobj from 'wsemi/src/isobj.mjs'
+import {
+    applyConceptFold, captureIdentityOf, captureNetGuardOf, promptOverridesOf, promptDomainConflicts, promptDomainOf, promptsForDomain, mergeDomains, resolveDataCfg, resolveLocale,
+} from './core/capturePackage.mjs'
+import { resolveSummarizeVocab, summarizeVocabProblem } from './core/vocab/summarizeVocab.mjs'
+import { SUMMARIZE_FEATURES, summarizeFeatureProblems } from './core/summarizeSettings.mjs'
+import { createTriageDomain, TRIAGE_PROMPT_SIGS } from './domain/triageDomain.mjs'
+import { createSummarizeDomain, NOTE_PROMPT_SIGS } from './domain/noteDomain.mjs'
+import { createRetagDomain, RETAG_PROMPT_SIGS } from './domain/retagDomain.mjs'
+import { createMaterialPolicy } from './stores/materialPolicy.mjs'
+import { contractProblem } from './stores/noteBuild.mjs'
+
+/**
+ * 摘要所用之集合(對外名;摘要子階段與維運函數讀寫者):文件(抓取寫入、摘要轉移狀態)、原文另存(唯讀)、待探索線索(摘要寫入)、
+ *   筆記、待判登錄。總組裝之開集合須至少含這些(他工作之集合另加;核心集合 cores 為選開)
+ *
+ * @type {Array}
+ */
+export const SUMMARIZE_STORE_KEYS = Object.freeze(['docs', 'docTexts', 'frontier', 'notes', 'holds'])
+
+/**
+ * 摘要所讀之資料鍵(cfg.data):詞彙覆寫 vocab
+ *
+ * @type {Array}
+ */
+export const SUMMARIZE_DATA_KEYS = Object.freeze(['vocab'])
+
+/**
+ * 摘要之輸出目錄(相對 workDir;交 resolveDirsCfg／expandDirs 之 extra):notes＝筆記 md(不隨 knowledge 之覆寫移動)
+ *
+ * @type {Object}
+ */
+export const SUMMARIZE_DIRS = Object.freeze({ notes: 'knowledge/notes' })
+
+/**
+ * 各 domain 之提示詞覆寫之形式(唯一來源為各 domain 檔;下列組合與所屬推導由之而來)
+ *
+ * @type {Object}
+ */
+const DOMAIN_PROMPT_SIGS = Object.freeze({ triage: TRIAGE_PROMPT_SIGS, summarize: NOTE_PROMPT_SIGS, retag: RETAG_PROMPT_SIGS })
+
+/**
+ * 提示詞覆寫之鍵與其函數形式(三個 domain 檔之 SIGS 之組合;錯誤訊息用,輸出契約固定,由各 domain 驗):預篩 triage、摘要 summarize、
+ *   忠實性覆核 faith、欄位定向修補 repair、重標 retag;末參數 ctx 為 { kbLabel, domain, vocab, defaultPrompt }(defaultPrompt＝內建提示詞函數,可包裝)
+ *
+ * @type {Object}
+ */
+export const SUMMARIZE_PROMPT_SIGS = Object.freeze(Object.assign({}, ...Object.values(DOMAIN_PROMPT_SIGS)))
+
+/**
+ * 摘要之 domain 鍵(每輪 deps.domains 中屬本套件者;他總組裝之 cfg.domains 另有他工作之 domain 時,以此取子集交 opt.domains)
+ *
+ * @type {Array}
+ */
+export const SUMMARIZE_DOMAIN_KEYS = Object.freeze(Object.keys(DOMAIN_PROMPT_SIGS))
+
+/** 各提示詞所屬之 domain(提示詞覆寫交該 domain 之工廠;與注入之同一 domain 擇一;由各 domain 檔之 SIGS 推導——抓取套件之 promptDomainOf) */
+const PROMPT_DOMAIN = promptDomainOf(DOMAIN_PROMPT_SIGS)
+
+/** 各 domain 之工廠之寫法(注入之建議;錯誤訊息用) */
+const DOMAIN_FACTORY = Object.freeze({ triage: 'createTriageDomain({ vocab })', summarize: 'createSummarizeDomain({ vocab })', retag: 'createRetagDomain({ vocab })' })
+
+/**
+ * 選填之 domain 成員:功能表(SUMMARIZE_FEATURES)中依功能而必填者——缺之則對應功能不可開啟(開啟而缺之即於建構期拋錯);
+ *   note 版型之內部件(normalizeQuality、renderNoteBody)——自備產物契約(contract.buildNote)之 domain 不需之;語言設定(locale;給了須與 cfg.lang 同一語言)
+ */
+const OPTIONAL_DOMAIN_MEMBERS = Object.freeze({ summarize: Object.freeze([...new Set([...SUMMARIZE_FEATURES.flatMap((f) => f.members || []), 'normalizeQuality', 'renderNoteBody', 'locale'])]) })
+
+/**
+ * 摘要所讀之資料(cfg.data 之 vocab)之檢核與正規化(抓取套件之 resolveDataCfg;各工作同一份);cfg.data 之鍵集由呼叫端檢核(各總組裝之 cfg.data 可另有其鍵)
+ *
+ * @param {*} d 輸入 cfg.data，未給代表全用預設
+ * @returns {Object} 回傳 { vocab:Object|null(安裝方原給之詞彙覆寫;null＝用內建預設) }
+ * @throws {Error} 非物件、或 vocab 非物件時拋出
+ * @example
+ * console.log(resolveSummarizeData({ vocab: { domain: '天文學' } }).vocab.domain)
+ * // => 天文學
+ */
+export function resolveSummarizeData(d) {
+    return resolveDataCfg(d, { keys: SUMMARIZE_DATA_KEYS, vocabKeysOf: 'core/vocab/summarizeVocab 之 SUMMARIZE_VOCAB_KEYS' })
+}
+
+/**
+ * 組裝摘要執行期件(檔頭):建構期即驗資料、編譯素材樣式、設定概念鍵之折疊、建 domain 並檢核啟用之功能——設定錯誤要在啟動期爆
+ *
+ * @param {Object} cfg 輸入總組裝之 cfg(讀 lang、data、conceptFold、dedup、netGuard)
+ * @param {Object} settings 輸入解析後之設定(讀 summarize、capture;本套件之 resolveSummarizeSettings 或他總組裝之同形設定)
+ * @param {Object} [opt={}] 輸入設定物件
+ * @param {Object} [opt.vocab] 輸入交本套件之詞彙(只含本套件所讀之鍵,見 core/vocab/summarizeVocab 之 pickSummarizeVocab);未給即用 cfg.data.vocab
+ * @param {Object} [opt.prompts] 輸入提示詞覆寫 { triage?, summarize?, faith?, repair?, retag? }(鍵與函數形式見 SUMMARIZE_PROMPT_SIGS;
+ *   呼叫端已檢核之 cfg.prompts),作用於內建 domain
+ * @param {Object} [opt.domains] 輸入交本套件之 domain 注入 { triage?, summarize?, retag? }(檔頭【domain 之注入只經 opt.domains】;未給＝無注入)
+ * @returns {Object} 回傳 { data:{ vocab }(原給), vocab(已解析), locale(語言設定:抓取套件 resolveLocale 之產物), folds:{ fold, clueFold }, identity(去重身分),
+ *   netGuard(null＝不判斷), isNetDown(交 AI 調度層之函數;netGuard 無 confirmDown 時為 null), domains:{ triage, summarize, retag }(生效之一份) }
+ * @throws {Error} settings 不含 summarize／capture、cfg.lang 不合、cfg.data 形狀不合、素材問題樣式無法編譯、詞彙表不合規格、cfg.conceptFold 型別不合、
+ *   opt.prompts 不合(非物件、不認得之鍵、值非函數)、提示詞覆寫與注入之 domain 給在同一 domain、opt.domains 不合規格(非物件、不認得之鍵、
+ *   缺成員、詞彙表未經本套件解析、locale 與 cfg.lang 不同語言)、修補／忠實性覆核開啟而 domain 缺對應成員、判定小組開啟而缺必填席位、
+ *   去重身分設定不合、cfg.netGuard 非物件時拋出
+ * @example
+ * need test in nodejs.
+ *
+ * let rt = createSummarizeRuntime({ data: { vocab: { domain: '天文學' } } }, resolveSummarizeSettings({}))
+ * console.log(rt.domains.summarize.vocab.domain)
+ * // => 天文學
+ */
+export function createSummarizeRuntime(cfg, settings, opt = {}) {
+    if (!isobj(cfg)) cfg = {}
+    if (!isobj(opt)) opt = {}
+    const sm = settings?.summarize
+    if (!isobj(sm) || !isobj(settings?.capture)) throw new Error('createSummarizeRuntime 需要解析後之 settings(含 summarize、capture)')
+
+    // ── 語言設定(cfg.lang;抓取套件之 core/locale):提示詞之輸出語言句、字形政策、折疊方向、slug 政策——與抓取套件同讀此一份 ──
+    const locale = resolveLocale(cfg.lang)
+
+    // ── 資料與素材問題樣式(樣式語法錯誤在啟動期即爆;預篩／摘要每輪才建判定器)──
+    const data = resolveSummarizeData(cfg.data)
+    createMaterialPolicy({ patterns: sm.refetch.patterns, max: sm.refetch.max })
+
+    // ── 詞彙(分類法、證據等級、提示詞之領域句、證據規則之設定錯誤在建構期即爆)與概念鍵之折疊(檔頭)──
+    const vocab = resolveSummarizeVocab(isobj(opt.vocab) ? opt.vocab : data.vocab)
+    const folds = applyConceptFold(cfg.conceptFold, vocab, locale)
+
+    // ── domain:內建三工廠(詞彙、字數上限、提示詞覆寫)→ 與注入者合併(生效之一份;注入之詞彙表須經本套件解析——納入閘與證據規則讀之)──
+    const prompts = promptOverridesOf(opt.prompts, SUMMARIZE_PROMPT_SIGS, 'createSummarizeRuntime')
+    const conflicts = promptDomainConflicts(prompts, opt.domains, PROMPT_DOMAIN)
+    if (conflicts.length) throw new Error(conflicts.join('；'))
+    const promptsOf = (owner) => promptsForDomain(prompts, PROMPT_DOMAIN, owner)
+    const domains = mergeDomains({
+        triage: createTriageDomain({ vocab, locale, triageCharsPerDoc: sm.triage.charsPerDoc, longDocChars: sm.charsPerDoc, prompts: promptsOf('triage') }),
+        summarize: createSummarizeDomain({ vocab, locale, summarizeCharsPerDoc: sm.charsPerDoc, prompts: promptsOf('summarize') }),
+        retag: createRetagDomain({ vocab, prompts: promptsOf('retag') }),
+    }, opt.domains, {
+        optional: OPTIONAL_DOMAIN_MEMBERS,
+        factories: DOMAIN_FACTORY,
+        // 注入之摘要 domain:詞彙須經本套件解析;產物契約(contract)須合形狀(stores/noteBuild 之 contractProblem;未給＝內建 note 契約);
+        //   語言設定(locale)給了須與 cfg.lang 同一語言(提示詞之語言句與 slug 政策不得與標準之字形政策分家)
+        check: (k, d) => [
+            summarizeVocabProblem(d.vocab),
+            ...(k === 'summarize' &amp;&amp; d.contract !== undefined ? [contractProblem(d.contract)] : []),
+            ...(k === 'summarize' &amp;&amp; d.locale !== undefined &amp;&amp; d.locale?.code !== locale.code ? [`locale 須與 cfg.lang 同一語言（domain 為 ${String(d.locale?.code)}，cfg.lang 為 ${locale.code}）`] : []),
+        ].filter(Boolean),
+    })
+
+    // ── 啟用之功能所需之判定小組席位與 domain 成員(功能表 SUMMARIZE_FEATURES 之單一判定;判定小組須兩票不同供應者才成立:覆核無「提案席」之
+    //    一票,first、second 皆須給;預篩確認之另一票即預篩席,只須確認席 first)——缺者啟動期拋錯,不等到該段第一次執行才爆 ──
+    const problems = summarizeFeatureProblems(settings, domains.summarize, { domainLabel: 'cfg.domains.summarize' })
+    if (problems.length) throw new Error(problems.join('；'))
+
+    // ── 去重身分(人工匯入等管線外登記文件之 id 須經之,與抓取同一身分)與本機網路判斷(抓取套件之判準;交 AI 調度層之 isNetDown)──
+    const identity = captureIdentityOf(cfg.dedup)
+    const { netGuard, isNetDown } = captureNetGuardOf(cfg.netGuard, settings.capture)
+
+    return { data, vocab, locale, folds, identity, netGuard, isNetDown, domains }
+}
+
+export default { SUMMARIZE_STORE_KEYS, SUMMARIZE_DATA_KEYS, SUMMARIZE_DIRS, SUMMARIZE_DOMAIN_KEYS, SUMMARIZE_PROMPT_SIGS, resolveSummarizeData, createSummarizeRuntime }
+</code></pre>
+        </article>
+    </section>
+
+
+
+
+    
+    
+</div>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 4.0.5</a> on Sun Nov 01 2026 23:10:48 GMT+0800 (台北標準時間) using the <a href="https://github.com/clenemt/docdash">docdash</a> theme.
+</footer>
+
+<script>prettyPrint();</script>
+<script src="scripts/polyfill.js"></script>
+<script src="scripts/linenumber.js"></script>
+
+
+
+</body>
+</html>

@@ -1,0 +1,269 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    
+    <meta charset="utf-8">
+    <title>core/vocab/conceptGroups.mjs - Documentation</title>
+    
+    
+    <script src="scripts/prettify/prettify.js"></script>
+    <script src="scripts/prettify/lang-css.js"></script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc.css">
+    <script src="scripts/nav.js" defer></script>
+    
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+</head>
+<body>
+
+<input type="checkbox" id="nav-trigger" class="nav-trigger" />
+<label for="nav-trigger" class="navicon-button x">
+  <div class="navicon"></div>
+</label>
+
+<label for="nav-trigger" class="overlay"></label>
+
+<nav >
+    
+    
+    <h2><a href="index.html">Home</a></h2><h3>Global</h3><ul><li><a href="global.html#AI_ADAPTER_OPT">AI_ADAPTER_OPT</a></li><li><a href="global.html#AI_BATCH_LOG_KNOWN">AI_BATCH_LOG_KNOWN</a></li><li><a href="global.html#AI_BATCH_LOG_MUST_SEE">AI_BATCH_LOG_MUST_SEE</a></li><li><a href="global.html#AI_BATCH_REVIEW_LOG_KNOWN">AI_BATCH_REVIEW_LOG_KNOWN</a></li><li><a href="global.html#AI_PENDING_SOURCE">AI_PENDING_SOURCE</a></li><li><a href="global.html#CACHE">CACHE</a></li><li><a href="global.html#CFG_KEYS">CFG_KEYS</a></li><li><a href="global.html#CLAUSE_SPLIT">CLAUSE_SPLIT</a></li><li><a href="global.html#CLI">CLI</a></li><li><a href="global.html#COLLECTION_KEYS">COLLECTION_KEYS</a></li><li><a href="global.html#COMPILED">COMPILED</a></li><li><a href="global.html#CONCEPT_COUNT">CONCEPT_COUNT</a></li><li><a href="global.html#CONFIRM_SCHEMA">CONFIRM_SCHEMA</a></li><li><a href="global.html#CONTRACT_FIELD_TYPES">CONTRACT_FIELD_TYPES</a></li><li><a href="global.html#DATA_KEYS">DATA_KEYS</a></li><li><a href="global.html#DIGEST_DEFAULT">DIGEST_DEFAULT</a></li><li><a href="global.html#DIGEST_PROMPT_SIGS">DIGEST_PROMPT_SIGS</a></li><li><a href="global.html#DISABLED">DISABLED</a></li><li><a href="global.html#DOC_HOLD_NEXT">DOC_HOLD_NEXT</a></li><li><a href="global.html#DOC_STDS">DOC_STDS</a></li><li><a href="global.html#DOMAIN_FACTORY">DOMAIN_FACTORY</a></li><li><a href="global.html#DOMAIN_PROMPT_SIGS">DOMAIN_PROMPT_SIGS</a></li><li><a href="global.html#EVIDENCE_RULE_DEFAULT">EVIDENCE_RULE_DEFAULT</a></li><li><a href="global.html#EVIDENCE_RULE_KEYS">EVIDENCE_RULE_KEYS</a></li><li><a href="global.html#EVIDENCE_STD">EVIDENCE_STD</a></li><li><a href="global.html#FAITH_BLANK">FAITH_BLANK</a></li><li><a href="global.html#FAITH_HOLD_NEXT">FAITH_HOLD_NEXT</a></li><li><a href="global.html#FAITH_PAGE">FAITH_PAGE</a></li><li><a href="global.html#FAITH_VERDICTS">FAITH_VERDICTS</a></li><li><a href="global.html#GATE_STDS">GATE_STDS</a></li><li><a href="global.html#HOLD_OBJECT">HOLD_OBJECT</a></li><li><a href="global.html#LINE_BREAKS">LINE_BREAKS</a></li><li><a href="global.html#MATERIAL_EXCLUDE_PATTERNS_DEFAULT">MATERIAL_EXCLUDE_PATTERNS_DEFAULT</a></li><li><a href="global.html#MATERIAL_PROBLEM_PATTERNS_DEFAULT">MATERIAL_PROBLEM_PATTERNS_DEFAULT</a></li><li><a href="global.html#MIN_START_MS">MIN_START_MS</a></li><li><a href="global.html#NAMESPACES">NAMESPACES</a></li><li><a href="global.html#NON_CONTENT_SECTIONS">NON_CONTENT_SECTIONS</a></li><li><a href="global.html#NOTES_DIR">NOTES_DIR</a></li><li><a href="global.html#NOTE_ARRAY_FIELDS">NOTE_ARRAY_FIELDS</a></li><li><a href="global.html#NOTE_CONTRACT_FIELDS">NOTE_CONTRACT_FIELDS</a></li><li><a href="global.html#NOTE_CONTRACT_STANDARDS">NOTE_CONTRACT_STANDARDS</a></li><li><a href="global.html#NOTE_ENTRIES">NOTE_ENTRIES</a></li><li><a href="global.html#NOTE_FIELD_LABELS">NOTE_FIELD_LABELS</a></li><li><a href="global.html#NOTE_FIELD_LIMITS">NOTE_FIELD_LIMITS</a></li><li><a href="global.html#NOTE_FIX_STDS">NOTE_FIX_STDS</a></li><li><a href="global.html#NOTE_HOLD_DEADLINE_DAYS">NOTE_HOLD_DEADLINE_DAYS</a></li><li><a href="global.html#NOTE_HOLD_NEXT">NOTE_HOLD_NEXT</a></li><li><a href="global.html#NOTE_LIST_FIELDS">NOTE_LIST_FIELDS</a></li><li><a href="global.html#NOTE_PLACEHOLDERS">NOTE_PLACEHOLDERS</a></li><li><a href="global.html#NOTE_PROMPT_SIGS">NOTE_PROMPT_SIGS</a></li><li><a href="global.html#NOTE_QUALITY_LABELS">NOTE_QUALITY_LABELS</a></li><li><a href="global.html#NOTE_SECTION_ORDER">NOTE_SECTION_ORDER</a></li><li><a href="global.html#NOTE_SECTION_TITLES">NOTE_SECTION_TITLES</a></li><li><a href="global.html#NOTE_SOURCE_LABELS">NOTE_SOURCE_LABELS</a></li><li><a href="global.html#NOTE_STANDARDS">NOTE_STANDARDS</a></li><li><a href="global.html#NOTE_SYNC_STATE">NOTE_SYNC_STATE</a></li><li><a href="global.html#NOTE_TEXT_FIELDS">NOTE_TEXT_FIELDS</a></li><li><a href="global.html#NO_KNOWN_CONCEPT">NO_KNOWN_CONCEPT</a></li><li><a href="global.html#NO_MATERIAL_DETAIL">NO_MATERIAL_DETAIL</a></li><li><a href="global.html#OPTIONAL_DOMAIN_MEMBERS">OPTIONAL_DOMAIN_MEMBERS</a></li><li><a href="global.html#OPT_KEYS">OPT_KEYS</a></li><li><a href="global.html#PANEL_DEFS">PANEL_DEFS</a></li><li><a href="global.html#PANEL_SCHEMA">PANEL_SCHEMA</a></li><li><a href="global.html#PANEL_STAGES">PANEL_STAGES</a></li><li><a href="global.html#PANEL_THIRD_STOP">PANEL_THIRD_STOP</a></li><li><a href="global.html#PANEL_UNSURE">PANEL_UNSURE</a></li><li><a href="global.html#PANEL_WHY">PANEL_WHY</a></li><li><a href="global.html#PANEL_WHY_LABELS">PANEL_WHY_LABELS</a></li><li><a href="global.html#PIPELINE_NAME">PIPELINE_NAME</a></li><li><a href="global.html#PROJECTION_SECTION_TITLES">PROJECTION_SECTION_TITLES</a></li><li><a href="global.html#PROMPT_DOMAIN">PROMPT_DOMAIN</a></li><li><a href="global.html#PROMPT_KEYS">PROMPT_KEYS</a></li><li><a href="global.html#REJUDGE_REASON_LABELS">REJUDGE_REASON_LABELS</a></li><li><a href="global.html#RENAME_FIELDS">RENAME_FIELDS</a></li><li><a href="global.html#REPAIR_BLANK">REPAIR_BLANK</a></li><li><a href="global.html#RETAG_BLANK">RETAG_BLANK</a></li><li><a href="global.html#RETAG_HOLD_NEXT">RETAG_HOLD_NEXT</a></li><li><a href="global.html#RETAG_HOLD_STD">RETAG_HOLD_STD</a></li><li><a href="global.html#RETAG_MAX_FAILS">RETAG_MAX_FAILS</a></li><li><a href="global.html#RETAG_PROMPT_SIGS">RETAG_PROMPT_SIGS</a></li><li><a href="global.html#RETAG_REASONS">RETAG_REASONS</a></li><li><a href="global.html#S">S</a></li><li><a href="global.html#SEAT_FALLBACK_STAGES">SEAT_FALLBACK_STAGES</a></li><li><a href="global.html#SECTIONS">SECTIONS</a></li><li><a href="global.html#SHAPE_DOMAIN">SHAPE_DOMAIN</a></li><li><a href="global.html#SS14">SS14</a></li><li><a href="global.html#SS14_OBJECT">SS14_OBJECT</a></li><li><a href="global.html#SUMMARIZE_AI_DEFAULT">SUMMARIZE_AI_DEFAULT</a></li><li><a href="global.html#SUMMARIZE_AI_PENDING_STANDARD_IDS">SUMMARIZE_AI_PENDING_STANDARD_IDS</a></li><li><a href="global.html#SUMMARIZE_AI_SCHEMA">SUMMARIZE_AI_SCHEMA</a></li><li><a href="global.html#SUMMARIZE_AUDITED_STANDARD_IDS">SUMMARIZE_AUDITED_STANDARD_IDS</a></li><li><a href="global.html#SUMMARIZE_BENCH_CASES_FILES">SUMMARIZE_BENCH_CASES_FILES</a></li><li><a href="global.html#SUMMARIZE_BENCH_MODELS">SUMMARIZE_BENCH_MODELS</a></li><li><a href="global.html#SUMMARIZE_BENCH_ROLES">SUMMARIZE_BENCH_ROLES</a></li><li><a href="global.html#SUMMARIZE_BENCH_USAGE">SUMMARIZE_BENCH_USAGE</a></li><li><a href="global.html#SUMMARIZE_BLANK">SUMMARIZE_BLANK</a></li><li><a href="global.html#SUMMARIZE_CAPACITY_DESC">SUMMARIZE_CAPACITY_DESC</a></li><li><a href="global.html#SUMMARIZE_CTX_FLAGS">SUMMARIZE_CTX_FLAGS</a></li><li><a href="global.html#SUMMARIZE_DATA_KEYS">SUMMARIZE_DATA_KEYS</a></li><li><a href="global.html#SUMMARIZE_DEFAULT">SUMMARIZE_DEFAULT</a></li><li><a href="global.html#SUMMARIZE_DIRS">SUMMARIZE_DIRS</a></li><li><a href="global.html#SUMMARIZE_DOC_STATUS">SUMMARIZE_DOC_STATUS</a></li><li><a href="global.html#SUMMARIZE_DOMAIN_KEYS">SUMMARIZE_DOMAIN_KEYS</a></li><li><a href="global.html#SUMMARIZE_FEATURES">SUMMARIZE_FEATURES</a></li><li><a href="global.html#SUMMARIZE_GUIDE_FIELDS">SUMMARIZE_GUIDE_FIELDS</a></li><li><a href="global.html#SUMMARIZE_LOG_KNOWN">SUMMARIZE_LOG_KNOWN</a></li><li><a href="global.html#SUMMARIZE_LOG_MUST_SEE">SUMMARIZE_LOG_MUST_SEE</a></li><li><a href="global.html#SUMMARIZE_LOG_PARSE">SUMMARIZE_LOG_PARSE</a></li><li><a href="global.html#SUMMARIZE_PROMPT_SIGS">SUMMARIZE_PROMPT_SIGS</a></li><li><a href="global.html#SUMMARIZE_REPORT_KEYS">SUMMARIZE_REPORT_KEYS</a></li><li><a href="global.html#SUMMARIZE_SCAN_OBJECT">SUMMARIZE_SCAN_OBJECT</a></li><li><a href="global.html#SUMMARIZE_SCHEMA">SUMMARIZE_SCHEMA</a></li><li><a href="global.html#SUMMARIZE_SEATS">SUMMARIZE_SEATS</a></li><li><a href="global.html#SUMMARIZE_SEAT_LABELS">SUMMARIZE_SEAT_LABELS</a></li><li><a href="global.html#SUMMARIZE_SHARED_KEYS">SUMMARIZE_SHARED_KEYS</a></li><li><a href="global.html#SUMMARIZE_SKIP_KIND">SUMMARIZE_SKIP_KIND</a></li><li><a href="global.html#SUMMARIZE_STAGE_KEYS">SUMMARIZE_STAGE_KEYS</a></li><li><a href="global.html#SUMMARIZE_STANDARDS">SUMMARIZE_STANDARDS</a></li><li><a href="global.html#SUMMARIZE_STORE_KEYS">SUMMARIZE_STORE_KEYS</a></li><li><a href="global.html#SUMMARIZE_TAP_STAGE_KEYS">SUMMARIZE_TAP_STAGE_KEYS</a></li><li><a href="global.html#SUMMARIZE_VOCAB_DEFAULT">SUMMARIZE_VOCAB_DEFAULT</a></li><li><a href="global.html#SUMMARIZE_VOCAB_KEYS">SUMMARIZE_VOCAB_KEYS</a></li><li><a href="global.html#SUMMARIZE_VOCAB_NULL_AS">SUMMARIZE_VOCAB_NULL_AS</a></li><li><a href="global.html#SUMMARY_SECTION">SUMMARY_SECTION</a></li><li><a href="global.html#SYNC_KEYS">SYNC_KEYS</a></li><li><a href="global.html#TAXONOMY_STATE_FILE">TAXONOMY_STATE_FILE</a></li><li><a href="global.html#TAXONOMY_STATE_VERSION">TAXONOMY_STATE_VERSION</a></li><li><a href="global.html#TRIAGE_BLANK">TRIAGE_BLANK</a></li><li><a href="global.html#TRIAGE_PROMPT_SIGS">TRIAGE_PROMPT_SIGS</a></li><li><a href="global.html#TRIAGE_SKIP_PREFIX">TRIAGE_SKIP_PREFIX</a></li><li><a href="global.html#TRIAGE_STATE">TRIAGE_STATE</a></li><li><a href="global.html#WKnowledgeSummarize">WKnowledgeSummarize</a></li><li><a href="global.html#annotationOf">annotationOf</a></li><li><a href="global.html#applyNoteStockFix">applyNoteStockFix</a></li><li><a href="global.html#applyRepairs">applyRepairs</a></li><li><a href="global.html#assertSummarizeVocab">assertSummarizeVocab</a></li><li><a href="global.html#auditSummarizeStandards">auditSummarizeStandards</a></li><li><a href="global.html#benchAdmitNoteItem">benchAdmitNoteItem</a></li><li><a href="global.html#bodyPartsOf">bodyPartsOf</a></li><li><a href="global.html#buildNote">buildNote</a></li><li><a href="global.html#capacityWarningsOf">capacityWarningsOf</a></li><li><a href="global.html#categoryOf">categoryOf</a></li><li><a href="global.html#categoryProposals">categoryProposals</a></li><li><a href="global.html#changedUnitsOf">changedUnitsOf</a></li><li><a href="global.html#check">check</a></li><li><a href="global.html#checkFaithChecks">checkFaithChecks</a></li><li><a href="global.html#checkFaithVerdictOf">checkFaithVerdictOf</a></li><li><a href="global.html#checkNote">checkNote</a></li><li><a href="global.html#checkRepairReply">checkRepairReply</a></li><li><a href="global.html#cleanStrList">cleanStrList</a></li><li><a href="global.html#cnValue">cnValue</a></li><li><a href="global.html#compile">compile</a></li><li><a href="global.html#composeNoteMd">composeNoteMd</a></li><li><a href="global.html#conceptCountDetail">conceptCountDetail</a></li><li><a href="global.html#conceptLabelProblem">conceptLabelProblem</a></li><li><a href="global.html#conceptVocabulary">conceptVocabulary</a></li><li><a href="global.html#contractFieldProblems">contractFieldProblems</a></li><li><a href="global.html#contractOf">contractOf</a></li><li><a href="global.html#contractProblem">contractProblem</a></li><li><a href="global.html#createDigestDomain">createDigestDomain</a></li><li><a href="global.html#createKnowledgeSummarize">createKnowledgeSummarize</a></li><li><a href="global.html#createMaterialPolicy">createMaterialPolicy</a></li><li><a href="global.html#createNoteRestoreGate">createNoteRestoreGate</a></li><li><a href="global.html#createRetagDomain">createRetagDomain</a></li><li><a href="global.html#createSummarizeDomain">createSummarizeDomain</a></li><li><a href="global.html#createSummarizeObject">createSummarizeObject</a></li><li><a href="global.html#createSummarizeRuntime">createSummarizeRuntime</a></li><li><a href="global.html#createTaxonomyStore">createTaxonomyStore</a></li><li><a href="global.html#createTriageDomain">createTriageDomain</a></li><li><a href="global.html#decidePanel">decidePanel</a></li><li><a href="global.html#deepFreeze">deepFreeze</a></li><li><a href="global.html#describe">describe</a></li><li><a href="global.html#diffLabelOf">diffLabelOf</a></li><li><a href="global.html#diffTaxonomy">diffTaxonomy</a></li><li><a href="global.html#domainNeeds">domainNeeds</a></li><li><a href="global.html#dropSection">dropSection</a></li><li><a href="global.html#dropUngrounded">dropUngrounded</a></li><li><a href="global.html#escalateDocHolds">escalateDocHolds</a></li><li><a href="global.html#evidenceCaveatsOf">evidenceCaveatsOf</a></li><li><a href="global.html#evidenceMessagesOf">evidenceMessagesOf</a></li><li><a href="global.html#evidenceNoteOf">evidenceNoteOf</a></li><li><a href="global.html#evidenceRuleOf">evidenceRuleOf</a></li><li><a href="global.html#evidenceTexts">evidenceTexts</a></li><li><a href="global.html#faithBenchRole">faithBenchRole</a></li><li><a href="global.html#faithCaseProblems">faithCaseProblems</a></li><li><a href="global.html#faithMissingOf">faithMissingOf</a></li><li><a href="global.html#faithNoteText">faithNoteText</a></li><li><a href="global.html#faithVerdictOf">faithVerdictOf</a></li><li><a href="global.html#fieldPlaceOf">fieldPlaceOf</a></li><li><a href="global.html#flattenEl">flattenEl</a></li><li><a href="global.html#gateNoteItem">gateNoteItem</a></li><li><a href="global.html#guideDefaultOf">guideDefaultOf</a></li><li><a href="global.html#hold">hold</a></li><li><a href="global.html#inAddScope">inAddScope</a></li><li><a href="global.html#indexedArrayCheck">indexedArrayCheck</a></li><li><a href="global.html#info">info</a></li><li><a href="global.html#ingestNotes">ingestNotes</a></li><li><a href="global.html#inputVocabProblems">inputVocabProblems</a></li><li><a href="global.html#isEvidenceRule">isEvidenceRule</a></li><li><a href="global.html#isNoteRow">isNoteRow</a></li><li><a href="global.html#jobForRemoved">jobForRemoved</a></li><li><a href="global.html#jobIdOf">jobIdOf</a></li><li><a href="global.html#jobScope">jobScope</a></li><li><a href="global.html#knownConceptOf">knownConceptOf</a></li><li><a href="global.html#levelMapOf">levelMapOf</a></li><li><a href="global.html#load">load</a></li><li><a href="global.html#mapContentSections">mapContentSections</a></li><li><a href="global.html#materialDocOf">materialDocOf</a></li><li><a href="global.html#materialExactValues">materialExactValues</a></li><li><a href="global.html#materialProblems">materialProblems</a></li><li><a href="global.html#materialValues">materialValues</a></li><li><a href="global.html#mdOf">mdOf</a></li><li><a href="global.html#mdText">mdText</a></li><li><a href="global.html#mergeContractLimits">mergeContractLimits</a></li><li><a href="global.html#mwGateNote">mwGateNote</a></li><li><a href="global.html#mwMarkDoc">mwMarkDoc</a></li><li><a href="global.html#mwPersistNote">mwPersistNote</a></li><li><a href="global.html#mwRenderNote">mwRenderNote</a></li><li><a href="global.html#mwSaveClues">mwSaveClues</a></li><li><a href="global.html#mwSettleTriage">mwSettleTriage</a></li><li><a href="global.html#mwSkipGate">mwSkipGate</a></li><li><a href="global.html#needThird">needThird</a></li><li><a href="global.html#noTopEvidenceOf">noTopEvidenceOf</a></li><li><a href="global.html#normConcepts">normConcepts</a></li><li><a href="global.html#normalizeNoteItem">normalizeNoteItem</a></li><li><a href="global.html#noteContentText">noteContentText</a></li><li><a href="global.html#noteContractOf">noteContractOf</a></li><li><a href="global.html#noteFeedbackOf">noteFeedbackOf</a></li><li><a href="global.html#noteFixOf">noteFixOf</a></li><li><a href="global.html#noteHoldDeadlineOf">noteHoldDeadlineOf</a></li><li><a href="global.html#noteItemFieldProblems">noteItemFieldProblems</a></li><li><a href="global.html#noteItemProblems">noteItemProblems</a></li><li><a href="global.html#noteMaterialFor">noteMaterialFor</a></li><li><a href="global.html#noteMaterialOf">noteMaterialOf</a></li><li><a href="global.html#noteMaterialText">noteMaterialText</a></li><li><a href="global.html#noteStd">noteStd</a></li><li><a href="global.html#noteUnitsOf">noteUnitsOf</a></li><li><a href="global.html#notesInflowOf">notesInflowOf</a></li><li><a href="global.html#notesInflowProblem">notesInflowProblem</a></li><li><a href="global.html#numberSet">numberSet</a></li><li><a href="global.html#openDocHolds">openDocHolds</a></li><li><a href="global.html#openStores">openStores</a></li><li><a href="global.html#originalTitleOf">originalTitleOf</a></li><li><a href="global.html#outputNumbers">outputNumbers</a></li><li><a href="global.html#packDocsByChars">packDocsByChars</a></li><li><a href="global.html#packOptOf">packOptOf</a></li><li><a href="global.html#panelFindingsOf">panelFindingsOf</a></li><li><a href="global.html#panelGroupOf">panelGroupOf</a></li><li><a href="global.html#panelSameProviderWarnings">panelSameProviderWarnings</a></li><li><a href="global.html#panelSeatRowsOf">panelSeatRowsOf</a></li><li><a href="global.html#panelSeats">panelSeats</a></li><li><a href="global.html#parseFrontmatter">parseFrontmatter</a></li><li><a href="global.html#parseSummarizeBenchArgs">parseSummarizeBenchArgs</a></li><li><a href="global.html#patchNoteRecord">patchNoteRecord</a></li><li><a href="global.html#patternsOf">patternsOf</a></li><li><a href="global.html#pickSummarizeVocab">pickSummarizeVocab</a></li><li><a href="global.html#planNoteStockFix">planNoteStockFix</a></li><li><a href="global.html#planSummarizeBench">planSummarizeBench</a></li><li><a href="global.html#proposalsOf">proposalsOf</a></li><li><a href="global.html#publishedOf">publishedOf</a></li><li><a href="global.html#putDocHold">putDocHold</a></li><li><a href="global.html#putRetagHold">putRetagHold</a></li><li><a href="global.html#queueRejudge">queueRejudge</a></li><li><a href="global.html#quote">quote</a></li><li><a href="global.html#rawPoolSplitOf">rawPoolSplitOf</a></li><li><a href="global.html#reEscape">reEscape</a></li><li><a href="global.html#readMd">readMd</a></li><li><a href="global.html#readNoteStockLedger">readNoteStockLedger</a></li><li><a href="global.html#readWatermark">readWatermark</a></li><li><a href="global.html#recordPatchOf">recordPatchOf</a></li><li><a href="global.html#renameKeysObsoleteOf">renameKeysObsoleteOf</a></li><li><a href="global.html#renderFrontmatter">renderFrontmatter</a></li><li><a href="global.html#repairBenchRole">repairBenchRole</a></li><li><a href="global.html#repairCaseProblems">repairCaseProblems</a></li><li><a href="global.html#repairPlanOf">repairPlanOf</a></li><li><a href="global.html#repairProblemsOf">repairProblemsOf</a></li><li><a href="global.html#repairVerdictOf">repairVerdictOf</a></li><li><a href="global.html#requeueCategory">requeueCategory</a></li><li><a href="global.html#resolveDocHolds">resolveDocHolds</a></li><li><a href="global.html#resolveJob">resolveJob</a></li><li><a href="global.html#resolveNoteHolds">resolveNoteHolds</a></li><li><a href="global.html#resolveSummarizeData">resolveSummarizeData</a></li><li><a href="global.html#resolveSummarizeSettings">resolveSummarizeSettings</a></li><li><a href="global.html#resolveSummarizeVocab">resolveSummarizeVocab</a></li><li><a href="global.html#retagBenchRole">retagBenchRole</a></li><li><a href="global.html#retagCaseProblems">retagCaseProblems</a></li><li><a href="global.html#retagJobLabelOf">retagJobLabelOf</a></li><li><a href="global.html#retagPageProblems">retagPageProblems</a></li><li><a href="global.html#retagTargetOf">retagTargetOf</a></li><li><a href="global.html#retagVerdictOf">retagVerdictOf</a></li><li><a href="global.html#reviveFailedDocs">reviveFailedDocs</a></li><li><a href="global.html#rewriteFieldOf">rewriteFieldOf</a></li><li><a href="global.html#rewriteMdField">rewriteMdField</a></li><li><a href="global.html#rollbackNoteRow">rollbackNoteRow</a></li><li><a href="global.html#rollbackNoteStockFix">rollbackNoteStockFix</a></li><li><a href="global.html#runAiBatchStage">runAiBatchStage</a></li><li><a href="global.html#runFaithCheck">runFaithCheck</a></li><li><a href="global.html#runPanelPage">runPanelPage</a></li><li><a href="global.html#runSummarizeBench">runSummarizeBench</a></li><li><a href="global.html#runSummarizeBenchCli">runSummarizeBenchCli</a></li><li><a href="global.html#save">save</a></li><li><a href="global.html#seatFaithVotesOf">seatFaithVotesOf</a></li><li><a href="global.html#section">section</a></li><li><a href="global.html#sectionBodyOf">sectionBodyOf</a></li><li><a href="global.html#sectionItemsOf">sectionItemsOf</a></li><li><a href="global.html#sectionOf">sectionOf</a></li><li><a href="global.html#settleRetagHolds">settleRetagHolds</a></li><li><a href="global.html#shortText">shortText</a></li><li><a href="global.html#splitTopLevel">splitTopLevel</a></li><li><a href="global.html#stageRetag">stageRetag</a></li><li><a href="global.html#stageSummarize">stageSummarize</a></li><li><a href="global.html#stageSync">stageSync</a></li><li><a href="global.html#stageTriage">stageTriage</a></li><li><a href="global.html#standardsVocabOf">standardsVocabOf</a></li><li><a href="global.html#stateFileOf">stateFileOf</a></li><li><a href="global.html#strArr">strArr</a></li><li><a href="global.html#stripIdentifiers">stripIdentifiers</a></li><li><a href="global.html#stripPatternsOf">stripPatternsOf</a></li><li><a href="global.html#stripSlugs">stripSlugs</a></li><li><a href="global.html#suggestConceptRenames">suggestConceptRenames</a></li><li><a href="global.html#summarizeBenchRole">summarizeBenchRole</a></li><li><a href="global.html#summarizeBenchRoleOf">summarizeBenchRoleOf</a></li><li><a href="global.html#summarizeCapacityOf">summarizeCapacityOf</a></li><li><a href="global.html#summarizeCaseProblems">summarizeCaseProblems</a></li><li><a href="global.html#summarizeFeatureProblems">summarizeFeatureProblems</a></li><li><a href="global.html#summarizePanelsOf">summarizePanelsOf</a></li><li><a href="global.html#summarizeScanOf">summarizeScanOf</a></li><li><a href="global.html#summarizeSeatOf">summarizeSeatOf</a></li><li><a href="global.html#summarizeSeatsOf">summarizeSeatsOf</a></li><li><a href="global.html#summarizeSummaryOf">summarizeSummaryOf</a></li><li><a href="global.html#summarizeVerdictOf">summarizeVerdictOf</a></li><li><a href="global.html#summarizeVocabProblem">summarizeVocabProblem</a></li><li><a href="global.html#summarizeWarningsOf">summarizeWarningsOf</a></li><li><a href="global.html#summaryTextOf">summaryTextOf</a></li><li><a href="global.html#syncFieldsOf">syncFieldsOf</a></li><li><a href="global.html#syncHashOf">syncHashOf</a></li><li><a href="global.html#syncNoteHolds">syncNoteHolds</a></li><li><a href="global.html#syncNotes">syncNotes</a></li><li><a href="global.html#syncTaxonomy">syncTaxonomy</a></li><li><a href="global.html#syncVocabOf">syncVocabOf</a></li><li><a href="global.html#tagSuspects">tagSuspects</a></li><li><a href="global.html#taxonomyFixOf">taxonomyFixOf</a></li><li><a href="global.html#taxonomyOf">taxonomyOf</a></li><li><a href="global.html#taxonomySnapshotOf">taxonomySnapshotOf</a></li><li><a href="global.html#taxonomyStatus">taxonomyStatus</a></li><li><a href="global.html#taxonomyVersion">taxonomyVersion</a></li><li><a href="global.html#triageBenchRole">triageBenchRole</a></li><li><a href="global.html#triageCaseProblems">triageCaseProblems</a></li><li><a href="global.html#triageEnabledOf">triageEnabledOf</a></li><li><a href="global.html#triagePendingOf">triagePendingOf</a></li><li><a href="global.html#triageReadyOf">triageReadyOf</a></li><li><a href="global.html#triageVerdictOf">triageVerdictOf</a></li><li><a href="global.html#trimItem">trimItem</a></li><li><a href="global.html#ungroundedLinesOf">ungroundedLinesOf</a></li><li><a href="global.html#ungroundedNumbers">ungroundedNumbers</a></li><li><a href="global.html#unquote">unquote</a></li><li><a href="global.html#verifyNoteStockChain">verifyNoteStockChain</a></li><li><a href="global.html#wordsOf">wordsOf</a></li><li><a href="global.html#writeMd">writeMd</a></li></ul>
+    
+</nav>
+
+<div id="main">
+    
+    <h1 class="page-title">core/vocab/conceptGroups.mjs</h1>
+    
+
+    
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>// conceptGroups.mjs — 概念詞彙表、概念標籤清理建議與可疑標籤判定(摘要段用)
+//
+// 【概念鍵一律走 normalizeConcept】標籤只要對不起來,同一概念就會分裂成多個詞彙;
+//   詞彙表依鍵計數、依最常見之寫法顯示,摘要時餵回 prompt 令標籤收斂成共用詞彙。
+// 【摘要段只計數、不改資料】可疑標籤(tagSuspects)於摘要時只計數並記日誌;存量之清理建議(suggestConceptRenames)
+//   供安裝方審閱後貼入 vocab.conceptRenames／conceptAliases——二者共用同一判準(annotationOf、splitTopLevel)。
+
+import isarr from 'wsemi/src/isarr.mjs'
+import isobj from 'wsemi/src/isobj.mjs'
+import isfun from 'wsemi/src/isfun.mjs'
+import ispint from 'wsemi/src/ispint.mjs'
+import cint from 'wsemi/src/cint.mjs'
+import { normalizeConcept } from '../capturePackage.mjs'
+
+/**
+ * 既有概念詞彙表（依使用篇數降冪），餵回摘要 prompt 令標籤收斂成共用詞彙
+ *
+ * 【預設只回名稱】回「名稱(篇數)」並餵回摘要 prompt 時，模型會把「(743)」照抄進標籤，
+ *   產生「資料結構(743)」這類分身概念；篇數之訊號改由排序表達。
+ *
+ * @param {Object} notes 輸入筆記集合，需具 select 方法
+ * @param {Integer} [limit=60] 輸入回傳最多幾條，非正整數則用預設 60
+ * @param {Object} [opt={}] 輸入設定物件，非物件視為{}
+ * @param {Boolean} [opt.counts=false] 輸入是否附使用篇數(維運顯示用；勿餵回 prompt)
+ * @returns {Promise} 回傳 Promise，resolve 回傳字串陣列(依使用篇數降冪)，格式為 '&lt;顯示寫法>'；opt.counts 為 true 時為 '&lt;顯示寫法>(&lt;使用篇數>)'
+ * @throws {Error} notes 缺 select 方法時拋出
+ * @example
+ * const notes = { select: async () => [{ concepts: ['太陽黑子', '日冕'] }, { concepts: ['太陽黑子'] }, { concepts: ['彗星'] }] }
+ * console.log(await conceptVocabulary(notes, 2))
+ * // => [ '太陽黑子', '日冕' ]
+ *
+ * console.log(await conceptVocabulary(notes, 2, { counts: true }))
+ * // => [ '太陽黑子(2)', '日冕(1)' ]
+ */
+export async function conceptVocabulary(notes, limit = 60, opt = {}) {
+
+    //check
+    if (!isfun(notes?.select)) {
+        throw new Error('conceptVocabulary 需要 notes 集合（具 select 方法）')
+    }
+    if (!ispint(limit)) {
+        limit = 60
+    }
+    limit = cint(limit)
+    if (!isobj(opt)) {
+        opt = {}
+    }
+
+    const all = await notes.select()
+    const count = new Map()
+    const forms = new Map() // key → Map(原始寫法 → 次數)
+    for (const n of all) {
+        const seenKeys = new Set() // 同一篇筆記之多個標籤折疊成同一鍵時只計一次(計的是「使用篇數」)
+        for (const c of n.concepts || []) {
+            const key = normalizeConcept(c)
+            if (!key || seenKeys.has(key)) continue
+            seenKeys.add(key)
+            count.set(key, (count.get(key) || 0) + 1)
+            if (!forms.has(key)) forms.set(key, new Map())
+            const f = String(c).trim()
+            forms.get(key).set(f, (forms.get(key).get(f) || 0) + 1)
+        }
+    }
+    // display 取「最常見的原始寫法」而非首見：字形折疊後同鍵可能混著繁簡兩種寫法，
+    // 首見若是簡體，詞彙表回饋 prompt 反而會鼓勵模型續用簡體——取多數寫法才會收斂
+    const displayOf = (key) => [...forms.get(key).entries()].sort((a, b) => b[1] - a[1])[0][0]
+    return [...count.entries()].sort((a, b) => b[1] - a[1]).slice(0, limit)
+        .map(([k, v]) => (opt.counts === true ? `${displayOf(k)}(${v})` : displayOf(k)))
+}
+
+/**
+ * 概念標籤之清理建議(維運用;不自動改任何資料):供安裝方審閱後貼入 vocab.conceptRenames／conceptAliases
+ *
+ * 【為何不自動】「名稱(743)」之數字與年份、階數不可辨(奧運(2008)、多項式(2)／多項式(3)),自動去尾會誤併;
+ *   折疊(tw→cn)之同鍵裡亦有繁體語意不同者(曆年／歷年、回復率／回覆率)。輸出原字形(改名以折疊前之原字形精確比對)。
+ *
+ * 另列兩類只供人審之候選:
+ *   annotated——「名稱(說明)」之括號說明、英文對照或「是否在清單中」之註記(分群鍵保留括號內容,與「名稱」分成兩鍵);
+ *     括號內只有數字／分隔符者(多項式(2)、Beta(1,1)、f(0)、(2008)、(743))不列;限定語(如「平均(加權)」)可能是不同概念,故不併入 renames;
+ *   multi——括號外以「,」「，」「、」「;」「；」串接多個概念之單一標籤;改名對照只能一對一,拆分屬使用方之資料整理。
+ *
+ * @param {Array} notes 輸入筆記陣列，非陣列視為空
+ * @param {Object} [opt={}] 輸入設定物件
+ * @param {Integer} [opt.minSuffix=10] 輸入「名稱(N)」之 N 至少多少才列入(篇數照抄多為兩位數以上)
+ * @returns {Object} 回傳 { renames:{ 原寫法: 基名 }, renameDetail:Array({ form, base, notes, yearLike }), foldGroups:Array({ key, forms:Array({ form, notes }) }),
+ *   annotated:Array({ form, base, inner, notes, baseUsed }), multi:Array({ form, parts, notes }) }；yearLike＝N 看似年份(1000～2100,如「奧運(2008)」,多為誤報)
+ * @example
+ * const notes = [{ concepts: ['資料結構'] }, { concepts: ['資料結構(743)'] }, { concepts: ['k-means(3)'] }]
+ * console.log(suggestConceptRenames(notes).renames)
+ * // => { '資料結構(743)': '資料結構' }
+ */
+export function suggestConceptRenames(notes, opt = {}) {
+    if (!isarr(notes)) notes = []
+    if (!isobj(opt)) opt = {}
+    const minSuffix = Number.isInteger(opt.minSuffix) ? opt.minSuffix : 10
+    const byKey = new Map() // key → Map(原字形 → 篇數)
+    for (const n of notes) {
+        const seen = new Set()
+        for (const c of n?.concepts || []) {
+            const form = String(c).trim()
+            const key = normalizeConcept(form)
+            if (!key || seen.has(`${key}|${form}`)) continue
+            seen.add(`${key}|${form}`)
+            if (!byKey.has(key)) byKey.set(key, new Map())
+            byKey.get(key).set(form, (byKey.get(key).get(form) || 0) + 1)
+        }
+    }
+    const renames = {}
+    const renameDetail = []
+    for (const forms of byKey.values()) {
+        for (const [form, cnt] of forms) {
+            const m = form.normalize('NFKC').match(/^(.+?)\s*\((\d+)\)$/)
+            if (!m || Number(m[2]) &lt; minSuffix) continue
+            const baseForms = byKey.get(normalizeConcept(m[1]))
+            if (!baseForms) continue
+            const base = [...baseForms.entries()].sort((a, b) => b[1] - a[1])[0][0]
+            renames[form] = base
+            const n = Number(m[2])
+            renameDetail.push({ form, base, notes: cnt, yearLike: n >= 1000 &amp;&amp; n &lt;= 2100 })
+        }
+    }
+    const foldGroups = [...byKey.entries()]
+        .filter(([, forms]) => new Set([...forms.keys()].map((f) => f.normalize('NFKC').replace(/\s+/g, '').toLowerCase())).size > 1)
+        .map(([key, forms]) => ({ key, forms: [...forms.entries()].map(([form, n]) => ({ form, notes: n })).sort((a, b) => b.notes - a.notes) }))
+        .sort((a, b) => b.forms.reduce((s, x) => s + x.notes, 0) - a.forms.reduce((s, x) => s + x.notes, 0))
+    const annotated = []
+    const multi = []
+    for (const forms of byKey.values()) {
+        for (const [form, cnt] of forms) {
+            const a = annotationOf(form)
+            if (a) annotated.push({ form, base: a.base, inner: a.inner, notes: cnt, baseUsed: byKey.has(normalizeConcept(a.base)) })
+            const parts = splitTopLevel(form.normalize('NFKC'))
+            if (parts.length >= 2) multi.push({ form, parts, notes: cnt })
+        }
+    }
+    annotated.sort((a, b) => Number(b.baseUsed) - Number(a.baseUsed) || b.notes - a.notes || a.form.localeCompare(b.form))
+    multi.sort((a, b) => b.notes - a.notes || a.form.localeCompare(b.form))
+    return { renames, renameDetail, foldGroups, annotated, multi }
+}
+
+/**
+ * 標籤之末尾括號說明:「名稱(說明)」且括號內不是只有數字／分隔符(排除 多項式(2)、Beta(1,1)、f(0)、(2008)、(743))
+ *
+ * @param {String} tag 輸入標籤原字形
+ * @returns {Object|null} 回傳 { base, inner } 或 null
+ */
+function annotationOf(tag) {
+    const m = String(tag || '').normalize('NFKC').trim().match(/^(.+?)\s*\(([^()]+)\)$/)
+    if (!m || /^[\p{N}\s,.\-+:/·]+$/u.test(m[2])) return null
+    return { base: m[1].trim(), inner: m[2].trim() }
+}
+
+/**
+ * 可疑之概念標籤(括號說明／英文對照,或一個標籤擠多個概念;摘要段只計數、不改資料——判準同 suggestConceptRenames 之 annotated／multi)
+ *
+ * @param {Array} tags 輸入標籤陣列，非陣列視為空
+ * @returns {Array} 回傳 [{ tag, kind:'annotated'|'multi' }]
+ * @example
+ * console.log(tagSuspects(['Beta(1,1)', '資料清理(未載入)', '甲, 乙', '多項式(2)']).map((x) => x.kind))
+ * // => [ 'annotated', 'multi' ]
+ */
+export function tagSuspects(tags) {
+    const out = []
+    for (const t of isarr(tags) ? tags : []) {
+        if (annotationOf(t)) out.push({ tag: t, kind: 'annotated' })
+        else if (splitTopLevel(String(t || '').normalize('NFKC')).length >= 2) out.push({ tag: t, kind: 'multi' })
+    }
+    return out
+}
+
+/**
+ * 以括號外之「,」「、」「;」切分(括號／引號內不切,如 Beta(1,1));NFKC 後全形之「，」「；」已轉為半形
+ *
+ * @param {String} s 輸入字串
+ * @returns {Array} 回傳非空片段陣列(去頭尾空白)
+ */
+function splitTopLevel(s) {
+    const OPEN = '([「『【'
+    const CLOSE = ')]」』】'
+    const parts = []
+    let depth = 0
+    let cur = ''
+    for (const ch of String(s || '')) {
+        if (OPEN.includes(ch)) depth++
+        else if (CLOSE.includes(ch)) depth = Math.max(0, depth - 1)
+        if (depth === 0 &amp;&amp; /[,、;]/.test(ch)) {
+            parts.push(cur)
+            cur = ''
+            continue
+        }
+        cur += ch
+    }
+    parts.push(cur)
+    return parts.map((x) => x.trim()).filter(Boolean)
+}
+
+export default { conceptVocabulary, suggestConceptRenames, tagSuspects }
+</code></pre>
+        </article>
+    </section>
+
+
+
+
+    
+    
+</div>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 4.0.5</a> on Sun Nov 01 2026 23:10:48 GMT+0800 (台北標準時間) using the <a href="https://github.com/clenemt/docdash">docdash</a> theme.
+</footer>
+
+<script>prettyPrint();</script>
+<script src="scripts/polyfill.js"></script>
+<script src="scripts/linenumber.js"></script>
+
+
+
+</body>
+</html>

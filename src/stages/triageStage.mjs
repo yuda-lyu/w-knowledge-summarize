@@ -1,0 +1,338 @@
+// triageStage.mjs — 摘要物件之子階段 triage:預篩(raw 文件之標題＋開頭片段 → 放行／攔下),摘要只讀放行者
+//
+// hook 錨點:summarize.triage.settleTriage
+// 批次調度(部分接受/隊頭防阻塞/tries 出隊/額度中止/零進度守門/時間預算守門)沿用 core/stages/aiBatchStage;
+// prompt/驗證內建於 domain(deps.domains.triage),可由 opt.domain 整組置換或 tap 逐環覆寫。
+//
+// 【與摘要的接縫】raw 文件之 triage 欄(stores/docStatus 之 TRIAGE_STATE):未設＝待預篩;relevant＝放行(摘要選池只取此類);
+//   irrelevant＝攔下(同時轉 skip,skipReason「預篩：…」)。預篩失敗達上限者標 relevant 放行(fail-open):預篩壞了不得擋住整條摘要線。
+//   summarize.triage.enabled=false 即整段停用且摘要不看此欄。
+// 【容量】summarize.triage.rounds×ai.parallel×summarize.triage.docsPerCall(預設 2×3×20＝120 篇/輪),約為摘要容量之 2 倍——
+//   放行率約 4～5 成時兩段容量才對得上。
+// 【陣列輸出之呼叫逐次截斷放行】預篩與第二席確認之輸出皆為逐篇之 JSON 陣列:每次呼叫給 acceptTruncated:true(調度層於輸出截斷時收前段完整項目,
+//   未涵蓋者留下輪;部分接受之語意)。逐次給、不在建構期開:共用同一調度實例之他段(物件輸出者)不受影響。
+// 【攔下之第二席確認(檢定標準 SS5;summarize.standards.triageConfirm.enabled,預設 false)】預篩席判「無關」者不立即攔下:標 triage
+//   reject-pending(記預篩席之實際成交供應者與理由),於本段末以確認席(summarize.standards.triageConfirm.ai.first;須與預篩席不同家)以同一提示詞
+//   再判,判定小組(core/standards/panel)成立「無關」才攔下(skipReason「預篩：…（兩席確認）」);成立「相關」→ 放行;不一致(第三席亦未成立)
+//   → 放行交摘要(摘要以全文再判相關性,不誤殺);缺票或同一供應者 → 留待下輪(逾 summarize.triage.maxTries 放行)。素材問題之退回不經確認
+//   (不是攔下)。確認席關閉(開過再關)時,既有待確認者依關閉後之語意(預篩席單席判無關即攔下)轉攔下(skipReason 註明「確認席已關閉」;
+//   計 confirmClosed)——否則永遠擱淺:預篩池只取無 triage 者、確認只在開啟時跑、摘要只取 relevant。開啟而缺確認席 first → 拋錯(功能表
+//   SUMMARIZE_FEATURES 之單一判定,與忠實性覆核同):不可當成關閉——那會把待確認者依單席之判定攔下。
+// 【退路之 domain】未給 opt.domain 且 deps.domains.triage 缺者,以已解析之 deps.vocab(無則取 deps.data.vocab 中本套件所讀之鍵)現建。
+
+import isobj from 'wsemi/src/isobj.mjs'
+import { decidePanel, needThird, PANEL_WHY, PANEL_WHY_LABELS } from '../core/standards/panel.mjs'
+import { defineMw, applyTaps, makeMsg, count, runChainOverMsgs, stdReport, stageFields, budgetOf, byRetryTierFifo, oneline } from '../core/capturePackage.mjs'
+import { SUMMARIZE_DEFAULT, triageEnabledOf, summarizeFeatureProblems, summarizeSeatOf } from '../core/summarizeSettings.mjs'
+import { pickSummarizeVocab } from '../core/vocab/summarizeVocab.mjs'
+import { runAiBatchStage } from '../core/stages/aiBatchStage.mjs'
+import { createTriageDomain } from '../domain/triageDomain.mjs'
+import { createMaterialPolicy } from '../stores/materialPolicy.mjs'
+import { SUMMARIZE_DOC_STATUS, SUMMARIZE_SKIP_KIND, TRIAGE_STATE, TRIAGE_SKIP_PREFIX } from '../stores/docStatus.mjs'
+
+/**
+ * 錨點:settleTriage(落帳:放行標 relevant;攔下轉 skip(記錄保留,skipReason 帶「預篩：」可稽核))
+ *
+ * 讀 msg.data(doc、_aiItem、_domain);不寫 msg.data(落帳寫入 stores.docs);不短路(恆呼叫 next)
+ *
+ * @returns {Object} 回傳 defineMw 產物
+ * @example
+ * let row = { id: 'd1', status: 'raw', title: '體育新聞' }
+ * let docs = { patch: async (id, o) => Object.assign(row, o) }
+ * let msg = makeMsg('doc', { doc: row, _aiItem: { relevant: false, reason: '與天文學無關' }, _domain: { reasonOf: (it) => it.reason } })
+ * let ctx = { deps: { stores: { docs }, clock: { iso8: () => 'T0' }, settings: {} }, log: { info() {}, warn() {} } }
+ * await runChainOverMsgs({ chain: [mwSettleTriage()], ctx, msgs: [msg] })
+ * console.log(row.status, row.triage, row.skipReason, msg.stats)
+ * // => skip irrelevant 預篩：與天文學無關 { irrelevant: 1, processed: 1 }
+ */
+export const mwSettleTriage = () => defineMw({
+    name: 'settleTriage',
+    handle: async (msg, ctx, next) => {
+        const { stores, clock, settings } = ctx.deps
+        const { doc, _aiItem: item, _domain: domain, _material: material } = msg.data
+        const now = clock.iso8()
+        if (item.relevant) {
+            await stores.docs.patch(doc.id, { triage: TRIAGE_STATE.relevant, triagedAt: now })
+            count(msg, 'relevant')
+        }
+        else {
+            const reason = domain.reasonOf(item)
+            // 理由直指素材壞了(亂碼／未載入／截斷…)→ 不丟,退回抓取以另一種方法重抓(stores/materialPolicy)
+            const rp = material?.refetchPatchOf(doc, reason, { nowIso: now, capture: settings?.capture })
+            if (rp) {
+                await stores.docs.patch(doc.id, rp)
+                count(msg, 'materialRefetch')
+                ctx.log.info(`預篩：素材問題退回抓取[${oneline(doc.title, 40)}]（${oneline(reason, 60)}；排除 ${rp.refetchSkip.join('、')} 重抓）`)
+            }
+            else if (msg.data._confirm === true) {
+                // SS5:待確認席再判(本段末);記預篩席之實際成交供應者(判定小組之獨立性)
+                await stores.docs.patch(doc.id, { triage: TRIAGE_STATE.rejectPending, triagedAt: now, triageRejectBy: String(msg.data._provider || ''), triageRejectReason: reason })
+                count(msg, 'rejectPending')
+            }
+            else {
+                // skipKind:預篩判無關 triage;理由直指素材壞了而不退回者(抓取套件判不可換法之來源)material——後者不是對題材之判定
+                //   (抓取套件之來源產出統計不計為已判定)
+                await stores.docs.patch(doc.id, { triage: TRIAGE_STATE.irrelevant, triagedAt: now, status: SUMMARIZE_DOC_STATUS.skip, skipKind: material?.problemOf?.(reason) ? SUMMARIZE_SKIP_KIND.material : SUMMARIZE_SKIP_KIND.triage, skipReason: `${TRIAGE_SKIP_PREFIX}${reason}`, notedAt: now })
+                count(msg, 'irrelevant')
+                ctx.log.info(`預篩：攔下[${oneline(doc.title, 40)}]（${reason}）`)
+            }
+        }
+        count(msg, 'processed')
+        return next(msg)
+    },
+})
+
+/**
+ * 預篩子階段:raw 文件之標題＋開頭片段 → 放行／攔下,摘要只讀放行者。hook 錨點:summarize.triage.settleTriage
+ *
+ * @param {Object} [opt={}] 輸入設定物件，非物件則視為{}
+ * @param {Array} [opt.chain] 輸入自組動作鏈(defineMw 產物陣列)，未給則以 tap 組裝預設鏈
+ * @param {Object} [opt.tap] 輸入認名掛載規格(applyTaps 之 taps)
+ * @param {Object} [opt.domain] 輸入整組置換之預篩領域物件(buildPrompt/isValidItem/reasonOf)，未給則用 ctx.deps.domains.triage
+ * @param {Function} [opt.callAI] 輸入覆寫之 AI 呼叫函數 (prompt, check, callOpt) => Promise，未給則用 ai.callJson;callOpt 同正式呼叫:
+ *   預篩為 { shouldStop, budgetMs, acceptTruncated:true }(席位 spec 由正式呼叫補),第二席確認為 { spec, segment:'triageConfirm', shouldStop, budgetMs, acceptTruncated:true }
+ * @param {Integer} [opt.docsPerBatch] 輸入每批文件數，未給則用 settings.summarize.triage.docsPerCall
+ * @param {Integer} [opt.parallel] 輸入每輪並行批數，未給則用 settings.ai.parallel
+ * @param {Integer} [opt.rounds] 輸入輪數，未給則用 settings.summarize.triage.rounds
+ * @param {Integer} [opt.maxTries] 輸入預篩失敗幾次後 fail-open 放行，未給則用 settings.summarize.triage.maxTries，預設2
+ * @param {Object} [opt.statuses] 輸入狀態名覆寫，可含 pending，預設 { pending:'raw' }
+ * @param {Boolean} [opt.enabled] 輸入是否啟用本子階段，未給則用 settings.summarize.triage.enabled===true
+ * @param {Boolean} [opt.confirm] 輸入是否開啟攔下之第二席確認，未給則用 settings.summarize.standards.triageConfirm.enabled===true(開啟而缺確認席 first 即拋錯)
+ * @param {Object} [opt.material] 輸入素材問題判定器(createMaterialPolicy 之產物)，未給則依 settings.summarize.refetch 建立
+ * @param {Function} [opt.rank] 輸入宿主排序 async (docs, { ctx }) => 要留之文件陣列(docs＝本段末全部已放行待摘要之文件;未入選者攔下、
+ *   skipReason「預篩：未入選」——零件庫用法之「取前 N」;內建排名提示詞為後續版本)
+ * @returns {Object} 回傳 stage 物件 { name, run }(階段契約欄位 enabled／when 等見抓取套件之 stageFields)
+ * @example
+ * let rows = new Map([['a', { id: 'a', status: 'raw', title: '星系旋轉曲線', text: '外圍恆星的轉速趨於定值', collectedAt: 'c1' }]])
+ * let docs = {
+ *     select: async (find) => [...rows.values()].filter((d) => d.status === find.status),
+ *     get: async (id) => rows.get(id),
+ *     patch: async (id, o) => Object.assign(rows.get(id), o),
+ * }
+ * let settings = resolveSummarizeSettings({ summarize: { triage: { enabled: true } } })
+ * let callAI = async () => ({ ok: true, data: [{ index: 1, relevant: true }] })
+ * let stage = stageTriage({ docsPerBatch: 1, parallel: 1, rounds: 1, callAI })
+ * let r = await stage.run({ deps: { stores: { docs }, clock: { iso8: () => 'T0' }, settings }, log: { info() {}, warn() {} } })
+ * console.log(stage.name, r.detail.relevant, rows.get('a').triage)
+ * // => triage 1 relevant
+ *
+ * let off = stageTriage({ enabled: false })
+ * console.log((await off.run({ deps: { settings }, log: { info() {}, warn() {} } })).detail)
+ * // => { disabled: true, processed: 0, relevant: 0, irrelevant: 0 }
+ */
+export function stageTriage(opt = {}) {
+
+    //check
+    if (!isobj(opt)) {
+        opt = {}
+    }
+
+    const chain = opt.chain || applyTaps([mwSettleTriage(opt)], opt.tap, { chainName: 'summarize.triage' })
+
+    return {
+        ...stageFields(opt, { name: 'triage' }),
+        run: async (ctx) => {
+            const { stores, settings, ai, clock } = ctx.deps
+            const log = ctx.log
+            // 啟用判準與摘要段、容量推導同一份(core/summarizeSettings 之 triageEnabledOf;未經解析之裸設定視為未啟用)
+            const enabled = opt.enabled ?? triageEnabledOf(settings.summarize)
+            if (!enabled) return stdReport({ detail: { disabled: true, processed: 0, relevant: 0, irrelevant: 0 } })
+            const domain = opt.domain || ctx.deps.domains?.triage || createTriageDomain({ vocab: ctx.deps.vocab || pickSummarizeVocab(ctx.deps.data?.vocab), triageCharsPerDoc: settings.summarize.triage.charsPerDoc, longDocChars: settings.summarize.charsPerDoc })
+            // 時間預算(抓取套件之 budgetOf):與摘要同一份守門;覆寫 callAI 者亦收第三參數
+            const budget = budgetOf(ctx)
+            const shouldStop = budget.shouldStop
+            // 席位:summarize.triage.ai 未給即沿用摘要席位 summarize.ai(summarizeSeatOf;取值延後到真的要呼叫時:覆寫 callAI 之測試環境可無席位設定)
+            const baseCall = (p, c, o) => ai.callJson(p, c, { spec: summarizeSeatOf(settings.summarize, 'triage'), ...o })
+            const callAI = (p, c) => (opt.callAI || baseCall)(p, c, { shouldStop, budgetMs: budget.remainingMs(), acceptTruncated: true })
+            const st = { pending: SUMMARIZE_DOC_STATUS.pending, ...(opt.statuses || {}) }
+            const triesField = 'triageTries'
+            const maxTries = opt.maxTries ?? settings.summarize.triage.maxTries ?? SUMMARIZE_DEFAULT.triage.maxTries
+
+            /**
+             * fail-open:預篩失敗達上限即放行交摘要(記 lastError 可稽核),不得擋住整條線
+             * @param {Object} doc 輸入待預篩文件記錄
+             * @param {String} why 輸入本次未判定原因(寫入 lastError／warn 訊息)
+             */
+            const bumpTries = async (doc, why) => {
+                const tries = (doc[triesField] || 0) + 1
+                if (tries >= maxTries) {
+                    await stores.docs.patch(doc.id, { [triesField]: tries, triage: TRIAGE_STATE.relevant, triagedAt: clock.iso8(), lastError: `預篩未判定（${why}），放行交摘要` })
+                    log.warn(`預篩：[${oneline(doc.title, 40)}] ${why}（第 ${tries} 次），放行交摘要`)
+                }
+                else {
+                    await stores.docs.patch(doc.id, { [triesField]: tries })
+                }
+            }
+
+            const batchSize = opt.docsPerBatch ?? settings.summarize.triage.docsPerCall
+            const parallel = opt.parallel ?? settings.ai.parallel
+            const rounds = opt.rounds ?? settings.summarize.triage.rounds
+            // SS5 第二席確認(檔頭):開啟而缺確認席 → 拋錯(功能表之單一判定;子階段之選項覆寫設定之開關)
+            const confirmSeats = settings.summarize?.standards?.triageConfirm?.ai || {}
+            const confirmOn = (opt.confirm ?? settings.summarize?.standards?.triageConfirm?.enabled) === true
+            const featureProblems = summarizeFeatureProblems(settings, domain, { enabled: confirmOn ? ['triageConfirm'] : [] })
+            if (featureProblems.length) throw new Error(featureProblems.join('；'))
+            /** 未預篩之待處理池:status 為 pending 且尚無 triage 欄者 */
+            const pickUntriaged = async () => (await stores.docs.select({ status: st.pending })).filter((d) => !d.triage)
+            const raw0 = await stores.docs.select({ status: st.pending })
+            const pool = raw0.filter((d) => !d.triage)
+            log.info(`預篩池 ${pool.length} 篇，本輪容量 ${rounds * parallel * batchSize}`)
+            const material = opt.material || createMaterialPolicy({ patterns: settings.summarize?.refetch?.patterns, max: settings.summarize?.refetch?.max })
+            // 確認席關閉時之待確認者(檔頭):依預篩席之判定攔下
+            let confirmClosed = 0
+            if (!confirmOn) {
+                for (const d of raw0.filter((x) => x.triage === TRIAGE_STATE.rejectPending)) {
+                    const now = clock.iso8()
+                    const reason = d.triageRejectReason || domain.reasonOf({})
+                    await stores.docs.patch(d.id, { triage: TRIAGE_STATE.irrelevant, triagedAt: now, status: SUMMARIZE_DOC_STATUS.skip, skipKind: material.problemOf(reason) ? SUMMARIZE_SKIP_KIND.material : SUMMARIZE_SKIP_KIND.triage, skipReason: `${TRIAGE_SKIP_PREFIX}${reason}（確認席已關閉，以預篩席之判定攔下）`, notedAt: now })
+                    confirmClosed++
+                    log.info(`預篩：攔下[${oneline(d.title, 40)}]（${reason}；確認席已關閉，以預篩席之判定攔下）`)
+                }
+                if (confirmClosed) log.info(`預篩：確認席已關閉，待確認 ${confirmClosed} 篇依預篩席之判定攔下`)
+            }
+            const closedDetail = confirmClosed ? { confirmClosed } : {}
+            const pendingConfirm = async () => (confirmOn ? (await stores.docs.select({ status: st.pending })).filter((d) => d.triage === TRIAGE_STATE.rejectPending) : [])
+            if (pool.length === 0 && !(await pendingConfirm()).length) return stdReport({ stats: { skip: confirmClosed }, detail: { processed: 0, relevant: 0, irrelevant: 0, pool: 0, ...closedDetail } })
+
+            const r = pool.length === 0 ? { applied: {}, failedBatches: 0, missed: 0, chainFailed: 0, aiCalls: 0, aiAttempts: 0, aborted: false, stopped: false } : await runAiBatchStage({
+                log,
+                batchSize,
+                parallel,
+                rounds,
+                shouldStop,
+                // 選取順序與摘要同一份比較器(抓取套件之 byRetryTierFifo:tries 升冪→tier→FIFO):高層級來源先預篩、先摘要
+                pickPool: async (limit) => (await pickUntriaged()).sort(byRetryTierFifo(triesField)).slice(0, limit),
+                buildPrompt: async (batch) => domain.buildPrompt(batch),
+                checkResult: (data, batch) => Array.isArray(data) && data.length > 0 && data.some((it) => domain.isValidItem(it, batch.length)),
+                isValidItem: (it, batch) => domain.isValidItem(it, batch.length),
+                indexOf: (it) => it.index,
+                callAI,
+                applyItem: async (item, doc, helpers) => {
+                    const msg = makeMsg('doc', { doc, _aiItem: item, _domain: domain, _material: material, _confirm: confirmOn, _provider: helpers?.providerId || '' }, { stage: 'triage' })
+                    const rr = await runChainOverMsgs({ chain, ctx, msgs: [msg], chainName: 'summarize.triage' })
+                    if (rr.fails) {
+                        await bumpTries(doc, `逐項鏈異常：${oneline(rr.errors.join('；'), 150)}`)
+                        return { ...rr.stats, _chainFailed: true } // harness:不算進度、計 chainFailed
+                    }
+                    return rr.stats
+                },
+                onMissed: (doc) => bumpTries(doc, '未被模型完整涵蓋（缺席或項目不合格式）'),
+                onBatchFailed: async (batch) => {
+                    for (const d of batch) await bumpTries(d, '預篩批次失敗（輸出截斷／驗證不過）')
+                },
+            })
+
+            // ── SS5:攔下之第二席確認(本輪新判與前輪留待者;容量同預篩)──
+            const cf = { confirmed: 0, overturned: 0, confirmUndetermined: 0, confirmRetry: 0, confirmCalls: 0 }
+            if (confirmOn && !budget.shouldStop()) {
+                const queue = (await pendingConfirm()).sort((a, b) => String(a.triagedAt || '').localeCompare(String(b.triagedAt || ''))).slice(0, rounds * parallel * batchSize)
+                // 回覆驗證與預篩同一判定(至少一項過 domain.isValidItem):調度層取回覆中最後一段過驗證之 JSON,只驗「是陣列」會被尾隨說明之小片段騙過
+                const callSeat = (spec, p, n) => {
+                    cf.confirmCalls++
+                    const check = (d) => Array.isArray(d) && d.some((it) => domain.isValidItem(it, n))
+                    return (opt.callAI ? opt.callAI(p, check, { spec, segment: 'triageConfirm', shouldStop, budgetMs: budget.remainingMs(), acceptTruncated: true }) : ai.callJson(p, check, { spec, shouldStop, budgetMs: budget.remainingMs(), acceptTruncated: true }))
+                }
+                const votesOf = (res, n) => {
+                    const m = new Map()
+                    for (const it of Array.isArray(res?.data) ? res.data : []) {
+                        if (!domain.isValidItem(it, n)) continue
+                        const v = it.relevant ? 'relevant' : 'irrelevant'
+                        if (m.has(it.index) && m.get(it.index) !== v) m.set(it.index, null)
+                        else if (!m.has(it.index)) m.set(it.index, v)
+                    }
+                    return m
+                }
+                for (let i = 0; i < queue.length; i += batchSize) {
+                    if (budget.shouldStop()) break
+                    const batch = queue.slice(i, i + batchSize)
+                    const rb = await callSeat(confirmSeats.first, domain.buildPrompt(batch), batch.length)
+                    if (rb?.skipped) break
+                    const vb = rb?.ok ? votesOf(rb, batch.length) : new Map()
+                    const votes = batch.map((d, k) => [{ seat: 'triage', provider: String(d.triageRejectBy || ''), verdict: 'irrelevant' }, { seat: 'confirm', provider: String(rb?.providerId || ''), verdict: vb.has(k + 1) ? vb.get(k + 1) : null }])
+                    const thirdIdx = isobj(confirmSeats.third) ? batch.map((d, k) => k).filter((k) => needThird(votes[k])) : []
+                    // 第三席被略過(額度、時間預算、本機網路不通):須第三席之篇本輪不判、不記次(同第一席之略過與忠實性覆核),
+                    //   兩席已定者照常落帳;其後之批次不再呼叫
+                    let thirdSkipped = false
+                    if (thirdIdx.length) {
+                        const sub = thirdIdx.map((k) => batch[k])
+                        const rc = await callSeat(confirmSeats.third, domain.buildPrompt(sub), sub.length)
+                        thirdSkipped = rc?.skipped === true
+                        const vc = rc?.ok && !rc?.skipped ? votesOf(rc, sub.length) : new Map()
+                        thirdIdx.forEach((k, j) => votes[k].push({ seat: 'third', provider: String(rc?.providerId || ''), verdict: vc.has(j + 1) ? vc.get(j + 1) : null }))
+                    }
+                    const waitThird = new Set(thirdSkipped ? thirdIdx : [])
+                    for (const [k, d] of batch.entries()) {
+                        if (waitThird.has(k)) continue
+                        const dec = decidePanel(votes[k])
+                        const now = clock.iso8()
+                        if (dec.status === 'decided' && dec.verdict === 'irrelevant') {
+                            await stores.docs.patch(d.id, { triage: TRIAGE_STATE.irrelevant, status: SUMMARIZE_DOC_STATUS.skip, skipKind: material.problemOf(d.triageRejectReason || '') ? SUMMARIZE_SKIP_KIND.material : SUMMARIZE_SKIP_KIND.triage, skipReason: `${TRIAGE_SKIP_PREFIX}${d.triageRejectReason || domain.reasonOf({})}（兩席確認）`, notedAt: now, triageConfirmedAt: now })
+                            cf.confirmed++
+                            log.info(`預篩：攔下[${oneline(d.title, 40)}]（${d.triageRejectReason || ''}；兩席確認）`)
+                        }
+                        else if (dec.status === 'decided' || dec.why === PANEL_WHY.DISAGREE || dec.why === PANEL_WHY.UNSURE) {
+                            // 成立相關、或判不了 → 放行交摘要(摘要以全文再判相關性;不誤殺)
+                            // 未成立原因之字樣取判定小組之字樣表(PANEL_WHY_LABELS;不確定與不一致各自照實寫)
+                            const why = PANEL_WHY_LABELS[dec.why] || dec.why
+                            await stores.docs.patch(d.id, { triage: TRIAGE_STATE.relevant, triagedAt: now, lastError: dec.status === 'decided' ? `預篩攔下被第二席推翻（${d.triageRejectReason || ''}）` : `預篩攔下之第二席確認判不了（${why}），放行交摘要（${d.triageRejectReason || ''}）` })
+                            if (dec.status === 'decided') cf.overturned++
+                            else cf.confirmUndetermined++
+                            log.info(`預篩：放行[${oneline(d.title, 40)}]（預篩席判無關而${dec.status === 'decided' ? '第二席判相關、成立' : `判定小組判不了（${why}）`}，交摘要再判）`)
+                        }
+                        else {
+                            // 缺票、同一供應者 → 留待下輪;逾上限放行(fail-open,同預篩失敗)
+                            const tries = (d.triageConfirmTries || 0) + 1
+                            const give = tries >= maxTries
+                            await stores.docs.patch(d.id, give ? { triageConfirmTries: tries, triage: TRIAGE_STATE.relevant, triagedAt: now, lastError: `預篩攔下之第二席確認未完成（${PANEL_WHY_LABELS[dec.why] || dec.why}），放行交摘要` } : { triageConfirmTries: tries })
+                            cf.confirmRetry++
+                        }
+                    }
+                    if (thirdSkipped) break
+                }
+                if (cf.confirmed + cf.overturned + cf.confirmUndetermined) log.info(`預篩第二席確認：確認攔下 ${cf.confirmed}、推翻放行 ${cf.overturned}、不一致放行 ${cf.confirmUndetermined}、留待下輪 ${cf.confirmRetry}`)
+            }
+
+            // ── 宿主排序取前 N(opt.rank;零件庫用法):已放行待摘要者交宿主,回要留者;未入選者攔下(skip,「預篩：未入選」)、不進摘要 ──
+            const rk = { ranked: 0, rankSkipped: 0 }
+            if (typeof opt.rank === 'function') {
+                const ready = (await stores.docs.select({ status: st.pending })).filter((d) => d.triage === TRIAGE_STATE.relevant)
+                if (ready.length) {
+                    const kept = await opt.rank(ready, { ctx })
+                    if (!Array.isArray(kept)) throw new Error('triage 之 opt.rank 須回傳文件陣列（已放行者之子集）')
+                    const keep = new Set(kept.map((d) => d?.id))
+                    rk.ranked = ready.filter((d) => keep.has(d.id)).length
+                    for (const d of ready.filter((d) => !keep.has(d.id))) {
+                        const now = clock.iso8()
+                        await stores.docs.patch(d.id, { triage: TRIAGE_STATE.irrelevant, triagedAt: now, status: SUMMARIZE_DOC_STATUS.skip, skipKind: SUMMARIZE_SKIP_KIND.triage, skipReason: `${TRIAGE_SKIP_PREFIX}未入選`, notedAt: now })
+                        rk.rankSkipped++
+                    }
+                    log.info(`預篩：宿主排序取 ${rk.ranked} 篇，未入選 ${rk.rankSkipped} 篇攔下`)
+                }
+            }
+
+            return stdReport({
+                stats: { in: r.applied.processed || 0, out: (r.applied.relevant || 0) + cf.overturned + cf.confirmUndetermined - rk.rankSkipped, skip: (r.applied.irrelevant || 0) + cf.confirmed + confirmClosed + rk.rankSkipped, fail: r.failedBatches + r.missed + r.chainFailed, aiCalls: r.aiCalls + cf.confirmCalls },
+                detail: {
+                    processed: r.applied.processed || 0,
+                    relevant: r.applied.relevant || 0,
+                    irrelevant: r.applied.irrelevant || 0,
+                    ...(confirmOn ? { rejectPending: r.applied.rejectPending || 0, ...cf } : {}),
+                    // 宿主排序(opt.rank 給了才附)
+                    ...(typeof opt.rank === 'function' ? rk : {}),
+                    // 確認席關閉時依預篩席之判定攔下之待確認者(有才附)
+                    ...closedDetail,
+                    materialRefetch: r.applied.materialRefetch || 0,
+                    aborted: r.aborted,
+                    stopped: r.stopped,
+                    failedBatches: r.failedBatches,
+                    missed: r.missed,
+                    chainFailed: r.chainFailed,
+                    aiAttempts: r.aiAttempts,
+                    pool: pool.length,
+                },
+            })
+        },
+    }
+}
+
+export default stageTriage

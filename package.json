@@ -1,0 +1,32 @@
+{
+  "name": "w-knowledge-summarize",
+  "version": "1.0.1",
+  "main": "dist/w-knowledge-summarize.umd.js",
+  "dependencies": {
+    "w-knowledge-capture": "^1.0.1",
+    "wsemi": "^1.9.40"
+  },
+  "devDependencies": {
+    "w-data-pipeline": "^1.0.24",
+    "w-dispatch-ai": "^1.0.64",
+    "w-orm-lmdb": "^1.0.50",
+    "w-package-tools": "^1.1.22"
+  },
+  "scripts": {
+    "test": "mocha --parallel \"test/*.test.mjs\" --timeout 180000",
+    "deploy": "gh-pages -d docs"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/yuda-lyu/w-knowledge-summarize.git"
+  },
+  "keywords": [
+    "package",
+    "tool",
+    "knowledge",
+    "summarize",
+    "nodejs"
+  ],
+  "author": "yuda-lyu(semisphere)",
+  "license": "MIT"
+}

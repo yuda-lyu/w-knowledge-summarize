@@ -1,0 +1,562 @@
+// stockFix.mjs — 筆記之檢定標準存量處置:預演(plan)→ 套用(apply;處置帳可回退)→ 連鎖斷言(verify)→ 回退(rollback)
+//
+// 【目標取自符合度掃描】與每輪掃描同一判定(standards/audit 之 SS2、SS3、SS4、SS6、SS11):只處置現行違反者(已豁免者不在其列)。
+//   修法為 ops/noteStockFix 之 noteFixOf(與筆記同步、還原筆記同一函數):只動內容章、標題、概念、樣本期間與限制、證據等級,
+//   [[連結]] 與網址不轉;SS4 須原文(抓取套件之原文取得;不可得者不修)。套用時逐篇以現值重算(已不須修者列 stale)。
+// 【修不了者入待判】可確定修正之外者(缺欄位、擠標籤有段非既有概念、SS4 之標題或一句話重點含原文沒有之數字…)逐筆登錄待判:物件 note、
+//   該標準、負責者 user、期限同 stores/noteHolds(noteHoldDeadlineOf);下一步同筆記同步入口之筆記待判(NOTE_HOLD_NEXT:使用者修正 md 後由
+//   筆記同步重驗,合格即結案;或豁免)——修不了者不得留在庫中而無負責者。已有未結或已豁免之同鍵登錄者不重登。
+// 【只動筆記,連鎖交呼叫端】記錄同步 title／concepts／summary 與 syncHash(原有才寫)、stdFixes 留痕「存量 SSx：…」;不寫 knowledgeChangedAt
+//   (形式修正不是內容變更,不觸發下游重判)。讀筆記之下游所需之連鎖由呼叫端依套用之回傳處置:titleChanged(標題有變——顯示本篇標題之
+//   下游投影須更新)、contentChanged(內容章有變)、consumed(記錄已有下游處理時刻 extractedAt——內容或標題有變者下游須重設基準)、
+//   conceptKeys(SS6／SS2 改概念之分群鍵 removed／added——以概念分群之下游據以列出受影響之產物)、renameKeysObsolete(詞彙表 conceptRenames
+//   中之多概念鍵:拆開後已無標籤用之,改詞彙表屬安裝方)。
+// 【處置帳】抓取套件之帳協定(opt.ledgerFile;未給為 deps.dirs.state 下之 STOCK_LEDGER_FILE——四工作與宿主同一本帳,本模組只讀寫自己之列):
+//   筆記列 { at, object:'note', id, stds, changes, titleChanged, contentChanged(同套用之回傳;他工作驗連鎖、回退時讀之,不必解讀 changes 之字樣),
+//   body:'parts'|'whole'(本文之單位切法), before:{ kca(處置前之 knowledgeChangedAt), consumed, units, record }, after:{ units, record }, file }——
+//   只記該次處置實際修改之單位:md 之 front 各鍵(`front:<鍵>`)與本文之段(首段 `head`、各章 `section:<章名>#<同名序>`;修法不增刪段,處置前後之段序
+//   不同時本文為單一單位 `body`),記錄之非同步欄位(證據等級、限制、樣本期間、stdFixes…;同步欄位 title／concepts／summary／syncHash 由 md 重算)。
+//   處置前不存在之單位不列於 before(回退時刪除)。待判列 { at, object:'hold', id:登錄鍵, stds, before:{ hold }, hold:登錄鍵 };回退列 { at, rollbackOf, object, id }。
+//   先寫 md、即記帳、再回驗並寫記錄——其後之步驟失敗亦可依帳回退。讀帳(readNoteStockLedger)遇無法解析之列即拋(allowBad 才略過)。
+// 【回退＝撤銷該次處置之效果】(抓取套件之回退防護 rollbackPlanOf)md 之單位與記錄之非同步欄位逐單位比現值:＝after 者寫回 before(處置前不存在者刪除)、
+//   已＝before 者已完成、皆不是者(其後被改動——使用者手改、下游之章)不動並報衝突;單位彼此獨立(未衝突者照回)。未修改之單位(下游投影之章、
+//   使用者新增之章與鍵)一律不動。組回之 md 原子寫並回驗;同步欄位以組回之 md 同一讀法重算(原有 syncHash 者重算之)。有衝突之列不記回退列
+//   (仍列於帳),opt.acceptCurrent 記取代列。記錄已不在或 md 讀不到者為衝突。刪記錄之鍵以集合之 replace 寫整筆(集合之 patch 刪不了鍵)。
+// 【陣列欄先清後寫】集合之 patch 為深合併(陣列依索引合併):記錄之陣列欄有變先以一次寫入清為 null 再寫,寫後逐欄回驗——與筆記同步同一實作(stores/notePatch)。
+// 【呼叫端負責】取執行鎖、一致備份、使用者同意(正式庫)。本模組不取鎖、不呼叫 AI。
+
+import fs from 'fs'
+import isobj from 'wsemi/src/isobj.mjs'
+import isarr from 'wsemi/src/isarr.mjs'
+import isfun from 'wsemi/src/isfun.mjs'
+import isestr from 'wsemi/src/isestr.mjs'
+import {
+    strOf, docTextOf, writeFileAtomic, noteConsumedOf, stockLedgerFileOf, stockAtOf, stockLedgerRowsOf, stockLedgerWriter, appendRollbackRow, rollbackPlanOf, rollbackWriteOf,
+    sameValue, stockErrorOf, holdStockUnfixable, rollbackStockHold, stockHoldProblems,
+} from '../core/capturePackage.mjs'
+import { readMd, writeMd, mdText, parseFrontmatter } from '../core/md/md.mjs'
+import { conceptLabelProblem, noteMaterialOf, standardsVocabOf } from './noteStandards.mjs'
+import { auditSummarizeStandards } from './audit.mjs'
+import { noteFixOf, NOTE_FIX_STDS } from '../ops/noteStockFix.mjs'
+import { syncFieldsOf, syncHashOf, recordPatchOf } from '../stores/noteSync.mjs'
+import { knownConceptOf } from '../stores/knownConcepts.mjs'
+import { noteHoldDeadlineOf, NOTE_HOLD_NEXT } from '../stores/noteHolds.mjs'
+import { patchNoteRecord } from '../stores/notePatch.mjs'
+
+/** 修不了者之待判物件(與筆記同步入口之筆記待判同一物件:同步重驗合格即結案) */
+const HOLD_OBJECT = 'note'
+
+/** 記錄之同步欄位(由 md 重算;不入帳列之單位——檔頭【處置帳】) */
+const SYNC_KEYS = Object.freeze(['title', 'concepts', 'summary', 'syncHash'])
+
+/**
+ * 本文之段(同 mapContentSections 之切法:以 `\n(?=## )` 切;首段非章者為 head,章以章名＋同名序為鍵)
+ *
+ * @param {*} body 輸入 md 本文
+ * @returns {Array} 回傳 [{ key, text }](依原序;以 '\n' 接回即原本文)
+ */
+function bodyPartsOf(body) {
+    const seen = new Map()
+    return String(body ?? '').replace(/\r\n/g, '\n').split(/\n(?=## )/).map((text, i) => {
+        if (i === 0 && !text.startsWith('## ')) return { key: 'head', text }
+        const title = (/^## ([^\n]*)/.exec(text)?.[1] ?? '').trim()
+        const n = seen.get(title) || 0
+        seen.set(title, n + 1)
+        return { key: `section:${title}#${n}`, text }
+    })
+}
+
+/**
+ * md 之單位(檔頭【處置帳】):front 之各鍵＋本文(parts:各段;whole:整份為 body)
+ *
+ * @param {Object} md 輸入 { front, body }
+ * @param {String} mode 輸入 'parts'|'whole'
+ * @returns {Object} 回傳 單位 → 值
+ */
+function noteUnitsOf(md, mode) {
+    const out = {}
+    for (const [k, v] of Object.entries(isobj(md?.front) ? md.front : {})) if (v !== undefined) out[`front:${k}`] = v
+    if (mode === 'whole') out.body = String(md?.body ?? '').replace(/\r\n/g, '\n')
+    else for (const p of bodyPartsOf(md?.body)) out[p.key] = p.text
+    return out
+}
+
+/**
+ * 處置所修改之單位(處置前後之 md 逐單位比;本文之段序不同時本文為單一單位)
+ *
+ * @param {Object} md0 輸入處置前之 md
+ * @param {Object} md1 輸入處置後之 md
+ * @returns {Object} 回傳 { body:'parts'|'whole', before:Object, after:Object }(只列有變之單位;某側不存在者不列於該側)
+ */
+function changedUnitsOf(md0, md1) {
+    const keys = (md) => bodyPartsOf(md?.body).map((p) => p.key).join('\u0000')
+    const body = keys(md0) === keys(md1) ? 'parts' : 'whole'
+    const u0 = noteUnitsOf(md0, body)
+    const u1 = noteUnitsOf(md1, body)
+    const before = {}
+    const after = {}
+    for (const k of [...new Set([...Object.keys(u0), ...Object.keys(u1)])]) {
+        if (Object.hasOwn(u0, k) && Object.hasOwn(u1, k) && sameValue(u0[k], u1[k])) continue
+        if (Object.hasOwn(u0, k)) before[k] = u0[k]
+        if (Object.hasOwn(u1, k)) after[k] = u1[k]
+    }
+    return { body, before, after }
+}
+
+/**
+ * 組回 md:給定之單位寫回處置前之值(front 之鍵處置前不存在者刪除;本文之段依現行之序替換——修法不增刪段)
+ *
+ * @param {Object} md 輸入現行之 md
+ * @param {String} mode 輸入 'parts'|'whole'
+ * @param {Object} before 輸入帳列之 before.units
+ * @param {Array} units 輸入要寫回之單位
+ * @returns {String} 回傳組回之 md 全文(mdText)
+ */
+function composeNoteMd(md, mode, before, units) {
+    const front = { ...(isobj(md.front) ? md.front : {}) }
+    for (const u of units.filter((x) => x.startsWith('front:'))) {
+        const k = u.slice('front:'.length)
+        if (Object.hasOwn(before, u)) front[k] = before[u]
+        else delete front[k]
+    }
+    const bodyUnits = units.filter((x) => !x.startsWith('front:'))
+    let body = String(md.body ?? '').replace(/\r\n/g, '\n')
+    if (bodyUnits.length) {
+        body = mode === 'whole'
+            ? String(before.body ?? '')
+            : bodyPartsOf(body).map((p) => (bodyUnits.includes(p.key) && Object.hasOwn(before, p.key) ? before[p.key] : p.text)).join('\n')
+    }
+    return mdText(front, body)
+}
+
+/**
+ * 詞彙表 conceptRenames 中之多概念鍵(SS6 之修正把擠一標籤之多概念拆開——拆開後已無標籤用此鍵;改詞彙表屬安裝方,列出供其一併處理)
+ *
+ * @param {Object} [vocab] 輸入詞彙表(取 conceptRenames;未給回空陣列)
+ * @returns {Array} 回傳多概念鍵陣列
+ * @example
+ * console.log(renameKeysObsoleteOf({ conceptRenames: { '甲、乙': '甲', '丙': '丁' } }))
+ * // => [ '甲、乙' ]
+ */
+export function renameKeysObsoleteOf(vocab) {
+    const renames = isobj(vocab?.conceptRenames) ? vocab.conceptRenames : {}
+    return Object.keys(renames).filter((k) => /^多概念/.test(conceptLabelProblem(k)))
+}
+
+/**
+ * 筆記之 SS4 材料(與 checkNote／符合度掃描同一定義:原文標題＋摘要當時送出之內文;原文不可得回 undefined——不修 SS4)
+ *
+ * @param {Object} stores 輸入集合(docs、docTexts)
+ * @param {Object} rec 輸入筆記記錄
+ * @param {Object} md 輸入 md { front, body }
+ * @returns {Promise} 回傳 Promise,resolve 回傳材料字串或 undefined
+ */
+async function noteMaterialFor(stores, rec, md) {
+    const src = rec?.docId ? await docTextOf(stores, rec.docId) : null
+    const m = noteMaterialOf(src, rec, md?.body)
+    return typeof m === 'string' ? m : undefined
+}
+
+/**
+ * md 全文之解析(壞檔回 null)
+ *
+ * @param {*} text 輸入 md 全文
+ * @returns {Object|null} 回傳 { front, body } 或 null
+ */
+function mdOf(text) {
+    if (typeof text !== 'string') return null
+    try {
+        return parseFrontmatter(text)
+    }
+    catch {
+        return null
+    }
+}
+
+/**
+ * 是否為本模組之帳列:筆記列(stds 皆為筆記標準),或筆記之待判列(登錄鍵之物件為 note、stds 皆為筆記標準)
+ *
+ * @param {*} r 輸入帳列
+ * @returns {Boolean} 回傳是否為本模組之列
+ */
+function isNoteRow(r) {
+    if (!isobj(r) || !isarr(r.stds) || !r.stds.length || !r.stds.every((s) => NOTE_FIX_STDS.includes(s))) return false
+    if (r.object === 'note') return true
+    return r.object === 'hold' && strOf(r.hold || r.id).startsWith(`${HOLD_OBJECT}:`)
+}
+
+/**
+ * 預演:列出各篇筆記之處置(不寫任何東西)
+ *
+ * @param {Object} deps 輸入 { stores:{ notes(select／get), docs?, docTexts?(SS4 之原文), holds?(使用者豁免), cores?(既有概念之來源;選讀) },
+ *   vocab?(resolveSummarizeVocab 之產物;未給＝清單檢查略過、SS11 不判不修), clock?, locale?(語言設定;SS3 之判定與修正依之,未給＝臺灣正體) }
+ * @param {Object} [opt={}] 輸入設定物件
+ * @param {Array} [opt.stds] 輸入只處置這些標準(NOTE_FIX_STDS 之子集;未給或空陣列＝全部;其他 id 略過)
+ * @param {Array} [opt.ids] 輸入只處置這些筆記 id
+ * @param {Integer} [opt.limit] 輸入每種「修正之標準組合」至多幾篇(正整數;依掃描之序,同一組合之第 limit＋1 篇起不列;修不了者照列)
+ * @param {Boolean} [opt.material=true] 輸入 SS4 是否讀原文判定與修正;false 時 SS4 不處置
+ * @param {String} [opt.at] 輸入預演時刻 ISO(預設 clock.iso8() 或現在)
+ * @returns {Promise} 回傳 Promise,resolve 回傳 { at, stds,
+ *   items:[{ object:'note', id, stds, changes:[{ std, what }], skipped:[{ std, what }], titleChanged, contentChanged, conceptKeys:{ removed, added }, consumed }],
+ *   unfixable:[{ id, std, detail }](未修之標準,與有修正而仍有殘留者——擠標籤未拆之段、SS3 轉正體會改分群鍵而不改之概念;後者之 detail 為不改之理由),
+ *   renameKeysObsolete:Array, counts:{ violations:{ 標準: 掃描之違反數 }, items, unfixable, fixes:{ 標準: 篇數 } } }
+ * @throws {Error} deps.stores.notes 缺 select／get 方法、或 deps.vocab 給了而非本套件解析後之詞彙表時拋出
+ * @example
+ * need test in nodejs.
+ *
+ * const plan = await planNoteStockFix({ stores, vocab, clock }, { stds: ['SS3', 'SS6'] })
+ * console.log(plan.items.map((x) => [x.id, x.stds]), plan.unfixable.length)
+ */
+export async function planNoteStockFix(deps, opt = {}) {
+
+    //check
+    const stores = deps?.stores
+    if (!isobj(stores) || !isfun(stores.notes?.select) || !isfun(stores.notes?.get)) {
+        throw new Error('planNoteStockFix 需要 deps.stores.notes（具 select／get 方法）')
+    }
+    const vocab = standardsVocabOf(deps.vocab, 'planNoteStockFix 之 deps.vocab')
+    if (!isobj(opt)) {
+        opt = {}
+    }
+
+    const stds = [...new Set((isarr(opt.stds) && opt.stds.length ? opt.stds : NOTE_FIX_STDS).filter((s) => NOTE_FIX_STDS.includes(s)))]
+    const ids = isarr(opt.ids) && opt.ids.length ? new Set(opt.ids.map(String)) : null
+    const limit = Number.isInteger(opt.limit) && opt.limit > 0 ? opt.limit : Infinity
+    const useMaterial = opt.material !== false
+    const at = stockAtOf(deps, opt)
+    const items = []
+    const unfixable = []
+    const violations = {}
+    const fixes = {}
+    const done = () => ({
+        at, stds, items, unfixable,
+        renameKeysObsolete: stds.includes('SS6') ? renameKeysObsoleteOf(vocab) : [],
+        counts: { violations, items: items.length, unfixable: unfixable.length, fixes },
+    })
+    if (!stds.length) return done()
+
+    // 掃描(與每輪掃描同一判定;SS4 須以原文判)→ 依筆記彙整各標準之違反(依標準之序、各標準內依掃描之序)
+    const audit = await auditSummarizeStandards({ stores, vocab, locale: deps.locale }, { only: stds, material: useMaterial })
+    const byNote = new Map()
+    for (const s of stds) {
+        const b = audit.standards[s]
+        violations[s] = b?.violation || 0
+        for (const v of b?.violations || []) {
+            const id = strOf(v.id).split('#')[0]
+            if (ids && !ids.has(id)) continue
+            if (!byNote.has(id)) byNote.set(id, [])
+            byNote.get(id).push({ std: s, detail: v.detail })
+        }
+    }
+    // 既有概念(SS6 之擠標籤拆分條件;與新進、同步同一實作)
+    const knownConcept = byNote.size ? await knownConceptOf(stores) : () => false
+    const perKey = {}
+    for (const [id, vs] of byNote) {
+        const rec = await stores.notes.get(id)
+        const md = rec ? readMd(rec.file) : null
+        if (!rec || !md) {
+            for (const v of vs) unfixable.push({ id, std: v.std, detail: '記錄或 md 讀不到' })
+            continue
+        }
+        const material = vs.some((v) => v.std === 'SS4') && useMaterial ? await noteMaterialFor(stores, rec, md) : undefined
+        const fix = noteFixOf(md, rec, { stds: vs.map((v) => v.std), vocab, knownConcept, locale: deps.locale, ...(material !== undefined ? { material } : {}) })
+        const fixed = new Set(fix.changes.map((c) => c.std))
+        // 未修之標準列修不了;有修正而仍有殘留者亦列為修不了(擠標籤有段非既有概念而未拆;該標準有 skipped 之項——如 SS3 之概念轉正體會改分群鍵而不改):
+        //   殘留不列,套用後重掃之不合格即多於修不了者,呼叫端之回退判準(不合格多於修不了)誤判為須回退
+        for (const v of vs) {
+            const skipped = fix.skipped.filter((s) => s.std === v.std)
+            const residual = (v.std === 'SS6' && isarr(fix.front.concepts) && fix.front.concepts.some((c) => conceptLabelProblem(c))) || skipped.length > 0
+            if (!fixed.has(v.std) || residual) unfixable.push({ id, std: v.std, detail: skipped.length ? skipped.map((s) => s.what).join('；') : v.detail })
+        }
+        if (!fix.changes.length) continue
+        const key = [...fixed].sort().join('+')
+        perKey[key] = (perKey[key] || 0) + 1
+        if (perKey[key] > limit) continue
+        items.push({ object: 'note', id, stds: [...fixed], changes: fix.changes, skipped: fix.skipped, titleChanged: fix.titleChanged, contentChanged: fix.contentChanged, conceptKeys: fix.conceptKeys, consumed: noteConsumedOf(rec) })
+        for (const s of fixed) fixes[s] = (fixes[s] || 0) + 1
+    }
+    return done()
+}
+
+/**
+ * 套用預演之計畫:逐篇以現值重算再寫(md 原子寫、即記帳、回讀驗、記錄 patch 與回驗);修不了者登錄待判;不碰下游(連鎖交呼叫端,檔頭)
+ *
+ * @param {Object} deps 輸入 { stores:{ notes(select／get／patch), docs?, docTexts?, holds?(修不了者之待判;未開者列入 errors), cores? },
+ *   vocab?(同預演), dirs?:{ state }(處置帳之預設位置), clock? }
+ * @param {Object} plan 輸入 planNoteStockFix 之產物(取 items 中 object 為 note 者、unfixable 中筆記標準者、stds)
+ * @param {Object} [opt={}] 輸入設定物件
+ * @param {String} [opt.at] 輸入處置時刻 ISO(帳列之 at、待判之登錄時刻;預設 clock.iso8() 或現在)
+ * @param {String} [opt.ledgerFile] 輸入處置帳(JSONL)絕對路徑(未給為 deps.dirs.state 下之 STOCK_LEDGER_FILE)
+ * @returns {Promise} 回傳 Promise,resolve 回傳 { at,
+ *   applied:[{ id, stds, titleChanged, contentChanged, consumed, conceptKeys:{ removed, added } }](供呼叫端連鎖下游),
+ *   counts:{ 標準: 篇數, held?: 新登錄之待判數 }, held:[{ key, id, std }](新登錄之待判), alreadyHeld:Array(已有未結或已豁免之登錄鍵),
+ *   stale:Array(現值已不須修之筆記 id), errors:[{ id, object, error }], ledger:Array(本次寫入之帳列), ledgerFile, renameKeysObsolete:Array }
+ * @throws {Error} deps.stores.notes 缺 select／get／patch 方法、deps.vocab 給了而非本套件解析後之詞彙表、或處置帳之路徑皆未給時拋出
+ * @example
+ * need test in nodejs.
+ *
+ * const r = await applyNoteStockFix({ stores, vocab, dirs, clock }, plan)
+ * console.log(r.applied.filter((x) => x.titleChanged).map((x) => x.id), r.held.length, r.errors)
+ */
+export async function applyNoteStockFix(deps, plan, opt = {}) {
+
+    //check
+    const stores = deps?.stores
+    if (!isobj(stores) || !isfun(stores.notes?.select) || !isfun(stores.notes?.get) || !isfun(stores.notes?.patch)) {
+        throw new Error('applyNoteStockFix 需要 deps.stores.notes（具 select／get／patch 方法）')
+    }
+    const vocab = standardsVocabOf(deps.vocab, 'applyNoteStockFix 之 deps.vocab')
+    if (!isobj(opt)) {
+        opt = {}
+    }
+    const ledgerFile = stockLedgerFileOf(deps, opt, 'applyNoteStockFix')
+
+    const at = stockAtOf(deps, opt)
+    const { log, rows: ledger } = stockLedgerWriter(ledgerFile, at)
+    const applied = []
+    const counts = {}
+    const held = []
+    const alreadyHeld = []
+    const stale = []
+    const errors = []
+    const items = (isarr(plan?.items) ? plan.items : []).filter((x) => x?.object === 'note')
+    const knownConcept = items.length ? await knownConceptOf(stores) : () => false
+
+    for (const it of items) {
+        const id = strOf(it.id)
+        try {
+            const itStds = (isarr(it.stds) ? it.stds : []).filter((s) => NOTE_FIX_STDS.includes(s))
+            const rec = await stores.notes.get(id)
+            const raw = rec && isestr(rec.file) && fs.existsSync(rec.file) ? fs.readFileSync(rec.file, 'utf8') : null
+            const md = mdOf(raw)
+            if (!rec || !md) throw new Error('記錄或 md 讀不到')
+            const material = itStds.includes('SS4') ? await noteMaterialFor(stores, rec, md) : undefined
+            const fix = noteFixOf(md, rec, { stds: itStds, vocab, knownConcept, locale: deps.locale, ...(material !== undefined ? { material } : {}) })
+            if (!fix.changes.length) {
+                stale.push(id)
+                continue
+            }
+            // 新 md 之全文與同步欄位寫前即定(帳列須先於記錄之寫入)
+            const text = mdText(fix.front, fix.body)
+            const f = syncFieldsOf(mdOf(text))
+            const patch = {
+                ...fix.recordPatch,
+                ...recordPatchOf(f),
+                ...(rec.syncHash ? { syncHash: syncHashOf(f) } : {}),
+                stdFixes: [...(isarr(rec.stdFixes) ? rec.stdFixes : []), ...fix.changes.map((c) => `存量 ${c.std}：${c.what}`.slice(0, 120))].slice(-20),
+            }
+            // 帳列只記實際修改之單位(檔頭【處置帳】):md 之單位、記錄之非同步欄位(處置前不存在者不列於 before)
+            const u = changedUnitsOf(md, mdOf(text))
+            const own = Object.keys(patch).filter((k) => !SYNC_KEYS.includes(k))
+            const recBefore = Object.fromEntries(own.filter((k) => rec[k] !== undefined).map((k) => [k, rec[k]]))
+            const recAfter = Object.fromEntries(own.map((k) => [k, patch[k]]))
+            const stds = [...new Set(fix.changes.map((c) => c.std))]
+            writeMd(rec.file, fix.front, fix.body)
+            // 即記帳(其後之回驗或記錄寫入失敗亦可依帳回退);kca:處置前之 knowledgeChangedAt(連鎖斷言:形式修正不得寫內容變更時刻)
+            log({
+                object: 'note', id, stds, changes: fix.changes, titleChanged: fix.titleChanged, contentChanged: fix.contentChanged, body: u.body,
+                before: { kca: rec.knowledgeChangedAt ?? null, consumed: noteConsumedOf(rec), units: u.before, record: recBefore },
+                after: { units: u.after, record: recAfter },
+                file: rec.file,
+            })
+            if (fs.readFileSync(rec.file, 'utf8') !== text) throw new Error('md 寫入後回驗不符')
+            await patchNoteRecord(stores.notes, rec, patch, { label: '存量處置' })
+            for (const s of stds) counts[s] = (counts[s] || 0) + 1
+            applied.push({ id, stds, titleChanged: fix.titleChanged, contentChanged: fix.contentChanged, consumed: noteConsumedOf(rec), conceptKeys: fix.conceptKeys })
+        }
+        catch (e) {
+            errors.push(stockErrorOf(id, 'note', e))
+        }
+    }
+
+    // 修不了者逐筆登錄待判(檔頭;抓取套件之存量待判件——已有未結或已豁免者不重登,登錄即記待判列,回退時結案)。未開 holds 集合 → 列入 errors(不靜默)
+    for (const u of isarr(plan?.unfixable) ? plan.unfixable : []) {
+        const s = strOf(u?.std)
+        if (!NOTE_FIX_STDS.includes(s)) continue
+        const oid = strOf(u.id).split('#')[0]
+        try {
+            const r = await holdStockUnfixable(stores.holds, { object: HOLD_OBJECT, oid, std: s, detail: strOf(u.detail), next: NOTE_HOLD_NEXT, owner: 'user', deadline: noteHoldDeadlineOf(at) }, { at, log })
+            if (!r.held) {
+                alreadyHeld.push(r.key)
+                continue
+            }
+            counts.held = (counts.held || 0) + 1
+            held.push({ key: r.key, id: oid, std: s })
+        }
+        catch (e) {
+            errors.push(stockErrorOf(u.id, HOLD_OBJECT, e))
+        }
+    }
+
+    const planStds = isarr(plan?.stds) ? plan.stds : NOTE_FIX_STDS
+    return { at, applied, counts, held, alreadyHeld, stale, errors, ledger, ledgerFile, renameKeysObsolete: planStds.includes('SS6') ? renameKeysObsoleteOf(vocab) : [] }
+}
+
+/**
+ * 套用後之連鎖斷言(本套件可驗者):筆記之記錄 syncHash＝現行 md 之同步雜湊(下輪同步不報內容變更)、knowledgeChangedAt 未被寫
+ *   (＝帳列之 kca);待判列之登錄存在。下游之連鎖(投影、重設基準等)由呼叫端驗
+ *
+ * @param {Object} deps 輸入 { stores:{ notes(get), holds? } }
+ * @param {Array} rows 輸入帳列(applyNoteStockFix 之 ledger,或 readNoteStockLedger 之產物;他模組之列略過)
+ * @returns {Promise} 回傳 Promise,resolve 回傳 { checked:Integer(驗過之本模組帳列數), problems:Array(字串) }
+ * @throws {Error} deps.stores.notes 缺 get 方法時拋出
+ * @example
+ * need test in nodejs.
+ *
+ * const r = await applyNoteStockFix(deps, plan)
+ * console.log((await verifyNoteStockChain(deps, r.ledger)).problems)
+ * // => []
+ */
+export async function verifyNoteStockChain(deps, rows) {
+
+    //check
+    const stores = deps?.stores
+    if (!isobj(stores) || !isfun(stores.notes?.get)) {
+        throw new Error('verifyNoteStockChain 需要 deps.stores.notes（具 get 方法）')
+    }
+
+    let checked = 0
+    const problems = []
+    for (const r of (isarr(rows) ? rows : []).filter(isNoteRow)) {
+        checked++
+        if (r.object === 'note') {
+            const rec = await stores.notes.get(r.id)
+            const md = rec ? readMd(rec.file) : null
+            if (!rec || !md) {
+                problems.push(`筆記 ${r.id}：記錄或 md 讀不到`)
+                continue
+            }
+            if (rec.syncHash && rec.syncHash !== syncHashOf(syncFieldsOf(md))) problems.push(`筆記 ${r.id}：syncHash 與現行 md 不符（下輪同步會報內容變更）`)
+            if ((rec.knowledgeChangedAt ?? null) !== (r.before?.kca ?? null)) problems.push(`筆記 ${r.id}：knowledgeChangedAt 被寫（${r.before?.kca ?? '無'} → ${rec.knowledgeChangedAt}）`)
+        }
+        else problems.push(...(await stockHoldProblems(stores.holds, r)))
+    }
+    return { checked, problems }
+}
+
+/**
+ * 讀處置帳(JSONL;抓取套件之帳協定):本模組之列(筆記列、筆記之待判列),排除回退列與已被回退者;檔案不存在回空陣列
+ *
+ * @param {String} file 輸入處置帳絕對路徑
+ * @param {Object} [opt={}] 輸入設定物件
+ * @param {String} [opt.since] 輸入只取此時刻起之列(以時刻比較)
+ * @param {String} [opt.at] 輸入只取此時刻之列(某次套用之列;連鎖斷言用)
+ * @param {Boolean} [opt.allowBad=false] 輸入有無法解析之列時是否略過(預設即拋)
+ * @returns {Array} 回傳列陣列(依檔內順序)
+ * @throws {Error} 帳有無法解析之列而未給 allowBad 時拋出(訊息列行號)
+ * @example
+ * need test in nodejs.
+ *
+ * const rows = readNoteStockLedger(path.join(dirs.state, STOCK_LEDGER_FILE), { at: r.at })
+ */
+export function readNoteStockLedger(file, opt = {}) {
+    if (!isobj(opt)) opt = {}
+    return stockLedgerRowsOf(file, { since: opt.since, at: opt.at, allowBad: opt.allowBad, keep: isNoteRow })
+}
+
+/**
+ * 一筆筆記列之回退(檔頭【回退＝撤銷該次處置之效果】):md 之單位與記錄之非同步欄位逐單位比現值,＝after 者寫回 before、其後被改動者不動;
+ *   同步欄位以組回之 md 重算
+ *
+ * @param {Object} stores 輸入集合(notes:get／patch／replace)
+ * @param {Object} r 輸入筆記列
+ * @returns {Promise} 回傳 Promise，resolve 回傳 { conflict:Array(衝突之單位;記錄或 md 不在者為單一說明), restoredUnits:Array(本次寫回之單位) }
+ * @throws {Error} 帳列缺 before／after 之單位、或寫後回驗不符時拋出
+ */
+async function rollbackNoteRow(stores, r) {
+    if (!isobj(r.before?.units) || !isobj(r.after?.units) || !isobj(r.before?.record) || !isobj(r.after?.record)) {
+        throw new Error('帳列缺 before／after 之單位（units、record），無從判定其後是否被改動')
+    }
+    const cur = await stores.notes.get(r.id)
+    if (!cur) return { conflict: ['（記錄不在）'], restoredUnits: [] }
+    const file = isestr(r.file) ? r.file : strOf(cur.file)
+    const raw = isestr(file) && fs.existsSync(file) ? fs.readFileSync(file, 'utf8') : null
+    const md = mdOf(raw)
+    if (!md) return { conflict: ['（md 讀不到）'], restoredUnits: [] }
+    const mode = r.body === 'whole' ? 'whole' : 'parts'
+    const pm = rollbackPlanOf(noteUnitsOf(md, mode), { before: r.before.units, after: r.after.units })
+    const pr = rollbackPlanOf(cur, { before: r.before.record, after: r.after.record })
+    let text = raw
+    if (pm.restore.length) {
+        text = composeNoteMd(md, mode, r.before.units, pm.restore)
+        writeFileAtomic(file, text, { fallbackOverwrite: true })
+        if (fs.readFileSync(file, 'utf8') !== text) throw new Error('md 還原後回驗不符')
+    }
+    // 記錄:非同步欄位逐鍵寫回(處置前不存在者刪除)、同步欄位以組回之 md 重算(原有 syncHash 者重算之)
+    const f = syncFieldsOf(mdOf(text))
+    const w = rollbackWriteOf({ before: r.before.record }, pr.restore)
+    const patch = { ...w.patch, ...recordPatchOf(f), ...(cur.syncHash ? { syncHash: syncHashOf(f) } : {}) }
+    const back = await patchNoteRecord(stores.notes, cur, patch, { label: '存量回退' })
+    if (w.unset.length) {
+        if (!isfun(stores.notes.replace)) throw new Error('刪除記錄之鍵需要 notes 集合之 replace 方法')
+        await stores.notes.replace(Object.fromEntries(Object.entries(back).filter(([k]) => !w.unset.includes(k))))
+        const again = await stores.notes.get(r.id)
+        if (w.unset.some((k) => again?.[k] !== undefined)) throw new Error(`筆記 ${r.id} 之存量回退刪鍵後回驗不符`)
+    }
+    return { conflict: [...pm.conflict, ...pr.conflict.map((k) => `record:${k}`)], restoredUnits: [...pm.restore, ...pr.restore.map((k) => `record:${k}`)] }
+}
+
+/**
+ * 回退:依帳逆序還原(筆記列:逐單位之回退防護——rollbackNoteRow;待判列:只動同一登錄——使用者其後之裁示、他次登錄不被改寫);無衝突者附寫回退列
+ *   { at, rollbackOf, object, id }(readNoteStockLedger 據以排除已回退者),有衝突者仍列於帳(opt.acceptCurrent 記取代列)。
+ *   回退後之下游連鎖(標題有變者之投影等)由呼叫端依回傳之 notes 處置(titleChanged 取帳列所記;有寫回單位者才列)
+ *
+ * @param {Object} deps 輸入 { stores:{ notes(get／patch／replace), holds? }, dirs?:{ state }(處置帳之預設位置), clock? }
+ * @param {Array} rows 輸入帳列(readNoteStockLedger 之產物,或 applyNoteStockFix 之 ledger;他模組之列略過)
+ * @param {Object} [opt={}] 輸入設定物件
+ * @param {String} [opt.at] 輸入回退時刻 ISO(回退列之 at、待判結案時刻;預設 clock.iso8() 或現在)
+ * @param {String} [opt.ledgerFile] 輸入處置帳(JSONL)絕對路徑(未給為 deps.dirs.state 下之 STOCK_LEDGER_FILE)
+ * @param {Boolean} [opt.acceptCurrent=false] 輸入有衝突之列是否接受現值(記取代列 { accepted:'current', units };未衝突之單位照回)
+ * @returns {Promise} 回傳 Promise,resolve 回傳 { at, restored:Integer, accepted:Integer, conflicts:[{ id, object:'note', units }], errors:[{ id, object, error }],
+ *   notes:[{ id, titleChanged, consumed }] }
+ * @throws {Error} deps.stores.notes 缺 get／patch 方法、或處置帳之路徑皆未給時拋出
+ * @example
+ * need test in nodejs.
+ *
+ * const rb = await rollbackNoteStockFix({ stores, dirs, clock }, readNoteStockLedger(path.join(dirs.state, STOCK_LEDGER_FILE)))
+ * console.log(rb.restored, rb.conflicts, rb.errors)
+ */
+export async function rollbackNoteStockFix(deps, rows, opt = {}) {
+
+    //check
+    const stores = deps?.stores
+    if (!isobj(stores) || !isfun(stores.notes?.get) || !isfun(stores.notes?.patch)) {
+        throw new Error('rollbackNoteStockFix 需要 deps.stores.notes（具 get／patch 方法）')
+    }
+    if (!isobj(opt)) {
+        opt = {}
+    }
+    const ledgerFile = stockLedgerFileOf(deps, opt, 'rollbackNoteStockFix')
+
+    const at = stockAtOf(deps, opt)
+    let restored = 0
+    let accepted = 0
+    const conflicts = []
+    const errors = []
+    const notes = []
+    for (const r of [...(isarr(rows) ? rows : [])].filter(isNoteRow).reverse()) {
+        try {
+            if (r.object === 'note') {
+                const x = await rollbackNoteRow(stores, r)
+                if (x.restoredUnits.length) notes.push({ id: strOf(r.id), titleChanged: r.titleChanged === true, consumed: !!r.before.consumed })
+                if (x.conflict.length) {
+                    if (opt.acceptCurrent === true) {
+                        appendRollbackRow(ledgerFile, r, at, { accepted: 'current', units: x.conflict })
+                        accepted++
+                    }
+                    else conflicts.push({ id: strOf(r.id), object: 'note', units: x.conflict })
+                    continue
+                }
+            }
+            else await rollbackStockHold(stores.holds, r, at)
+            appendRollbackRow(ledgerFile, r, at)
+            restored++
+        }
+        catch (e) {
+            errors.push(stockErrorOf(r.id, r.object, e))
+        }
+    }
+    return { at, restored, accepted, conflicts, errors, notes }
+}
+
+export default { renameKeysObsoleteOf, planNoteStockFix, applyNoteStockFix, verifyNoteStockChain, readNoteStockLedger, rollbackNoteStockFix }

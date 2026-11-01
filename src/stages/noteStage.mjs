@@ -1,0 +1,861 @@
+// noteStage.mjs — 摘要物件之子階段 summarize:佇列→批次 AI 摘要→逐項動作鏈→線索回收
+//
+// hook 錨點:summarize.summarize.{saveClues, skipGate, renderNote, gateNote, persistNote, markDoc}
+// 【納入閘】(檢定標準:達標才納入)AI 項目於驗證前先經確定性正規化,再判硬性欄位與數字紮根(standards/noteGate):不合格項不算涵蓋
+//   → 記 tries 與原因(下次提示詞附回饋 stdFeedback),末次重試避開曾產出不合格結果之供應者(調度層之 avoid);組版後 gateNote 以
+//   standards/noteStandards.checkNote 對落地形態再驗一次,仍不合格即不落地。清單行含原文沒有之數字者逐條移除(剔除有問題之部分,
+//   記於筆記記錄 stdFixes)。
+// 批次調度(部分接受/隊頭防阻塞/tries 出隊/額度中止/零進度守門/時間預算守門)是 core/stages/aiBatchStage 之機制,不拆散;通過驗證之
+// 逐項結果送進動作鏈——掛載點在逐項鏈上。prompt/驗證/版型內建於 domain(deps.domains.summarize),可由 opt.domain 整組置換或 tap 逐環
+// 覆寫(replace renderNote＝換版型)。
+//
+// 【一次呼叫做兩件事】摘要與「待探索線索判斷」合併為單一 AI 呼叫(額度是硬限制,拆兩次等於可處理文件量砍半,而兩件事讀同一份原文)。
+// 【陣列輸出之呼叫逐次截斷放行】摘要之輸出為逐篇之 JSON 陣列:每次呼叫給 acceptTruncated:true(調度層於輸出截斷時收前段完整項目,未涵蓋者
+//   記 tries 留佇列;部分接受之語意)。物件輸出之修補與忠實性覆核不給(截斷之物件救不回)。逐次給、不在建構期開:共用同一調度實例之他段不受影響。
+// 【兩種失敗分帳】AI 失敗(批次失敗、未涵蓋)記 tries,達 maxTries 標 summarize-failed(模型對這篇就是做不出來);逐項鏈異常(寫檔／入庫／
+//   插件拋錯)亦記 tries(排隊尾、不擋隊頭)但永不標終態,且每次 WARN——它是程式或環境問題,修好即可重做;標終態會讓修好後仍須重抓全文。
+// 【既有筆記不覆寫】同一文件已有筆記(同 slug 或同 docId)時不重寫 md、不入庫、不計「新知識」:下游投影之章(「關聯」「⚠ 衝突與反例」)
+//   與 frontmatter 之 related／conflicts 皆在既有 md 上,覆寫即全數消失(與 ops/ingestNotes 之略過對稱)。
+// 【長文:依字數打包,不固定截斷】每批字數上限＝summarize.docsPerCall×summarize.charsPerDoc(預設 18,000),依池之順序貪婪裝批:篇數與字數
+//   皆不逾上限者同批、各自全文進 AI;單篇逾上限者獨佔一批並截至上限(stores/packByChars)。字數 ≤ summarize.charsPerDoc 之批,提示詞與未給
+//   budgets 者逐字相同(評分題目識別不變)。截斷者明示:筆記記 sourceChars／processedChars、md 來源章多一行處理範圍,報告計 truncated
+//   (含判非知識者——長文後段才有方法論時,只讀前段之判定可能誤丟)。自訂 buildPrompt 未依 budgets 截斷者,處理範圍之記錄會失準,
+//   請一併給 packByChars:false。
+// 【忠實性覆核(檢定標準 SS14;summarize.standards.faithCheck.enabled,預設 false)】過確定性納入閘之項目於寫筆記前,同一批一次交判定小組
+//   (席位 summarize.standards.faithCheck.ai;aiBatchStage 之 reviewItems):成立忠實 → 照常寫;成立不忠實 → 不寫、tries＋1、回饋附於下次提示詞
+//   (同 SS4 之路徑);判不了 → 不寫、待判 SS14(首次負責者 pipeline:文件留 raw 下輪重摘重判;再判不了 → user,文件標 faithHold、選池排除至
+//   使用者要求重試或豁免——豁免者下輪不經覆核照常摘要);缺票或同一供應者 → 不寫、faithTries＋1(不動 summarizeTries),逾限同判不了。
+// 【欄位定向修補呼叫(檢定標準 SS2／SS4;summarize.standards.repair.enabled,預設 false)】開啟時,批次回覆中形狀合格之項目(含未過納入閘者)
+//   於套用前逐項以 standards/noteRepair 列出須修補之處(SS2 硬性欄位、SS4 含原文沒有之數字之欄位與行);有者以同一摘要席(summarize.ai)發一次
+//   修補呼叫(domain.buildRepairPrompt),只取被指出之處套回,再過同一閘——仍不合格者照既有規則逐條移除／不納入(一輪為限;計 stdRepaired／
+//   stdRepairFailed)。呼叫失敗 → 照既有規則;額度／時間用盡 → 本批不套用、不記 tries(同覆核中止)。修補在忠實性覆核之前(覆核所見為修補後之
+//   內容)。關閉時:未過閘者不收為項目(交遞補與未涵蓋落帳),提示詞逐字不變。
+// 【待判(stores/noteHolds)】納入閘判不納入(驗證、gateNote、修補後仍不合格;含各家輸出皆未過閘而整批失敗者)→ 登錄文件待判(主要標準、
+//   pipeline、「下輪附回饋重摘」);逾 maxTries 轉 summarize-failed → 該文件未結之待判改由使用者處置(重開或豁免;SS14 不忠實之終態另登錄);
+//   文件轉離 raw → 未結之閘門待判結案。忠實性判不了之待判之下一步見 FAITH_HOLD_NEXT;期限與其餘待判同一(stores/noteHolds 之 noteHoldDeadlineOf);
+//   使用者之重試要求以抓取套件之 retryRequestedOf 判定(要求晚於登錄之最後更新,以時刻比較)。
+//   未開 holds 集合 → 每輪 WARN 一次、略過登錄。
+// 【擠標籤之拆分條件(SS6)】各段皆為既有概念才拆:本輪開工前以 stores/knownConcepts 讀一次(或 opt.knownConcept 注入)。
+
+import isobj from 'wsemi/src/isobj.mjs'
+import {
+    defineMw, applyTaps, makeMsg, count, runChainOverMsgs, stdReport, stageFields, budgetOf, saveClues, byRetryTierFifo, oneline, queueAge,
+    listHolds, putHold, resolveHold, holdKey, retryRequestedOf,
+} from '../core/capturePackage.mjs'
+import { PANEL_WHY, PANEL_WHY_LABELS } from '../core/standards/panel.mjs'
+import { conceptVocabulary, tagSuspects } from '../core/vocab/conceptGroups.mjs'
+import { runAiBatchStage } from '../core/stages/aiBatchStage.mjs'
+import { writeMd } from '../core/md/md.mjs'
+import { SS14_OBJECT, runFaithCheck, checkFaithChecks } from '../standards/faithCheck.mjs'
+import { gateNoteItem } from '../standards/noteGate.mjs'
+import { normalizeNoteItem } from '../standards/noteNormalize.mjs'
+import { repairProblemsOf, applyRepairs, checkRepairReply } from '../standards/noteRepair.mjs'
+import { checkNote, noteFeedbackOf } from '../standards/noteStandards.mjs'
+import { createMaterialPolicy } from '../stores/materialPolicy.mjs'
+import { packDocsByChars } from '../stores/packByChars.mjs'
+import { contractOf } from '../stores/noteBuild.mjs'
+import { knownConceptOf } from '../stores/knownConcepts.mjs'
+import { putDocHold, escalateDocHolds, resolveDocHolds, noteHoldDeadlineOf } from '../stores/noteHolds.mjs'
+import { SUMMARIZE_DOC_STATUS, SUMMARIZE_SKIP_KIND, triageReadyOf } from '../stores/docStatus.mjs'
+import { SUMMARIZE_DEFAULT, triageEnabledOf, summarizeFeatureProblems } from '../core/summarizeSettings.mjs'
+
+/**
+ * 忠實性覆核判不了之待判(SS14)之下一步:首次由管線下輪重摘重判;同一待判仍未結而再判不了 → 使用者以本套件之待判處置 API 判讀
+ *
+ * @type {Object}
+ */
+export const FAITH_HOLD_NEXT = Object.freeze({
+    retry: '下輪自動重摘並重判',
+    user: '使用者判讀：要求重試（requestRetry：解除排除，下輪重摘重判）或豁免（waiveHold：下輪不經覆核照常摘要）',
+})
+
+/**
+ * 錨點:saveClues(線索回收:略過的文件仍收線索——彙整貼文不成筆記,但它列的題目正是最值得追的)
+ *
+ * 讀 msg.data(doc.id、_aiItem、_domain);不寫 msg.data(線索寫入 stores.frontier);不短路(恆呼叫 next)
+ *
+ * @param {Object} [opt={}] 輸入設定物件，非物件則視為{}
+ * @param {Array} [opt.clueTypes] 輸入線索型別白名單，傳給 saveClues
+ * @returns {Object} 回傳 defineMw 產物
+ * @example
+ * let rows = []
+ * let frontier = {
+ *     select: async () => rows,
+ *     get: async () => null,
+ *     patch: async () => {},
+ *     insertNew: async (xs) => { rows.push(...xs); return { added: xs, addCount: xs.length, dupCount: 0 } },
+ * }
+ * let msg = makeMsg('doc', { doc: { id: 'd1', title: '星系' }, _aiItem: { relevant: true, explore: [{ type: 'keyword', value: '暗物質', why: '星系旋轉曲線需要' }] }, _domain: {} })
+ * let ctx = { deps: { stores: { frontier }, clock: { iso8: () => 'T0' } }, log: { info() {}, warn() {} } }
+ * await runChainOverMsgs({ chain: [mwSaveClues()], ctx, msgs: [msg] })
+ * console.log(msg.stats, rows.length, rows[0].value, rows[0].fromRef)
+ * // => { explore: 1 } 1 暗物質 doc:d1
+ */
+export const mwSaveClues = (opt = {}) => {
+
+    //check
+    if (!isobj(opt)) {
+        opt = {}
+    }
+
+    return defineMw({
+        name: 'saveClues',
+        handle: async (msg, ctx, next) => {
+            const { stores, clock } = ctx.deps
+            const item = msg.data._aiItem
+            const domain = msg.data._domain
+            const explore = domain.exploreOf?.(item) || item.explore || []
+            // 知識文件亦留 doc:<id>(抓取套件之領域發現依「被多少篇相異文件帶出」判重要性;略過文件為 skip:<id>,挑選優先序在後)。
+            //   線索之格式、網址須見於材料(標題＋正文＋本文件網址)、值轉正體等檢核在抓取套件之 saveClues
+            const doc = msg.data.doc
+            const clue = await saveClues(stores.frontier, explore, {
+                types: opt.clueTypes, nowIso: clock.iso8(), fromRef: `${item.relevant ? 'doc' : 'skip'}:${doc.id}`,
+                groundText: [doc.title, doc.text || doc.feedText || '', doc.url, doc.finalUrl].filter(Boolean).join('\n'),
+                locale: ctx.deps.locale,
+            })
+            count(msg, 'explore', clue.addCount)
+            const drop = Object.values(clue.dropped || {}).reduce((n, x) => n + x, 0)
+            if (drop) {
+                count(msg, 'cluesDropped', drop)
+                ctx.log.info(`線索未入庫[${oneline(doc.title, 30)}]：${Object.entries(clue.dropped).filter(([, n]) => n).map(([k, n]) => `${{ type: '型別不在清單', empty: '值空', long: '值過長', site: '網址格式不合', ungrounded: '網址不見於材料' }[k]}×${n}`).join('、')}`)
+            }
+            if (clue.toTw) count(msg, 'cluesToTw', clue.toTw)
+            return next(msg)
+        },
+    })
+}
+
+/**
+ * 錨點:skipGate(非知識判定:標記略過並短路,不進版型/落庫;理由直指素材壞了者改退回抓取)
+ *
+ * 讀 msg.data(doc、_aiItem.relevant、_domain、_material);不寫 msg.data(略過或退回寫入 stores.docs);
+ * 短路:_aiItem.relevant 為 false 時處理後直接回傳 msg(不呼叫 next)
+ *
+ * @returns {Object} 回傳 defineMw 產物
+ * @example
+ * let row = { id: 'd1', status: 'raw' }
+ * let docs = { patch: async (id, o) => Object.assign(row, o) }
+ * let msg = makeMsg('doc', { doc: { id: 'd1', title: '體育新聞' }, _aiItem: { relevant: false, reason: '與天文學無關' }, _domain: {} })
+ * let ctx = { deps: { stores: { docs }, clock: { iso8: () => 'T0' }, settings: {} }, log: { info() {}, warn() {} } }
+ * let r = await runChainOverMsgs({ chain: [mwSkipGate()], ctx, msgs: [msg] })
+ * console.log(row.status, row.skipKind, row.skipReason, msg.stats, r.halts)
+ * // => skip not-knowledge 與天文學無關 { processed: 1, skipped: 1 } { skipGate: 1 }
+ */
+export const mwSkipGate = () => defineMw({
+    name: 'skipGate',
+    when: (m) => !m.data._aiItem.relevant,
+    handle: async (msg, ctx) => {
+        const { stores, clock, settings } = ctx.deps
+        const { doc, _aiItem: item, _domain: domain, _material: material } = msg.data
+        const reason = String(domain.skipReasonOf?.(item) || item.reason || '')
+        const now = clock.iso8()
+        // 理由直指素材壞了(亂碼／未載入／截斷…)→ 不丟,退回抓取以另一種方法重抓(stores/materialPolicy)
+        const rp = material?.refetchPatchOf(doc, reason, { nowIso: now, capture: settings?.capture })
+        if (rp) {
+            await stores.docs.patch(doc.id, rp)
+            count(msg, 'processed')
+            count(msg, 'materialRefetch')
+            ctx.log.info(`摘要：素材問題退回抓取[${oneline(doc.title, 40)}]（${oneline(reason, 60)}；排除 ${rp.refetchSkip.join('、')} 重抓）`)
+            return msg // 短路
+        }
+        await stores.docs.patch(doc.id, {
+            status: SUMMARIZE_DOC_STATUS.skip,
+            // skipKind:摘要判非知識 not-knowledge;理由直指素材壞了而不退回者(來源不可換法、已達上限)material——不是對題材之判定
+            //   (抓取套件之來源產出統計不計為已判定)
+            skipKind: material?.problemOf?.(reason) ? SUMMARIZE_SKIP_KIND.material : SUMMARIZE_SKIP_KIND.notKnowledge,
+            skipReason: reason.slice(0, 150),
+            notedAt: now,
+        })
+        count(msg, 'processed')
+        count(msg, 'skipped')
+        ctx.log.info(`摘要：略過[${String(doc.title || '').slice(0, 40)}] → 保留線索 ${msg.stats.explore || 0} 筆`)
+        return msg // 短路
+    },
+})
+
+/**
+ * 錨點:renderNote(產物組裝:依 domain 之產物契約(contract.buildNote)組記錄與 md,不落地;replace 此環＝換筆記版型)
+ *
+ * 讀 msg.data(doc、_aiItem、_domain、_chars);寫 msg.data._note({ slug, file, nowIso, front, body, md, text, record });不短路(恆呼叫 next)
+ *   (內建 note 契約:組裝與人工匯入(ops/ingestNotes)同一份 stores/noteBuild——清洗、類別落點、record 與 frontmatter;自訂契約依其 buildNote)
+ *
+ * @returns {Object} 回傳 defineMw 產物
+ * @example
+ * let item = { relevant: true, title: '星系旋轉曲線', summary: '外圍恆星的轉速不隨距離遞減', key_points: ['外圍轉速趨於定值', '可見質量不足以解釋'], concepts: ['星系', '暗物質'], category: '其他', claim_type: '實證研究', evidence_level: '中', caveats: ['樣本有限'] }
+ * let doc = { id: 'd1', title: '原文', url: 'u', sourceName: '來源' }
+ * let msg = makeMsg('doc', { doc, _aiItem: item, _domain: createSummarizeDomain({}) })
+ * let ctx = { deps: { dirs: { notes: 'notes' }, clock: { iso8: () => 'T0' } }, log: { info() {}, warn() {} } }
+ * await runChainOverMsgs({ chain: [mwRenderNote()], ctx, msgs: [msg] })
+ * console.log(msg.data._note.slug, msg.data._note.record.concepts)
+ * // => 星系旋轉曲線-ee17560c [ '星系', '暗物質' ]
+ */
+export const mwRenderNote = () => defineMw({
+    name: 'renderNote',
+    handle: async (msg, ctx, next) => {
+        const { dirs, clock } = ctx.deps
+        const { doc, _aiItem: k, _domain: domain } = msg.data
+        const nowIso = clock.iso8()
+        const n = contractOf(domain).buildNote(k, doc, { notesDir: dirs?.notes, nowIso, chars: msg.data._chars })
+        if (!isobj(n) || !isobj(n.record) || !n.record.id) throw new Error('contract.buildNote 須回傳 { record:{ id, … }, md, text? }')
+        const md = isobj(n.md) ? n.md : null
+        // 可疑標籤(括號說明／英文對照、一個標籤擠多個概念):只計數與記錄,不改資料——量測提示詞之「一標籤一概念」是否有效,
+        //   存量之清理由使用方以 suggestConceptRenames 之候選人審
+        const sus = tagSuspects(Array.isArray(n.concepts) ? n.concepts : [])
+        if (sus.length) {
+            count(msg, 'tagSuspect', sus.length)
+            ctx.log.info(`摘要標籤可疑[${n.record.id}]：${sus.map((x) => `「${x.tag}」`).join('、')}（括號說明或多概念；只計數，清理見 suggestConceptRenames）`)
+        }
+        // 清單外類別(先去頭尾空白再比對):原值存 categoryRaw,計數供類別提案之彙整
+        if (n.categoryRaw) {
+            count(msg, 'categoryOffList')
+            ctx.log.info(`摘要分類[${n.record.id}]：「${n.categoryRaw}」不在分類清單，落「${n.category}」（原值存 categoryRaw）`)
+        }
+        // 納入閘之修正紀錄(正規化、逐條移除;檔頭【納入閘】)隨筆記記錄留存備查
+        const fixes = Array.isArray(msg.data._fixes) ? msg.data._fixes : []
+        const record = fixes.length ? { ...n.record, stdFixes: fixes.slice(0, 20).map((x) => oneline(x, 120)) } : n.record
+        if (fixes.length) count(msg, 'stdFixed')
+        msg.data._note = { slug: n.record.id, file: md?.file || '', nowIso: n.nowIso || nowIso, front: md?.front || {}, body: md?.body || '', md, text: typeof n.text === 'string' ? n.text : '', record }
+        return next(msg)
+    },
+})
+
+/**
+ * 錨點:gateNote(納入閘之最後一道:以 noteStandards.checkNote 檢定組好之產物,只跑契約所列之標準(contract.standards);任一標準不合格或未能判定 → 不落地)
+ *
+ * 讀 msg.data(_note、_domain、_source);不合格時寫 msg.data._stdReject(原因陣列)、_stdRejectStd(主要標準:第一個不合格者,
+ * 無則第一個未能判定者)、_stdFeedback(回饋文字;noteStandards.noteFeedbackOf)並短路(不呼叫 next;執行端據以記 tries、回饋與待判)
+ *
+ * @returns {Object} 回傳 defineMw 產物
+ * @example
+ * let item = { relevant: true, title: '星系旋轉曲線', summary: '外圍恆星的轉速不隨距離遞減', key_points: ['外圍轉速趨於定值', '可見質量不足以解釋'], concepts: ['星系', '暗物質'], category: '其他', claim_type: '實證研究', evidence_level: '中', caveats: ['樣本有限'] }
+ * let doc = { id: 'd1', title: '原文', url: 'u', sourceName: '來源' }
+ * let domain = createSummarizeDomain({})
+ * let ok = makeMsg('doc', { doc, _aiItem: item, _domain: domain })
+ * let bad = makeMsg('doc', { doc, _aiItem: { ...item, concepts: ['星系'] }, _domain: domain })
+ * let ctx = { deps: { dirs: { notes: 'notes' }, clock: { iso8: () => 'T0' } }, log: { info() {}, warn() {} } }
+ * await runChainOverMsgs({ chain: [mwRenderNote(), mwGateNote()], ctx, msgs: [ok, bad] })
+ * console.log(ok.data._stdReject, bad.data._stdReject, bad.data._stdRejectStd)
+ * // => undefined [ 'SS2 概念 1 個（須 2～6）' ] SS2
+ */
+export const mwGateNote = () => defineMw({
+    name: 'gateNote',
+    handle: async (msg, ctx, next) => {
+        const { _note: n, _domain: domain, _source: source } = msg.data
+        const rs = checkNote({ front: n.front, body: n.body, record: n.record, text: n.text }, { vocab: domain.vocab, material: typeof source === 'string' ? source : undefined, only: contractOf(domain).standards, locale: ctx.deps.locale })
+        const bad = rs.filter((r) => r.status === 'violation' || r.status === 'undetermined')
+        if (bad.length) {
+            msg.data._stdReject = bad.map((r) => `${r.std} ${r.detail}`)
+            msg.data._stdRejectStd = (bad.find((r) => r.status === 'violation') || bad[0]).std
+            msg.data._stdFeedback = bad.map((r) => noteFeedbackOf(r, { vocab: domain.vocab })).join('；')
+            count(msg, 'stdRejected')
+            ctx.log.info(`摘要：[${oneline(n.front?.title || n.record?.title, 40)}] 未達檢定標準，不落地（${oneline(msg.data._stdReject.join('；'), 160)}）`)
+            return msg // 短路
+        }
+        return next(msg)
+    },
+})
+
+/**
+ * 錨點:persistNote(落地:寫 md(契約有 md 者)＋記錄入庫;同文件已有筆記者不覆寫——改用既有 slug 回鏈,不計新知識;opt.sink 給了即由宿主落地)
+ *
+ * 讀 msg.data._note({ file, front, body, md, record });寫 msg.data._note.slug(既有筆記時改為其 id;宿主落地回 id 時為之)、_note.existing;
+ * 落地為 md 檔(有 md 時)與 stores.notes,或交 opt.sink;不短路(恆呼叫 next)
+ *
+ * @param {Object} [opt={}] 輸入子階段 opts,非物件則回退為 {}
+ * @param {Function} [opt.sink] 輸入宿主落地 async ({ record, md, doc, ctx }) => { ok?, id? }:給了即不寫檔、不入庫(既有筆記判定仍以 stores.notes),
+ *   回 id 者作文件回鏈之 slug;拋錯＝逐項鏈異常
+ * @returns {Object} 回傳 defineMw 產物
+ * @example
+ * let rows = []
+ * let notes = { get: async () => null, select: async () => [], insertNew: async (xs) => { rows.push(...xs); return { addCount: xs.length } } }
+ * let log = { info() {}, warn() {} }
+ * let msgOf = () => makeMsg('doc', { doc: { id: 'd1' }, _note: { record: { id: 'n1', docId: 'd1' }, md: null } })
+ *
+ * let m1 = msgOf()
+ * await runChainOverMsgs({ chain: [mwPersistNote()], ctx: { deps: { stores: { notes } }, log }, msgs: [m1] })
+ * console.log(rows.length, m1.stats)
+ * // => 1 { notes: 1 }
+ *
+ * let m2 = msgOf()
+ * let sink = async ({ record }) => ({ id: `host-${record.id}` })
+ * await runChainOverMsgs({ chain: [mwPersistNote({ sink })], ctx: { deps: { stores: { notes } }, log }, msgs: [m2] })
+ * console.log(m2.data._note.slug, rows.length)
+ * // => host-n1 1
+ *
+ * let m3 = msgOf()
+ * let had = { ...notes, get: async () => ({ id: 'old' }) }
+ * await runChainOverMsgs({ chain: [mwPersistNote()], ctx: { deps: { stores: { notes: had } }, log }, msgs: [m3] })
+ * console.log(m3.data._note.slug, m3.data._note.existing, m3.stats)
+ * // => old true { notesExisting: 1 }
+ */
+export const mwPersistNote = (opt = {}) => {
+
+    //check
+    if (!isobj(opt)) {
+        opt = {}
+    }
+
+    return defineMw({
+        name: 'persistNote',
+        handle: async (msg, ctx, next) => {
+            const { stores } = ctx.deps
+            const { doc, _note: n } = msg.data
+            // 既有筆記(檔頭【既有筆記不覆寫】):同 slug(同標題同文件)直讀;標題不同者以 docId 查
+            const exist = (await stores.notes.get(n.record.id)) || (await stores.notes.select({ docId: doc.id }))[0] || null
+            if (exist) {
+                n.slug = exist.id
+                n.existing = true
+                count(msg, 'notesExisting')
+                ctx.log.info(`摘要：文件已有筆記 ${exist.id}，保留既有（不覆寫關聯與衝突章），只回鏈文件`)
+                return next(msg)
+            }
+            if (typeof opt.sink === 'function') {
+                const r = await opt.sink({ record: n.record, md: n.md, doc, ctx })
+                if (isobj(r) && typeof r.id === 'string' && r.id) n.slug = r.id
+                count(msg, 'notes', 1)
+                return next(msg)
+            }
+            if (n.md) writeMd(n.md.file, n.md.front, n.md.body)
+            const ins = await stores.notes.insertNew([n.record])
+            count(msg, 'notes', ins.addCount)
+            return next(msg)
+        },
+    })
+}
+
+/**
+ * 錨點:markDoc(文件終態:noted＋回鏈 slug)
+ *
+ * 讀 msg.data(doc、_note.slug、_note.nowIso);不寫 msg.data(終態寫入 stores.docs);不短路(恆呼叫 next)
+ *
+ * @returns {Object} 回傳 defineMw 產物
+ * @example
+ * let row = { id: 'd1', status: 'raw' }
+ * let docs = { patch: async (id, o) => Object.assign(row, o) }
+ * let msg = makeMsg('doc', { doc: { id: 'd1' }, _note: { slug: 'n1', nowIso: 'T0' } })
+ * await runChainOverMsgs({ chain: [mwMarkDoc()], ctx: { deps: { stores: { docs } }, log: { info() {}, warn() {} } }, msgs: [msg] })
+ * console.log(row, msg.stats)
+ * // => { id: 'd1', status: 'noted', noteSlug: 'n1', notedAt: 'T0' } { processed: 1 }
+ */
+export const mwMarkDoc = () => defineMw({
+    name: 'markDoc',
+    handle: async (msg, ctx, next) => {
+        const { stores } = ctx.deps
+        const { doc, _note: n } = msg.data
+        // 已納入:清掉上次未達標準之回饋(下次重摘要不再附)
+        await stores.docs.patch(doc.id, { status: SUMMARIZE_DOC_STATUS.noted, noteSlug: n.slug, notedAt: n.nowIso, ...(doc.stdFeedback ? { stdFeedback: '' } : {}) })
+        count(msg, 'processed')
+        if (!n.existing) ctx.log.info(`摘要：新增知識筆記 ${n.slug}`)
+        return next(msg)
+    },
+})
+
+/**
+ * 摘要子階段:佇列→批次 AI 摘要→逐項動作鏈→線索回收。hook 錨點:summarize.summarize.{saveClues, skipGate, renderNote, gateNote, persistNote, markDoc}
+ *
+ * @param {Object} [opt={}] 輸入設定物件，非物件則視為{}
+ * @param {Array} [opt.chain] 輸入自組動作鏈(defineMw 產物陣列)，未給則以 tap 組裝預設鏈
+ * @param {Object} [opt.tap] 輸入認名掛載規格(applyTaps 之 taps)
+ * @param {Object} [opt.domain] 輸入整組置換之摘要領域物件，未給則用 ctx.deps.domains.summarize
+ * @param {Function} [opt.callAI] 輸入覆寫之 AI 呼叫函數 (prompt, check, callOpt) => Promise，未給則用 ai.callJson;callOpt 同正式呼叫:
+ *   摘要為 { shouldStop, budgetMs, acceptTruncated:true, avoid? }(席位 spec 由正式呼叫補;avoid 只在末次重試且有曾產出不合格者時給),
+ *   修補為 { spec, segment:'summarizeRepair', shouldStop, budgetMs },忠實性覆核為 { spec, segment:'summarizeFaith', shouldStop, budgetMs }
+ * @param {Integer} [opt.docsPerBatch] 輸入每批文件數，未給則用 settings.summarize.docsPerCall
+ * @param {Integer} [opt.parallel] 輸入每輪並行批數，未給則用 settings.ai.parallel
+ * @param {Integer} [opt.rounds] 輸入輪數，未給則用 settings.summarize.rounds
+ * @param {Integer} [opt.maxTries=3] 輸入摘要失敗達幾次即標為 summarize-failed
+ * @param {Array} [opt.clueTypes] 輸入線索型別白名單，傳給 mwSaveClues
+ * @param {Object} [opt.statuses] 輸入狀態名覆寫，可含 pending、failed
+ * @param {String} [opt.triesField='summarizeTries'] 輸入嘗試次數計數之欄位名
+ * @param {Boolean} [opt.requireTriage] 輸入是否只摘要已預篩放行者，未給則用 settings.summarize.triage.enabled===true
+ * @param {Object} [opt.material] 輸入素材問題判定器(createMaterialPolicy 之產物)，未給則依 settings.summarize.refetch 建立
+ * @param {Boolean} [opt.packByChars=true] 輸入是否依字數打包(檔頭【長文】)；false 即每批固定 docsPerBatch 篇、每篇截 summarize.charsPerDoc
+ * @param {Boolean} [opt.repair] 輸入是否開啟欄位定向修補呼叫(檔頭)，未給則用 settings.summarize.standards.repair.enabled===true；開啟而 domain 缺 buildRepairPrompt 即拋錯
+ * @param {Boolean} [opt.faithCheck] 輸入是否開啟忠實性覆核(檔頭)，未給則用 settings.summarize.standards.faithCheck.enabled===true；開啟而缺席位 first／second 或 domain 缺 buildFaithCheckPrompt 即拋錯
+ * @param {Function} [opt.knownConcept] 輸入既有概念判定 (標籤) => Boolean(擠標籤之拆分條件)，未給則本輪開工前以 knownConceptOf(stores) 讀
+ * @param {Function} [opt.sink] 輸入宿主落地 async ({ record, md, doc, ctx }) => { ok?, id? }(取代寫 md 與入庫;見 mwPersistNote)
+ * @returns {Object} 回傳 stage 物件 { name, run }(階段契約欄位 enabled／when 等見抓取套件之 stageFields)
+ * @example
+ * import fs from 'fs'
+ * import os from 'os'
+ * import path from 'path'
+ *
+ * let dir = fs.mkdtempSync(path.join(os.tmpdir(), 'notes-'))
+ * let rows = new Map([['a', { id: 'a', status: 'raw', title: '星系旋轉曲線', url: 'u', sourceName: '來源', text: '外圍恆星的轉速趨於定值，可見質量不足以解釋。', collectedAt: 'c1' }]])
+ * let docs = {
+ *     select: async (find) => [...rows.values()].filter((d) => d.status === find.status),
+ *     get: async (id) => rows.get(id),
+ *     patch: async (id, o) => Object.assign(rows.get(id), o),
+ * }
+ * let saved = new Map()
+ * let notes = {
+ *     select: async () => [...saved.values()],
+ *     get: async (id) => saved.get(id) ?? null,
+ *     insertNew: async (xs) => { xs.forEach((x) => saved.set(x.id, x)); return { addCount: xs.length } },
+ * }
+ * let frontier = { select: async () => [], get: async () => null, patch: async () => {}, insertNew: async (xs) => ({ addCount: xs.length }) }
+ * let item = { index: 1, relevant: true, title: '星系旋轉曲線', summary: '外圍恆星的轉速趨於定值', key_points: ['外圍轉速趨於定值', '可見質量不足以解釋'], concepts: ['星系', '暗物質'], category: '其他', claim_type: '實證研究', evidence_level: '中', caveats: ['樣本有限'] }
+ * let stage = stageSummarize({ domain: createSummarizeDomain({}), docsPerBatch: 1, parallel: 1, rounds: 1, callAI: async () => ({ ok: true, data: [item] }) })
+ * let settings = resolveSummarizeSettings({ summarize: { triage: { enabled: false } } })
+ * let r = await stage.run({ deps: { stores: { docs, notes, frontier }, dirs: { notes: dir }, clock: { iso8: () => 'T0' }, settings }, log: { info() {}, warn() {} } })
+ * console.log(stage.name, r.detail.notes, rows.get('a').status, fs.readdirSync(dir).length)
+ * // => summarize 1 noted 1
+ * fs.rmSync(dir, { recursive: true, force: true })
+ */
+export function stageSummarize(opt = {}) {
+
+    //check
+    if (!isobj(opt)) {
+        opt = {}
+    }
+
+    const chain = opt.chain || applyTaps(
+        [mwSaveClues(opt), mwSkipGate(opt), mwRenderNote(opt), mwGateNote(opt), mwPersistNote(opt), mwMarkDoc(opt)],
+        opt.tap, { chainName: 'summarize.summarize' },
+    )
+
+    return {
+        ...stageFields(opt, { name: 'summarize' }),
+        run: async (ctx) => {
+            const { stores, settings, ai, clock } = ctx.deps
+            const log = ctx.log
+            const domain = opt.domain || ctx.deps.domains.summarize
+            // 時間預算(抓取套件之 budgetOf,單一擁有者):每次呼叫以剩餘時間封頂、嘗試之間可中止;每輪開工前由 harness 守門。
+            // 覆寫 callAI 者亦收到第三參數(shouldStop/budgetMs),不因覆寫而失去時間預算
+            const budget = budgetOf(ctx)
+            const shouldStop = budget.shouldStop
+            const st = { pending: SUMMARIZE_DOC_STATUS.pending, failed: SUMMARIZE_DOC_STATUS.failed, ...(opt.statuses || {}) }
+            const triesField = opt.triesField || 'summarizeTries'
+            const maxTries = opt.maxTries ?? 3
+            const holds = stores.holds || null
+            // 本批驗證之不合格原因({ reasons, std })與套用前修補之閘結果:每批開始時清空——同一輪後續 round 重取同一篇時不沿用前批之判定
+            const problemsByDoc = new Map()
+            const repairedByDoc = new Map()
+            // 末次重試避開曾對本批文件產出不合格結果之供應者(檔頭【納入閘】;避開後無條目則不避)
+            const providersOf = (doc) => String(doc.summarizeProviders || '').split('|').filter(Boolean)
+            const avoidOf = (batch) => [...new Set((batch || []).filter((d) => (d[triesField] || 0) >= maxTries - 1).flatMap(providersOf))]
+            const baseCall = (p, c, o) => ai.callJson(p, c, { spec: settings.summarize.ai, ...o })
+            const callAI = (p, c, o2) => {
+                for (const d of o2?.batch || []) {
+                    problemsByDoc.delete(d.id)
+                    repairedByDoc.delete(d.id)
+                }
+                const avoid = avoidOf(o2?.batch)
+                // 陣列輸出:逐次截斷放行(檔頭)
+                return (opt.callAI || baseCall)(p, c, { shouldStop, budgetMs: budget.remainingMs(), acceptTruncated: true, ...(avoid.length ? { avoid } : {}) })
+            }
+
+            // 待判(檔頭【待判】):登錄、改判結案、終態轉使用者;未開 holds 集合 → 每輪 WARN 一次、略過登錄
+            const hc = { stdHeld: 0, stdHoldsResolved: 0, stdHoldsEscalated: 0 }
+            let holdsWarned = false
+            const holdsOn = () => {
+                if (holds) return true
+                if (!holdsWarned) {
+                    holdsWarned = true
+                    log.warn('摘要：未開 holds 集合，未達檢定標準之不納入與其終態未登錄待判')
+                }
+                return false
+            }
+
+            /**
+             * 累加摘要失敗次數(AI 失敗、未達檢定標準);達 maxTries 即標為終態(st.failed)並記 lastError,否則僅累加供下輪隊頭防阻塞排序。
+             *   有不納入之標準(o.std)者登錄待判(閘門標準每次;SS14 只在終態);AI 失敗之終態 → 該文件未結之待判轉使用者
+             * @param {Object} doc 輸入待摘要文件記錄
+             * @param {String} why 輸入本次失敗原因(寫入 lastError／warn 訊息)
+             * @param {Object} [o={}] 輸入 { providerId(產出不合格結果之供應者,記入 summarizeProviders), feedback(下次提示詞之回饋), std(不納入之主要標準) }
+             */
+            const bumpTries = async (doc, why, o = {}) => {
+                const tries = (doc[triesField] || 0) + 1
+                const terminal = tries >= maxTries
+                const extra = {
+                    ...(o.providerId ? { summarizeProviders: [...new Set([...providersOf(doc), o.providerId])].join('|') } : {}),
+                    ...(o.feedback ? { stdFeedback: oneline(o.feedback, 200) } : {}),
+                }
+                if (terminal) {
+                    await stores.docs.patch(doc.id, { [triesField]: tries, status: st.failed, lastError: why, ...extra })
+                    log.warn(`摘要：[${String(doc.title || '').slice(0, 40)}] ${why}（第 ${tries} 次），標為 ${st.failed}`)
+                }
+                else {
+                    await stores.docs.patch(doc.id, { [triesField]: tries, ...extra })
+                }
+                if (o.std && (o.std !== 'SS14' || terminal)) {
+                    if (!holdsOn()) return
+                    const h = await putDocHold(holds, doc, { std: o.std, why, terminal, tries, nowIso: clock.iso8() })
+                    hc.stdHeld += h.held
+                    hc.stdHoldsResolved += h.resolved
+                    hc.stdHoldsEscalated += h.escalated
+                }
+                else if (terminal && holds) hc.stdHoldsEscalated += await escalateDocHolds(holds, doc, { why, nowIso: clock.iso8() })
+            }
+
+            /**
+             * 逐項鏈異常之落帳(檔頭【兩種失敗分帳】):tries＋1 排隊尾、記 lastError、每次 WARN;永不標終態
+             * @param {Object} doc 輸入待摘要文件記錄
+             * @param {String} why 輸入異常原因
+             */
+            const bumpChainTries = async (doc, why) => {
+                const tries = (doc[triesField] || 0) + 1
+                await stores.docs.patch(doc.id, { [triesField]: tries, lastError: why })
+                log.warn(`摘要：[${String(doc.title || '').slice(0, 40)}] ${why}（第 ${tries} 次；程式或寫入問題，不標終態，修復後重做）`)
+            }
+
+            /**
+             * 套件層(機制)之最低結構驗證:index 落在批次範圍內且 relevant 為布林值;domain.isValidItem 另補內容層驗證
+             * @param {Object} it 輸入 AI 回傳之單一項目
+             * @param {Integer} cnt 輸入本批文件數(index 須介於 1～cnt)
+             * @returns {Boolean} 回傳是否通過機制層最低驗證
+             */
+            const baseValid = (it, cnt) => it && typeof it === 'object' &&
+        typeof it.index === 'number' && it.index >= 1 && it.index <= cnt &&
+        typeof it.relevant === 'boolean'
+
+            const batchSize = opt.docsPerBatch ?? settings.summarize.docsPerCall
+            const parallel = opt.parallel ?? settings.ai.parallel
+            const rounds = opt.rounds ?? settings.summarize.rounds
+            // 預篩接縫(stages/triageStage):啟用(設定解析之預設 true)時只摘要已放行者(triage 為 relevant);未預篩者等預篩,攔下者已轉 skip。
+            //   未經設定解析之裸設定視為未啟用,與預篩段同一判準
+            const requireTriage = opt.requireTriage ?? triageEnabledOf(settings.summarize)
+            const ready = (d) => !requireTriage || triageReadyOf(d)
+            const material = opt.material || createMaterialPolicy({ patterns: settings.summarize?.refetch?.patterns, max: settings.summarize?.refetch?.max })
+
+            // 依字數打包(檔頭【長文】;規則在 stores/packByChars,與評分題組共用):每批篇數 ≤ batchSize、字數 ≤ batchSize×charsPerDoc
+            const charsPerDoc = settings.summarize?.charsPerDoc ?? SUMMARIZE_DEFAULT.charsPerDoc
+            const budgetById = new Map() // doc.id → 本篇送入 AI 之字數上限(buildPrompt 之 budgets、處理範圍皆讀它)
+            /**
+             * 依池之順序貪婪裝批;各篇預算記入 budgetById
+             * @param {Array} items 輸入本輪池(已依 byRetryTierFifo 排序)
+             * @returns {Array} 回傳批次陣列
+             */
+            const packByChars = (items) => {
+                const r = packDocsByChars(items, { batchSize, charsPerDoc })
+                for (const [id, need] of r.budgets) budgetById.set(id, need)
+                return r.batches
+            }
+            /**
+             * 本篇之處理範圍(檔頭【長文】):sourceChars＝原文字數(抓取時之原長扣除無損去重;無原長者取正文長),processedChars＝AI 讀到之字數
+             * @param {Object} doc 輸入文件記錄
+             * @returns {Object} 回傳 { sourceChars, processedChars }
+             */
+            const charsOf = (doc) => {
+                const textLen = String(doc.text || '').length
+                const full = Number(doc.fullLength) > 0 ? Number(doc.fullLength) - (Number(doc.dedupedChars) || 0) : textLen
+                const cap = budgetById.has(doc.id) ? budgetById.get(doc.id) : charsPerDoc
+                return { sourceChars: Math.max(textLen, full), processedChars: Math.min(textLen, cap) }
+            }
+            // 積壓可見性:raw 池與最舊者天數每輪進日誌;容量＝rounds×parallel×batchSize(巡檢據此判容量不足;不丟)
+            const rawAll = await stores.docs.select({ status: st.pending })
+            const pool = queueAge(rawAll, 'rawAt') // 量進入 raw 之時刻,非收錄時刻
+            const readyCount = rawAll.filter(ready).length
+            log.info(`raw 池 ${pool.count} 篇（最舊 ${pool.oldestDays ?? '-'} 天${requireTriage ? `，已預篩放行 ${readyCount}` : ''}），本輪容量 ${rounds * parallel * batchSize}`)
+            // 只取已預篩者、池非空、卻無任何一篇帶預篩結果:預篩段停用或未跑(opt.enabled:false、自組 stages 漏列預篩),本輪永遠取不到件——
+            //   須明示(否則會被歸因為「摘要容量不足」);停用預篩須同時關 settings.summarize.triage.enabled 或給本段 requireTriage:false
+            if (requireTriage && rawAll.length > 0 && !rawAll.some((d) => d.triage)) {
+                log.warn(`摘要：raw 池 ${rawAll.length} 篇皆無預篩結果而本段只取已放行者——預篩段停用或未執行？請關閉 summarize.triage.enabled 或給 requireTriage:false`)
+            }
+
+            // 納入閘(檔頭【納入閘】):材料＝原文標題＋本篇送出之內文(與 noteStandards.noteMaterialOf 同一定義);
+            //   驗證時記下各篇不合格之原因,未涵蓋落帳時寫入 lastError 與下次提示詞之回饋
+            const sourceOf = (doc) => `${doc.title || ''}\n${String(doc.text || doc.feedText || '').slice(0, budgetById.has(doc.id) ? budgetById.get(doc.id) : charsPerDoc)}`
+            let stdInvalid = 0 // 驗證即不合格(未進逐項鏈)而落帳之篇數
+            // 擠標籤之拆分條件(SS6;檔頭):本輪有待摘要者才讀既有概念(全表讀筆記與核心一次)
+            const knownConcept = typeof opt.knownConcept === 'function' ? opt.knownConcept : (readyCount > 0 ? await knownConceptOf(stores) : () => false)
+            // 產物契約(stores/noteBuild 檔頭):納入閘之欄位判定、組裝與落地前之標準皆依之;形狀不合即於開工前拋
+            const contract = contractOf(domain)
+            // 語言設定(每輪依賴 deps.locale;抓取套件之 core/locale):納入閘之轉正體與修補之正規化依之
+            const locale = ctx.deps.locale
+            const gateOf = (it, doc) => gateNoteItem(it, { vocab: domain.vocab, material: doc ? sourceOf(doc) : undefined, knownConcept, contract, locale })
+
+            // 忠實性覆核(檢定標準 SS14;檔頭)與欄位定向修補呼叫(SS2／SS4;檔頭):開啟之功能所需之席位與 domain 成員以功能表單一判定
+            //   (子階段之選項覆寫設定之開關;覆核兩席必填、修補須 domain.buildRepairPrompt);使用者對待判之重試／豁免於選池前落實
+            const faithCfg = settings.summarize?.standards?.faithCheck || {}
+            const faithSeats = isobj(faithCfg.ai) ? faithCfg.ai : {}
+            const faithOn = (opt.faithCheck ?? faithCfg.enabled) === true
+            const repairOn = (opt.repair ?? settings.summarize?.standards?.repair?.enabled) === true
+            const featureProblems = summarizeFeatureProblems(settings, domain, { enabled: [...(repairOn ? ['repair'] : []), ...(faithOn ? ['faithCheck'] : [])] })
+            if (featureProblems.length) throw new Error(featureProblems.join('；'))
+            const faithMax = Number.isInteger(faithCfg.maxTries) && faithCfg.maxTries > 0 ? faithCfg.maxTries : SUMMARIZE_DEFAULT.standards.faithCheck.maxTries
+            const fc = { faithChecked: 0, faithRejected: 0, faithHeld: 0, faithRetry: 0, faithCalls: 0, faithResolved: 0, faithWaived: 0 }
+            if (faithOn && holds) {
+                for (const h of await listHolds(holds, { object: SS14_OBJECT, std: 'SS14' })) {
+                    const retry = h.status === 'open' && retryRequestedOf(h)
+                    if (h.status !== 'waived' && !retry) continue
+                    const d = await stores.docs.get(h.oid)
+                    if (!d?.faithHold) continue
+                    await stores.docs.patch(h.oid, h.status === 'waived' ? { faithHold: '', faithWaived: true } : { faithHold: '' })
+                    if (h.status === 'waived') fc.faithWaived++
+                }
+            }
+            const voteText = (votes) => (votes || []).map((v) => `${v.seat}:${v.provider || '?'}:${v.verdict && typeof v.verdict === 'object' ? `${v.verdict.verdict}（${oneline(v.verdict.reason, 60)}）` : String(v.verdict)}`).join('；')
+            /**
+             * 本篇套用時之閘結果:有套用前之修補結果者取之(檔頭【欄位定向修補呼叫】),否則以同一閘判原輸出
+             * @param {Object} item 輸入 AI 回傳之單一項目
+             * @param {Object} doc 輸入文件記錄
+             * @returns {Object} 回傳 gateNoteItem 之結果
+             */
+            const gatedOf = (item, doc) => repairedByDoc.get(doc.id) || gateOf(item, doc)
+
+            // 欄位定向修補呼叫(檢定標準 SS2／SS4;檔頭):席位＝摘要席(同一供應者鏈);物件輸出,不給截斷放行
+            const rc = { stdRepaired: 0, stdRepairFailed: 0 }
+            const callRepair = (prompt) => (opt.callAI
+                ? opt.callAI(prompt, checkRepairReply, { spec: settings.summarize?.ai, segment: 'summarizeRepair', shouldStop, budgetMs: budget.remainingMs() })
+                : ai.callJson(prompt, checkRepairReply, { spec: settings.summarize.ai, shouldStop, budgetMs: budget.remainingMs() }))
+            /**
+             * 套用前之逐項修補(一輪為限):須修補之處 → 修補呼叫 → 只取被指出者套回 → 同一閘;結果記於 repairedByDoc 供覆核與套用
+             * @param {Array} entries 輸入 [{ item, target, index }]
+             * @returns {Promise<Object>} 回傳 { rejected:Map(index → { kind:'std', reasons, std }) } 或 { stopped:true }
+             */
+            const repairEntries = async (entries) => {
+                const rejected = new Map()
+                for (const e of entries) {
+                    const doc = e.target
+                    const material = sourceOf(doc)
+                    const n0 = normalizeNoteItem(e.item, { vocab: domain.vocab, knownConcept, locale })
+                    const problems = repairProblemsOf(n0.item, { vocab: domain.vocab, material })
+                    if (!problems.length) {
+                        // 無可指出之處:照閘之原判(未過閘者此處即不納入——修補開啟時未過閘者亦收為項目,不得直接套用)
+                        const g0 = gateOf(e.item, doc)
+                        if (!g0.ok) rejected.set(e.index, { kind: 'std', reasons: g0.reasons, std: g0.std })
+                        continue
+                    }
+                    if (shouldStop()) return { stopped: true }
+                    const res = await callRepair(domain.buildRepairPrompt({ material, item: n0.item, problems }))
+                    if (res?.skipped) return { stopped: true }
+                    let g
+                    if (res?.ok) {
+                        const a = applyRepairs(n0.item, problems, res.data)
+                        const g1 = gateNoteItem(a.item, { vocab: domain.vocab, material, knownConcept, contract, locale })
+                        g = { ...g1, fixes: [...n0.fixes, ...a.notes, ...g1.fixes] }
+                        const fixedAll = g1.ok && !g1.removed.length
+                        if (fixedAll) rc.stdRepaired++
+                        else rc.stdRepairFailed++
+                        log.info(`摘要修補呼叫：〈${oneline(doc.title, 40)}〉指出 ${problems.length} 處、採用回覆 ${a.applied} 處——${fixedAll ? '再過閘合格' : (g1.ok ? `仍有 ${g1.removed.length} 處照既有規則移除` : `仍不合格（${oneline(g1.reasons.join('；'), 80)}），不納入`)}`)
+                    }
+                    else {
+                        rc.stdRepairFailed++
+                        g = gateOf(e.item, doc)
+                        log.info(`摘要修補呼叫失敗：〈${oneline(doc.title, 40)}〉（${oneline(res?.error, 80)}）——照既有規則處置`)
+                    }
+                    repairedByDoc.set(doc.id, g)
+                    if (!g.ok) rejected.set(e.index, { kind: 'std', reasons: g.reasons, std: g.std })
+                }
+                return { rejected }
+            }
+
+            /**
+             * 套用前之批次忠實性覆核:已豁免者不覆核;成立忠實者通過(其既有待判結案)。物件輸出,不給截斷放行
+             * @param {Array} entries 輸入 [{ item, target, index }]
+             * @returns {Promise<Object>} 回傳 { rejected:Map(index → { kind:'unfaithful'|'undetermined'|'retry', ... }) } 或 { stopped:true }
+             */
+            const faithReview = faithOn
+                ? async (entries) => {
+                    const todo = entries.filter((e) => !e.target.faithWaived)
+                    if (!todo.length) return {}
+                    const call = (seatKey, seat, prompt) => {
+                        fc.faithCalls++
+                        return opt.callAI ? opt.callAI(prompt, checkFaithChecks, { spec: seat, segment: 'summarizeFaith', shouldStop, budgetMs: budget.remainingMs() }) : ai.callJson(prompt, checkFaithChecks, { spec: seat, shouldStop, budgetMs: budget.remainingMs() })
+                    }
+                    const items = todo.map((e) => ({ key: String(e.index), title: e.target.title, material: sourceOf(e.target), note: gatedOf(e.item, e.target).item }))
+                    const r = await runFaithCheck({ items, buildPrompt: domain.buildFaithCheckPrompt, call, seats: { first: faithSeats.first, second: faithSeats.second, third: isobj(faithSeats.third) ? faithSeats.third : null } })
+                    if (r.stopped) return { stopped: true }
+                    fc.faithChecked += items.length
+                    const rejected = new Map()
+                    for (const e of todo) {
+                        const d = r.decisions.get(String(e.index))
+                        if (d?.status === 'decided' && d.verdict.verdict === 'faithful') {
+                            const cur = holds ? await holds.get(holdKey(SS14_OBJECT, e.target.id, 'SS14')) : null
+                            if (cur?.status === 'open' && await resolveHold(holds, cur.id, { how: '重摘後兩席判忠實', at: clock.iso8() })) fc.faithResolved++
+                            continue
+                        }
+                        if (d?.status === 'decided') rejected.set(e.index, { kind: 'unfaithful', reason: d.verdict.reason, votes: d.votes })
+                        else if (!d || d.why === PANEL_WHY.MISSING || d.why === PANEL_WHY.SAME_PROVIDER) rejected.set(e.index, { kind: 'retry', why: d?.why || PANEL_WHY.MISSING, votes: d?.votes || [] })
+                        else rejected.set(e.index, { kind: 'undetermined', why: d.why, votes: d.votes })
+                    }
+                    return { rejected }
+                }
+                : null
+            /**
+             * 套用前之批次處理(aiBatchStage reviewItems;修補與覆核皆關閉時不給):先修補(修補後仍不合格者剔除),
+             *   再對其餘項忠實性覆核;任一步中止(額度／時間)→ 本批不套用、不記 tries
+             * @param {Array} entries 輸入 [{ item, target, index }]
+             * @returns {Promise<Object>} 回傳 { rejected:Map } 或 { stopped:true }
+             */
+            const reviewItems = (repairOn || faithOn)
+                ? async (entries) => {
+                    const rejected = new Map()
+                    if (repairOn) {
+                        const rr = await repairEntries(entries)
+                        if (rr.stopped) {
+                            for (const e of entries) repairedByDoc.delete(e.target.id)
+                            return { stopped: true }
+                        }
+                        for (const [k, v] of rr.rejected) rejected.set(k, v)
+                    }
+                    if (faithReview) {
+                        const rf = await faithReview(entries.filter((e) => !rejected.has(e.index)))
+                        if (rf?.stopped) return { stopped: true }
+                        for (const [k, v] of rf?.rejected || []) rejected.set(k, v)
+                    }
+                    return { rejected }
+                }
+                : null
+            /**
+             * 套用前不通過之落帳(aiBatchStage onReviewRejected;檔頭):修補後仍不合格(std)、不忠實、判不了、缺票
+             * @param {Object} doc 輸入文件記錄
+             * @param {Object} why 輸入 reviewItems 之原因物件
+             * @param {Object} [meta={}] 輸入 { providerId(摘要之供應者) }
+             */
+            const onReviewRejected = async (doc, why, meta = {}) => {
+                const title = oneline(doc.title, 40)
+                if (why.kind === 'std') {
+                    stdInvalid++
+                    const reasons = (why.reasons || []).join('；')
+                    return bumpTries(doc, `未達檢定標準：${oneline(reasons, 150)}`, { providerId: meta.providerId, feedback: reasons, std: why.std })
+                }
+                if (why.kind === 'unfaithful') {
+                    fc.faithRejected++
+                    log.info(`摘要忠實性覆核：〈${title}〉兩席判不忠實於原文——不寫筆記（${oneline(why.reason, 120)}）`)
+                    return bumpTries(doc, `未達檢定標準：SS14 筆記不忠實於原文（${oneline(why.reason, 120)}）`, { providerId: meta.providerId, feedback: `筆記不忠實於原文：${why.reason}`, std: 'SS14' })
+                }
+                if (why.kind === 'retry') {
+                    const n = (doc.faithTries || 0) + 1
+                    if (n < faithMax) {
+                        fc.faithRetry++
+                        await stores.docs.patch(doc.id, { faithTries: n })
+                        return
+                    }
+                }
+                // 判不了(或缺票逾次):首次負責者 pipeline(文件留 raw,下輪重摘重判);同鍵仍未結而再判不了 → user＋faithHold(選池排除)
+                fc.faithHeld++
+                if (!holds) {
+                    log.warn(`摘要：未開 holds 集合，忠實性覆核判不了之〈${title}〉未登錄待判（SS14）`)
+                    return
+                }
+                const now = clock.iso8()
+                const cur = await holds.get(holdKey(SS14_OBJECT, doc.id, 'SS14'))
+                const again = cur?.status === 'open'
+                const reason = why.kind === 'retry' ? `覆核 ${faithMax} 次皆缺票或同一供應者` : (PANEL_WHY_LABELS[why.why] || why.why)
+                await putHold(holds, { object: SS14_OBJECT, oid: doc.id, std: 'SS14', reason: `筆記忠實性覆核判不了（SS14；${reason}）：〈${title}〉${why.votes?.length ? `——${oneline(voteText(why.votes), 300)}` : ''}`, next: again ? FAITH_HOLD_NEXT.user : FAITH_HOLD_NEXT.retry, owner: again ? 'user' : 'pipeline', deadline: noteHoldDeadlineOf(now), ctx: { title: doc.title || '' } }, now)
+                await stores.docs.patch(doc.id, { faithTries: 0, ...(again ? { faithHold: 'user' } : {}) })
+                log.info(`摘要忠實性覆核：〈${title}〉判不了（${reason}）——不寫筆記，已登錄待判（SS14，${again ? '改由使用者判讀' : '下輪重判'}）`)
+            }
+            /**
+             * 項目之驗證(批次回覆之 checkResult 與逐項 isValidItem 同一判定):形狀合格且過納入閘;未過閘者記原因(未涵蓋落帳用)。
+             *   修補開啟時未過閘者亦收為項目——於套用前修補(reviewItems),修補後仍不合格才不納入
+             * @param {Object} it 輸入 AI 回傳之單一項目
+             * @param {Array} batch 輸入本批文件
+             * @returns {Boolean} 回傳是否收為項目
+             */
+            const itemOk = (it, batch) => {
+                if (!baseValid(it, batch.length)) return false
+                const doc = batch[it.index - 1]
+                const g = gateOf(it, doc)
+                if (!domain.isValidItem(g.item, batch.length)) return false
+                if (!g.ok) {
+                    if (doc) problemsByDoc.set(doc.id, { reasons: g.reasons, std: g.std })
+                    return repairOn && !!doc
+                }
+                return true
+            }
+
+            const r = await runAiBatchStage({
+                log,
+                batchSize,
+                parallel,
+                rounds,
+                shouldStop,
+                // 選取順序(抓取套件之 byRetryTierFifo,與補全文段同一份):tries 升冪(失敗批排隊尾,同一批永遠排隊頭會把整條線擋死)→ tier →
+                //   collectedAt(FIFO;進料大於容量時,最新優先會讓最舊者永遠輪不到)。忠實性覆核待使用者判讀(faithHold)者不入選
+                //   (使用者要求重試或豁免後清除)
+                pickPool: async (limit) => (await stores.docs.select({ status: st.pending })).filter(ready).filter((d) => !d.faithHold).sort(byRetryTierFifo(triesField)).slice(0, limit),
+                // opt.packByChars:false 回到每批固定 batchSize 篇、每篇截 summarizeCharsPerDoc(此時 budgets 未給)
+                packBatches: opt.packByChars === false ? null : packByChars,
+                buildPrompt: async (batch) => domain.buildPrompt(batch, await conceptVocabulary(stores.notes), opt.packByChars === false ? {} : { budgets: batch.map((d) => budgetById.get(d.id)) }),
+                // 整批無任何合格項 → 判此家輸出不合格(調度層據以遞補下一家);合格與否含納入閘(正規化後之硬性欄位與數字紮根)。
+                //   修補開啟時,形狀合格而未過閘者亦算合格(交套用前之修補呼叫,不以遞補整批重摘;itemOk)
+                checkResult: (data, batch) => Array.isArray(data) && data.length > 0 && data.some((it) => itemOk(it, batch)),
+                isValidItem: (it, batch) => itemOk(it, batch),
+                indexOf: (it) => it.index,
+                callAI,
+                // 逐項鏈走 runChainOverMsgs(與抓取側同一執行器):mw 可 ctx.emit 衍生訊息(1→N),單項拋錯被隔離、不中斷同批其餘項目;
+                //   拋錯者仍記 tries——此 doc 仍為 raw 且 tries 最小者最先被挑,不記就永遠排在隊頭、每輪佔一個批次名額(與隊頭防阻塞機制相悖)
+                applyItem: async (item, doc, meta = {}) => {
+                    const chars = charsOf(doc)
+                    const g = gatedOf(item, doc) // 與驗證同一判定(確定性;有套用前修補者取修補後之結果):取正規化後之項目與修正紀錄
+                    repairedByDoc.delete(doc.id)
+                    const msg = makeMsg('doc', { doc, _aiItem: g.item, _fixes: g.fixes, _source: sourceOf(doc), _domain: domain, _material: material, _chars: chars }, { stage: 'summarize' })
+                    const r = await runChainOverMsgs({ chain, ctx, msgs: [msg], chainName: 'summarize.summarize' })
+                    if (r.fails) {
+                        await bumpChainTries(doc, `逐項鏈異常：${oneline(r.errors.join('；'), 150)}`)
+                        return { ...r.stats, _chainFailed: true } // harness:不算進度、計 chainFailed
+                    }
+                    if (Array.isArray(msg.data._stdReject)) {
+                        const why = msg.data._stdReject.join('；')
+                        await bumpTries(doc, `未達檢定標準：${oneline(why, 150)}`, { providerId: meta.providerId, feedback: msg.data._stdFeedback || why, std: msg.data._stdRejectStd || String(msg.data._stdReject[0] || '').split(' ')[0] })
+                    }
+                    else if (holds && (doc[triesField] || 0) > 0) {
+                        // 文件轉離 raw(納入、判非知識、素材退回抓取)→ 未結之閘門待判結案(檔頭【待判】;前有不納入者才可能有待判)
+                        const now = await stores.docs.get(doc.id)
+                        if (now && now.status !== st.pending) hc.stdHoldsResolved += await resolveDocHolds(holds, doc.id, { how: `重摘後文件轉 ${now.status}${now.status === SUMMARIZE_DOC_STATUS.noted ? '（已納入）' : ''}`, nowIso: clock.iso8() })
+                    }
+                    // 截斷計數含判非知識者(檔頭【長文】):只讀前段之判定可能誤丟,巡檢據此量長文需求
+                    return chars.processedChars < chars.sourceChars ? { ...r.stats, truncated: 1 } : r.stats
+                },
+                onMissed: (doc, meta = {}) => {
+                    const probs = problemsByDoc.get(doc.id)
+                    if (probs) stdInvalid++
+                    const why = probs ? `未達檢定標準：${oneline(probs.reasons.join('；'), 150)}` : '未被模型完整涵蓋（缺席或項目不合格式）'
+                    return bumpTries(doc, why, { providerId: meta.providerId, feedback: probs ? probs.reasons.join('；') : '', ...(probs ? { std: probs.std } : {}) })
+                },
+                onBatchFailed: async (batch) => {
+                    // 整批失敗:無法得知是哪一篇引發截斷,只能整批降序;換批次組合後無辜文件仍有機會。
+                    //   本批驗證記有未過納入閘之原因者(各家輸出皆未過閘而遞補用盡)→ 以標準之不納入落帳(回饋、待判)
+                    for (const d of batch) {
+                        const probs = problemsByDoc.get(d.id)
+                        if (!probs) {
+                            await bumpTries(d, '摘要批次失敗（輸出截斷／驗證不過）')
+                            continue
+                        }
+                        stdInvalid++
+                        await bumpTries(d, `未達檢定標準：${oneline(probs.reasons.join('；'), 150)}（各家輸出皆未過納入閘）`, { feedback: probs.reasons.join('；'), std: probs.std })
+                    }
+                },
+                ...(reviewItems ? { reviewItems, onReviewRejected } : {}),
+            })
+
+            // fail＝失敗批次＋未涵蓋項＋逐項鏈異常(不含預算／額度中止)
+            return stdReport({
+                stats: { in: r.applied.processed || 0, out: r.applied.notes || 0, skip: r.applied.skipped || 0, fail: r.failedBatches + r.missed + r.chainFailed, aiCalls: r.aiCalls },
+                detail: {
+                    processed: r.applied.processed || 0,
+                    notes: r.applied.notes || 0,
+                    notesExisting: r.applied.notesExisting || 0,
+                    skipped: r.applied.skipped || 0,
+                    materialRefetch: r.applied.materialRefetch || 0,
+                    truncated: r.applied.truncated || 0,
+                    categoryOffList: r.applied.categoryOffList || 0,
+                    stdFixed: r.applied.stdFixed || 0,
+                    stdRejected: (r.applied.stdRejected || 0) + stdInvalid,
+                    explore: r.applied.explore || 0,
+                    tagSuspect: r.applied.tagSuspect || 0,
+                    aborted: r.aborted,
+                    stopped: r.stopped,
+                    failedBatches: r.failedBatches,
+                    missed: r.missed,
+                    chainFailed: r.chainFailed,
+                    aiAttempts: r.aiAttempts,
+                    pool: pool.count,
+                    poolOldestDays: pool.oldestDays,
+                    ready: readyCount,
+                    // 忠實性覆核(SS14;開啟時):受檢、不忠實(不寫、回饋重試)、判不了(待判)、缺票重試、呼叫數、待判結案、豁免
+                    ...(faithOn ? fc : {}),
+                    // 欄位定向修補呼叫(開啟時):修補後全數合格／仍有問題或呼叫失敗(照既有規則處置)
+                    ...(repairOn ? rc : {}),
+                    // 待判(有異動才附):登錄、結案(改判或文件轉離 raw)、終態轉使用者
+                    ...(hc.stdHeld || hc.stdHoldsResolved || hc.stdHoldsEscalated ? hc : {}),
+                },
+            })
+        },
+    }
+}
+
+export default stageSummarize

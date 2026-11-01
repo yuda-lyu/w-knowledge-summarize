@@ -1,0 +1,315 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    
+    <meta charset="utf-8">
+    <title>stores/noteBuild.mjs - Documentation</title>
+    
+    
+    <script src="scripts/prettify/prettify.js"></script>
+    <script src="scripts/prettify/lang-css.js"></script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc.css">
+    <script src="scripts/nav.js" defer></script>
+    
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+</head>
+<body>
+
+<input type="checkbox" id="nav-trigger" class="nav-trigger" />
+<label for="nav-trigger" class="navicon-button x">
+  <div class="navicon"></div>
+</label>
+
+<label for="nav-trigger" class="overlay"></label>
+
+<nav >
+    
+    
+    <h2><a href="index.html">Home</a></h2><h3>Global</h3><ul><li><a href="global.html#AI_ADAPTER_OPT">AI_ADAPTER_OPT</a></li><li><a href="global.html#AI_BATCH_LOG_KNOWN">AI_BATCH_LOG_KNOWN</a></li><li><a href="global.html#AI_BATCH_LOG_MUST_SEE">AI_BATCH_LOG_MUST_SEE</a></li><li><a href="global.html#AI_BATCH_REVIEW_LOG_KNOWN">AI_BATCH_REVIEW_LOG_KNOWN</a></li><li><a href="global.html#AI_PENDING_SOURCE">AI_PENDING_SOURCE</a></li><li><a href="global.html#CACHE">CACHE</a></li><li><a href="global.html#CFG_KEYS">CFG_KEYS</a></li><li><a href="global.html#CLAUSE_SPLIT">CLAUSE_SPLIT</a></li><li><a href="global.html#CLI">CLI</a></li><li><a href="global.html#COLLECTION_KEYS">COLLECTION_KEYS</a></li><li><a href="global.html#COMPILED">COMPILED</a></li><li><a href="global.html#CONCEPT_COUNT">CONCEPT_COUNT</a></li><li><a href="global.html#CONFIRM_SCHEMA">CONFIRM_SCHEMA</a></li><li><a href="global.html#CONTRACT_FIELD_TYPES">CONTRACT_FIELD_TYPES</a></li><li><a href="global.html#DATA_KEYS">DATA_KEYS</a></li><li><a href="global.html#DIGEST_DEFAULT">DIGEST_DEFAULT</a></li><li><a href="global.html#DIGEST_PROMPT_SIGS">DIGEST_PROMPT_SIGS</a></li><li><a href="global.html#DISABLED">DISABLED</a></li><li><a href="global.html#DOC_HOLD_NEXT">DOC_HOLD_NEXT</a></li><li><a href="global.html#DOC_STDS">DOC_STDS</a></li><li><a href="global.html#DOMAIN_FACTORY">DOMAIN_FACTORY</a></li><li><a href="global.html#DOMAIN_PROMPT_SIGS">DOMAIN_PROMPT_SIGS</a></li><li><a href="global.html#EVIDENCE_RULE_DEFAULT">EVIDENCE_RULE_DEFAULT</a></li><li><a href="global.html#EVIDENCE_RULE_KEYS">EVIDENCE_RULE_KEYS</a></li><li><a href="global.html#EVIDENCE_STD">EVIDENCE_STD</a></li><li><a href="global.html#FAITH_BLANK">FAITH_BLANK</a></li><li><a href="global.html#FAITH_HOLD_NEXT">FAITH_HOLD_NEXT</a></li><li><a href="global.html#FAITH_PAGE">FAITH_PAGE</a></li><li><a href="global.html#FAITH_VERDICTS">FAITH_VERDICTS</a></li><li><a href="global.html#GATE_STDS">GATE_STDS</a></li><li><a href="global.html#HOLD_OBJECT">HOLD_OBJECT</a></li><li><a href="global.html#LINE_BREAKS">LINE_BREAKS</a></li><li><a href="global.html#MATERIAL_EXCLUDE_PATTERNS_DEFAULT">MATERIAL_EXCLUDE_PATTERNS_DEFAULT</a></li><li><a href="global.html#MATERIAL_PROBLEM_PATTERNS_DEFAULT">MATERIAL_PROBLEM_PATTERNS_DEFAULT</a></li><li><a href="global.html#MIN_START_MS">MIN_START_MS</a></li><li><a href="global.html#NAMESPACES">NAMESPACES</a></li><li><a href="global.html#NON_CONTENT_SECTIONS">NON_CONTENT_SECTIONS</a></li><li><a href="global.html#NOTES_DIR">NOTES_DIR</a></li><li><a href="global.html#NOTE_ARRAY_FIELDS">NOTE_ARRAY_FIELDS</a></li><li><a href="global.html#NOTE_CONTRACT_FIELDS">NOTE_CONTRACT_FIELDS</a></li><li><a href="global.html#NOTE_CONTRACT_STANDARDS">NOTE_CONTRACT_STANDARDS</a></li><li><a href="global.html#NOTE_ENTRIES">NOTE_ENTRIES</a></li><li><a href="global.html#NOTE_FIELD_LABELS">NOTE_FIELD_LABELS</a></li><li><a href="global.html#NOTE_FIELD_LIMITS">NOTE_FIELD_LIMITS</a></li><li><a href="global.html#NOTE_FIX_STDS">NOTE_FIX_STDS</a></li><li><a href="global.html#NOTE_HOLD_DEADLINE_DAYS">NOTE_HOLD_DEADLINE_DAYS</a></li><li><a href="global.html#NOTE_HOLD_NEXT">NOTE_HOLD_NEXT</a></li><li><a href="global.html#NOTE_LIST_FIELDS">NOTE_LIST_FIELDS</a></li><li><a href="global.html#NOTE_PLACEHOLDERS">NOTE_PLACEHOLDERS</a></li><li><a href="global.html#NOTE_PROMPT_SIGS">NOTE_PROMPT_SIGS</a></li><li><a href="global.html#NOTE_QUALITY_LABELS">NOTE_QUALITY_LABELS</a></li><li><a href="global.html#NOTE_SECTION_ORDER">NOTE_SECTION_ORDER</a></li><li><a href="global.html#NOTE_SECTION_TITLES">NOTE_SECTION_TITLES</a></li><li><a href="global.html#NOTE_SOURCE_LABELS">NOTE_SOURCE_LABELS</a></li><li><a href="global.html#NOTE_STANDARDS">NOTE_STANDARDS</a></li><li><a href="global.html#NOTE_SYNC_STATE">NOTE_SYNC_STATE</a></li><li><a href="global.html#NOTE_TEXT_FIELDS">NOTE_TEXT_FIELDS</a></li><li><a href="global.html#NO_KNOWN_CONCEPT">NO_KNOWN_CONCEPT</a></li><li><a href="global.html#NO_MATERIAL_DETAIL">NO_MATERIAL_DETAIL</a></li><li><a href="global.html#OPTIONAL_DOMAIN_MEMBERS">OPTIONAL_DOMAIN_MEMBERS</a></li><li><a href="global.html#OPT_KEYS">OPT_KEYS</a></li><li><a href="global.html#PANEL_DEFS">PANEL_DEFS</a></li><li><a href="global.html#PANEL_SCHEMA">PANEL_SCHEMA</a></li><li><a href="global.html#PANEL_STAGES">PANEL_STAGES</a></li><li><a href="global.html#PANEL_THIRD_STOP">PANEL_THIRD_STOP</a></li><li><a href="global.html#PANEL_UNSURE">PANEL_UNSURE</a></li><li><a href="global.html#PANEL_WHY">PANEL_WHY</a></li><li><a href="global.html#PANEL_WHY_LABELS">PANEL_WHY_LABELS</a></li><li><a href="global.html#PIPELINE_NAME">PIPELINE_NAME</a></li><li><a href="global.html#PROJECTION_SECTION_TITLES">PROJECTION_SECTION_TITLES</a></li><li><a href="global.html#PROMPT_DOMAIN">PROMPT_DOMAIN</a></li><li><a href="global.html#PROMPT_KEYS">PROMPT_KEYS</a></li><li><a href="global.html#REJUDGE_REASON_LABELS">REJUDGE_REASON_LABELS</a></li><li><a href="global.html#RENAME_FIELDS">RENAME_FIELDS</a></li><li><a href="global.html#REPAIR_BLANK">REPAIR_BLANK</a></li><li><a href="global.html#RETAG_BLANK">RETAG_BLANK</a></li><li><a href="global.html#RETAG_HOLD_NEXT">RETAG_HOLD_NEXT</a></li><li><a href="global.html#RETAG_HOLD_STD">RETAG_HOLD_STD</a></li><li><a href="global.html#RETAG_MAX_FAILS">RETAG_MAX_FAILS</a></li><li><a href="global.html#RETAG_PROMPT_SIGS">RETAG_PROMPT_SIGS</a></li><li><a href="global.html#RETAG_REASONS">RETAG_REASONS</a></li><li><a href="global.html#S">S</a></li><li><a href="global.html#SEAT_FALLBACK_STAGES">SEAT_FALLBACK_STAGES</a></li><li><a href="global.html#SECTIONS">SECTIONS</a></li><li><a href="global.html#SHAPE_DOMAIN">SHAPE_DOMAIN</a></li><li><a href="global.html#SS14">SS14</a></li><li><a href="global.html#SS14_OBJECT">SS14_OBJECT</a></li><li><a href="global.html#SUMMARIZE_AI_DEFAULT">SUMMARIZE_AI_DEFAULT</a></li><li><a href="global.html#SUMMARIZE_AI_PENDING_STANDARD_IDS">SUMMARIZE_AI_PENDING_STANDARD_IDS</a></li><li><a href="global.html#SUMMARIZE_AI_SCHEMA">SUMMARIZE_AI_SCHEMA</a></li><li><a href="global.html#SUMMARIZE_AUDITED_STANDARD_IDS">SUMMARIZE_AUDITED_STANDARD_IDS</a></li><li><a href="global.html#SUMMARIZE_BENCH_CASES_FILES">SUMMARIZE_BENCH_CASES_FILES</a></li><li><a href="global.html#SUMMARIZE_BENCH_MODELS">SUMMARIZE_BENCH_MODELS</a></li><li><a href="global.html#SUMMARIZE_BENCH_ROLES">SUMMARIZE_BENCH_ROLES</a></li><li><a href="global.html#SUMMARIZE_BENCH_USAGE">SUMMARIZE_BENCH_USAGE</a></li><li><a href="global.html#SUMMARIZE_BLANK">SUMMARIZE_BLANK</a></li><li><a href="global.html#SUMMARIZE_CAPACITY_DESC">SUMMARIZE_CAPACITY_DESC</a></li><li><a href="global.html#SUMMARIZE_CTX_FLAGS">SUMMARIZE_CTX_FLAGS</a></li><li><a href="global.html#SUMMARIZE_DATA_KEYS">SUMMARIZE_DATA_KEYS</a></li><li><a href="global.html#SUMMARIZE_DEFAULT">SUMMARIZE_DEFAULT</a></li><li><a href="global.html#SUMMARIZE_DIRS">SUMMARIZE_DIRS</a></li><li><a href="global.html#SUMMARIZE_DOC_STATUS">SUMMARIZE_DOC_STATUS</a></li><li><a href="global.html#SUMMARIZE_DOMAIN_KEYS">SUMMARIZE_DOMAIN_KEYS</a></li><li><a href="global.html#SUMMARIZE_FEATURES">SUMMARIZE_FEATURES</a></li><li><a href="global.html#SUMMARIZE_GUIDE_FIELDS">SUMMARIZE_GUIDE_FIELDS</a></li><li><a href="global.html#SUMMARIZE_LOG_KNOWN">SUMMARIZE_LOG_KNOWN</a></li><li><a href="global.html#SUMMARIZE_LOG_MUST_SEE">SUMMARIZE_LOG_MUST_SEE</a></li><li><a href="global.html#SUMMARIZE_LOG_PARSE">SUMMARIZE_LOG_PARSE</a></li><li><a href="global.html#SUMMARIZE_PROMPT_SIGS">SUMMARIZE_PROMPT_SIGS</a></li><li><a href="global.html#SUMMARIZE_REPORT_KEYS">SUMMARIZE_REPORT_KEYS</a></li><li><a href="global.html#SUMMARIZE_SCAN_OBJECT">SUMMARIZE_SCAN_OBJECT</a></li><li><a href="global.html#SUMMARIZE_SCHEMA">SUMMARIZE_SCHEMA</a></li><li><a href="global.html#SUMMARIZE_SEATS">SUMMARIZE_SEATS</a></li><li><a href="global.html#SUMMARIZE_SEAT_LABELS">SUMMARIZE_SEAT_LABELS</a></li><li><a href="global.html#SUMMARIZE_SHARED_KEYS">SUMMARIZE_SHARED_KEYS</a></li><li><a href="global.html#SUMMARIZE_SKIP_KIND">SUMMARIZE_SKIP_KIND</a></li><li><a href="global.html#SUMMARIZE_STAGE_KEYS">SUMMARIZE_STAGE_KEYS</a></li><li><a href="global.html#SUMMARIZE_STANDARDS">SUMMARIZE_STANDARDS</a></li><li><a href="global.html#SUMMARIZE_STORE_KEYS">SUMMARIZE_STORE_KEYS</a></li><li><a href="global.html#SUMMARIZE_TAP_STAGE_KEYS">SUMMARIZE_TAP_STAGE_KEYS</a></li><li><a href="global.html#SUMMARIZE_VOCAB_DEFAULT">SUMMARIZE_VOCAB_DEFAULT</a></li><li><a href="global.html#SUMMARIZE_VOCAB_KEYS">SUMMARIZE_VOCAB_KEYS</a></li><li><a href="global.html#SUMMARIZE_VOCAB_NULL_AS">SUMMARIZE_VOCAB_NULL_AS</a></li><li><a href="global.html#SUMMARY_SECTION">SUMMARY_SECTION</a></li><li><a href="global.html#SYNC_KEYS">SYNC_KEYS</a></li><li><a href="global.html#TAXONOMY_STATE_FILE">TAXONOMY_STATE_FILE</a></li><li><a href="global.html#TAXONOMY_STATE_VERSION">TAXONOMY_STATE_VERSION</a></li><li><a href="global.html#TRIAGE_BLANK">TRIAGE_BLANK</a></li><li><a href="global.html#TRIAGE_PROMPT_SIGS">TRIAGE_PROMPT_SIGS</a></li><li><a href="global.html#TRIAGE_SKIP_PREFIX">TRIAGE_SKIP_PREFIX</a></li><li><a href="global.html#TRIAGE_STATE">TRIAGE_STATE</a></li><li><a href="global.html#WKnowledgeSummarize">WKnowledgeSummarize</a></li><li><a href="global.html#annotationOf">annotationOf</a></li><li><a href="global.html#applyNoteStockFix">applyNoteStockFix</a></li><li><a href="global.html#applyRepairs">applyRepairs</a></li><li><a href="global.html#assertSummarizeVocab">assertSummarizeVocab</a></li><li><a href="global.html#auditSummarizeStandards">auditSummarizeStandards</a></li><li><a href="global.html#benchAdmitNoteItem">benchAdmitNoteItem</a></li><li><a href="global.html#bodyPartsOf">bodyPartsOf</a></li><li><a href="global.html#buildNote">buildNote</a></li><li><a href="global.html#capacityWarningsOf">capacityWarningsOf</a></li><li><a href="global.html#categoryOf">categoryOf</a></li><li><a href="global.html#categoryProposals">categoryProposals</a></li><li><a href="global.html#changedUnitsOf">changedUnitsOf</a></li><li><a href="global.html#check">check</a></li><li><a href="global.html#checkFaithChecks">checkFaithChecks</a></li><li><a href="global.html#checkFaithVerdictOf">checkFaithVerdictOf</a></li><li><a href="global.html#checkNote">checkNote</a></li><li><a href="global.html#checkRepairReply">checkRepairReply</a></li><li><a href="global.html#cleanStrList">cleanStrList</a></li><li><a href="global.html#cnValue">cnValue</a></li><li><a href="global.html#compile">compile</a></li><li><a href="global.html#composeNoteMd">composeNoteMd</a></li><li><a href="global.html#conceptCountDetail">conceptCountDetail</a></li><li><a href="global.html#conceptLabelProblem">conceptLabelProblem</a></li><li><a href="global.html#conceptVocabulary">conceptVocabulary</a></li><li><a href="global.html#contractFieldProblems">contractFieldProblems</a></li><li><a href="global.html#contractOf">contractOf</a></li><li><a href="global.html#contractProblem">contractProblem</a></li><li><a href="global.html#createDigestDomain">createDigestDomain</a></li><li><a href="global.html#createKnowledgeSummarize">createKnowledgeSummarize</a></li><li><a href="global.html#createMaterialPolicy">createMaterialPolicy</a></li><li><a href="global.html#createNoteRestoreGate">createNoteRestoreGate</a></li><li><a href="global.html#createRetagDomain">createRetagDomain</a></li><li><a href="global.html#createSummarizeDomain">createSummarizeDomain</a></li><li><a href="global.html#createSummarizeObject">createSummarizeObject</a></li><li><a href="global.html#createSummarizeRuntime">createSummarizeRuntime</a></li><li><a href="global.html#createTaxonomyStore">createTaxonomyStore</a></li><li><a href="global.html#createTriageDomain">createTriageDomain</a></li><li><a href="global.html#decidePanel">decidePanel</a></li><li><a href="global.html#deepFreeze">deepFreeze</a></li><li><a href="global.html#describe">describe</a></li><li><a href="global.html#diffLabelOf">diffLabelOf</a></li><li><a href="global.html#diffTaxonomy">diffTaxonomy</a></li><li><a href="global.html#domainNeeds">domainNeeds</a></li><li><a href="global.html#dropSection">dropSection</a></li><li><a href="global.html#dropUngrounded">dropUngrounded</a></li><li><a href="global.html#escalateDocHolds">escalateDocHolds</a></li><li><a href="global.html#evidenceCaveatsOf">evidenceCaveatsOf</a></li><li><a href="global.html#evidenceMessagesOf">evidenceMessagesOf</a></li><li><a href="global.html#evidenceNoteOf">evidenceNoteOf</a></li><li><a href="global.html#evidenceRuleOf">evidenceRuleOf</a></li><li><a href="global.html#evidenceTexts">evidenceTexts</a></li><li><a href="global.html#faithBenchRole">faithBenchRole</a></li><li><a href="global.html#faithCaseProblems">faithCaseProblems</a></li><li><a href="global.html#faithMissingOf">faithMissingOf</a></li><li><a href="global.html#faithNoteText">faithNoteText</a></li><li><a href="global.html#faithVerdictOf">faithVerdictOf</a></li><li><a href="global.html#fieldPlaceOf">fieldPlaceOf</a></li><li><a href="global.html#flattenEl">flattenEl</a></li><li><a href="global.html#gateNoteItem">gateNoteItem</a></li><li><a href="global.html#guideDefaultOf">guideDefaultOf</a></li><li><a href="global.html#hold">hold</a></li><li><a href="global.html#inAddScope">inAddScope</a></li><li><a href="global.html#indexedArrayCheck">indexedArrayCheck</a></li><li><a href="global.html#info">info</a></li><li><a href="global.html#ingestNotes">ingestNotes</a></li><li><a href="global.html#inputVocabProblems">inputVocabProblems</a></li><li><a href="global.html#isEvidenceRule">isEvidenceRule</a></li><li><a href="global.html#isNoteRow">isNoteRow</a></li><li><a href="global.html#jobForRemoved">jobForRemoved</a></li><li><a href="global.html#jobIdOf">jobIdOf</a></li><li><a href="global.html#jobScope">jobScope</a></li><li><a href="global.html#knownConceptOf">knownConceptOf</a></li><li><a href="global.html#levelMapOf">levelMapOf</a></li><li><a href="global.html#load">load</a></li><li><a href="global.html#mapContentSections">mapContentSections</a></li><li><a href="global.html#materialDocOf">materialDocOf</a></li><li><a href="global.html#materialExactValues">materialExactValues</a></li><li><a href="global.html#materialProblems">materialProblems</a></li><li><a href="global.html#materialValues">materialValues</a></li><li><a href="global.html#mdOf">mdOf</a></li><li><a href="global.html#mdText">mdText</a></li><li><a href="global.html#mergeContractLimits">mergeContractLimits</a></li><li><a href="global.html#mwGateNote">mwGateNote</a></li><li><a href="global.html#mwMarkDoc">mwMarkDoc</a></li><li><a href="global.html#mwPersistNote">mwPersistNote</a></li><li><a href="global.html#mwRenderNote">mwRenderNote</a></li><li><a href="global.html#mwSaveClues">mwSaveClues</a></li><li><a href="global.html#mwSettleTriage">mwSettleTriage</a></li><li><a href="global.html#mwSkipGate">mwSkipGate</a></li><li><a href="global.html#needThird">needThird</a></li><li><a href="global.html#noTopEvidenceOf">noTopEvidenceOf</a></li><li><a href="global.html#normConcepts">normConcepts</a></li><li><a href="global.html#normalizeNoteItem">normalizeNoteItem</a></li><li><a href="global.html#noteContentText">noteContentText</a></li><li><a href="global.html#noteContractOf">noteContractOf</a></li><li><a href="global.html#noteFeedbackOf">noteFeedbackOf</a></li><li><a href="global.html#noteFixOf">noteFixOf</a></li><li><a href="global.html#noteHoldDeadlineOf">noteHoldDeadlineOf</a></li><li><a href="global.html#noteItemFieldProblems">noteItemFieldProblems</a></li><li><a href="global.html#noteItemProblems">noteItemProblems</a></li><li><a href="global.html#noteMaterialFor">noteMaterialFor</a></li><li><a href="global.html#noteMaterialOf">noteMaterialOf</a></li><li><a href="global.html#noteMaterialText">noteMaterialText</a></li><li><a href="global.html#noteStd">noteStd</a></li><li><a href="global.html#noteUnitsOf">noteUnitsOf</a></li><li><a href="global.html#notesInflowOf">notesInflowOf</a></li><li><a href="global.html#notesInflowProblem">notesInflowProblem</a></li><li><a href="global.html#numberSet">numberSet</a></li><li><a href="global.html#openDocHolds">openDocHolds</a></li><li><a href="global.html#openStores">openStores</a></li><li><a href="global.html#originalTitleOf">originalTitleOf</a></li><li><a href="global.html#outputNumbers">outputNumbers</a></li><li><a href="global.html#packDocsByChars">packDocsByChars</a></li><li><a href="global.html#packOptOf">packOptOf</a></li><li><a href="global.html#panelFindingsOf">panelFindingsOf</a></li><li><a href="global.html#panelGroupOf">panelGroupOf</a></li><li><a href="global.html#panelSameProviderWarnings">panelSameProviderWarnings</a></li><li><a href="global.html#panelSeatRowsOf">panelSeatRowsOf</a></li><li><a href="global.html#panelSeats">panelSeats</a></li><li><a href="global.html#parseFrontmatter">parseFrontmatter</a></li><li><a href="global.html#parseSummarizeBenchArgs">parseSummarizeBenchArgs</a></li><li><a href="global.html#patchNoteRecord">patchNoteRecord</a></li><li><a href="global.html#patternsOf">patternsOf</a></li><li><a href="global.html#pickSummarizeVocab">pickSummarizeVocab</a></li><li><a href="global.html#planNoteStockFix">planNoteStockFix</a></li><li><a href="global.html#planSummarizeBench">planSummarizeBench</a></li><li><a href="global.html#proposalsOf">proposalsOf</a></li><li><a href="global.html#publishedOf">publishedOf</a></li><li><a href="global.html#putDocHold">putDocHold</a></li><li><a href="global.html#putRetagHold">putRetagHold</a></li><li><a href="global.html#queueRejudge">queueRejudge</a></li><li><a href="global.html#quote">quote</a></li><li><a href="global.html#rawPoolSplitOf">rawPoolSplitOf</a></li><li><a href="global.html#reEscape">reEscape</a></li><li><a href="global.html#readMd">readMd</a></li><li><a href="global.html#readNoteStockLedger">readNoteStockLedger</a></li><li><a href="global.html#readWatermark">readWatermark</a></li><li><a href="global.html#recordPatchOf">recordPatchOf</a></li><li><a href="global.html#renameKeysObsoleteOf">renameKeysObsoleteOf</a></li><li><a href="global.html#renderFrontmatter">renderFrontmatter</a></li><li><a href="global.html#repairBenchRole">repairBenchRole</a></li><li><a href="global.html#repairCaseProblems">repairCaseProblems</a></li><li><a href="global.html#repairPlanOf">repairPlanOf</a></li><li><a href="global.html#repairProblemsOf">repairProblemsOf</a></li><li><a href="global.html#repairVerdictOf">repairVerdictOf</a></li><li><a href="global.html#requeueCategory">requeueCategory</a></li><li><a href="global.html#resolveDocHolds">resolveDocHolds</a></li><li><a href="global.html#resolveJob">resolveJob</a></li><li><a href="global.html#resolveNoteHolds">resolveNoteHolds</a></li><li><a href="global.html#resolveSummarizeData">resolveSummarizeData</a></li><li><a href="global.html#resolveSummarizeSettings">resolveSummarizeSettings</a></li><li><a href="global.html#resolveSummarizeVocab">resolveSummarizeVocab</a></li><li><a href="global.html#retagBenchRole">retagBenchRole</a></li><li><a href="global.html#retagCaseProblems">retagCaseProblems</a></li><li><a href="global.html#retagJobLabelOf">retagJobLabelOf</a></li><li><a href="global.html#retagPageProblems">retagPageProblems</a></li><li><a href="global.html#retagTargetOf">retagTargetOf</a></li><li><a href="global.html#retagVerdictOf">retagVerdictOf</a></li><li><a href="global.html#reviveFailedDocs">reviveFailedDocs</a></li><li><a href="global.html#rewriteFieldOf">rewriteFieldOf</a></li><li><a href="global.html#rewriteMdField">rewriteMdField</a></li><li><a href="global.html#rollbackNoteRow">rollbackNoteRow</a></li><li><a href="global.html#rollbackNoteStockFix">rollbackNoteStockFix</a></li><li><a href="global.html#runAiBatchStage">runAiBatchStage</a></li><li><a href="global.html#runFaithCheck">runFaithCheck</a></li><li><a href="global.html#runPanelPage">runPanelPage</a></li><li><a href="global.html#runSummarizeBench">runSummarizeBench</a></li><li><a href="global.html#runSummarizeBenchCli">runSummarizeBenchCli</a></li><li><a href="global.html#save">save</a></li><li><a href="global.html#seatFaithVotesOf">seatFaithVotesOf</a></li><li><a href="global.html#section">section</a></li><li><a href="global.html#sectionBodyOf">sectionBodyOf</a></li><li><a href="global.html#sectionItemsOf">sectionItemsOf</a></li><li><a href="global.html#sectionOf">sectionOf</a></li><li><a href="global.html#settleRetagHolds">settleRetagHolds</a></li><li><a href="global.html#shortText">shortText</a></li><li><a href="global.html#splitTopLevel">splitTopLevel</a></li><li><a href="global.html#stageRetag">stageRetag</a></li><li><a href="global.html#stageSummarize">stageSummarize</a></li><li><a href="global.html#stageSync">stageSync</a></li><li><a href="global.html#stageTriage">stageTriage</a></li><li><a href="global.html#standardsVocabOf">standardsVocabOf</a></li><li><a href="global.html#stateFileOf">stateFileOf</a></li><li><a href="global.html#strArr">strArr</a></li><li><a href="global.html#stripIdentifiers">stripIdentifiers</a></li><li><a href="global.html#stripPatternsOf">stripPatternsOf</a></li><li><a href="global.html#stripSlugs">stripSlugs</a></li><li><a href="global.html#suggestConceptRenames">suggestConceptRenames</a></li><li><a href="global.html#summarizeBenchRole">summarizeBenchRole</a></li><li><a href="global.html#summarizeBenchRoleOf">summarizeBenchRoleOf</a></li><li><a href="global.html#summarizeCapacityOf">summarizeCapacityOf</a></li><li><a href="global.html#summarizeCaseProblems">summarizeCaseProblems</a></li><li><a href="global.html#summarizeFeatureProblems">summarizeFeatureProblems</a></li><li><a href="global.html#summarizePanelsOf">summarizePanelsOf</a></li><li><a href="global.html#summarizeScanOf">summarizeScanOf</a></li><li><a href="global.html#summarizeSeatOf">summarizeSeatOf</a></li><li><a href="global.html#summarizeSeatsOf">summarizeSeatsOf</a></li><li><a href="global.html#summarizeSummaryOf">summarizeSummaryOf</a></li><li><a href="global.html#summarizeVerdictOf">summarizeVerdictOf</a></li><li><a href="global.html#summarizeVocabProblem">summarizeVocabProblem</a></li><li><a href="global.html#summarizeWarningsOf">summarizeWarningsOf</a></li><li><a href="global.html#summaryTextOf">summaryTextOf</a></li><li><a href="global.html#syncFieldsOf">syncFieldsOf</a></li><li><a href="global.html#syncHashOf">syncHashOf</a></li><li><a href="global.html#syncNoteHolds">syncNoteHolds</a></li><li><a href="global.html#syncNotes">syncNotes</a></li><li><a href="global.html#syncTaxonomy">syncTaxonomy</a></li><li><a href="global.html#syncVocabOf">syncVocabOf</a></li><li><a href="global.html#tagSuspects">tagSuspects</a></li><li><a href="global.html#taxonomyFixOf">taxonomyFixOf</a></li><li><a href="global.html#taxonomyOf">taxonomyOf</a></li><li><a href="global.html#taxonomySnapshotOf">taxonomySnapshotOf</a></li><li><a href="global.html#taxonomyStatus">taxonomyStatus</a></li><li><a href="global.html#taxonomyVersion">taxonomyVersion</a></li><li><a href="global.html#triageBenchRole">triageBenchRole</a></li><li><a href="global.html#triageCaseProblems">triageCaseProblems</a></li><li><a href="global.html#triageEnabledOf">triageEnabledOf</a></li><li><a href="global.html#triagePendingOf">triagePendingOf</a></li><li><a href="global.html#triageReadyOf">triageReadyOf</a></li><li><a href="global.html#triageVerdictOf">triageVerdictOf</a></li><li><a href="global.html#trimItem">trimItem</a></li><li><a href="global.html#ungroundedLinesOf">ungroundedLinesOf</a></li><li><a href="global.html#ungroundedNumbers">ungroundedNumbers</a></li><li><a href="global.html#unquote">unquote</a></li><li><a href="global.html#verifyNoteStockChain">verifyNoteStockChain</a></li><li><a href="global.html#wordsOf">wordsOf</a></li><li><a href="global.html#writeMd">writeMd</a></li></ul>
+    
+</nav>
+
+<div id="main">
+    
+    <h1 class="page-title">stores/noteBuild.mjs</h1>
+    
+
+    
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>// noteBuild.mjs — 筆記之組裝(不落地):摘要子階段(stages/noteStage)與人工匯入(ops/ingestNotes)共用同一份
+//
+// 【為何共用】兩條寫入路徑若各自清洗與組裝(概念清洗、類別修剪、清單外類別之落點各寫一份),同一份 note 經兩條路會產出不同之 record 與 md;
+//   清洗、類別落點與 record／frontmatter 之組裝只寫在這裡。
+// 【清單外類別】落 vocab.fallbackCategory,並保留模型(或匯入者)原給之類別於 categoryRaw——分類法擴充之候選依據
+//   (類別提案彙整;不自動新增類別)。
+// 【版型】frontmatter 與 record 之欄位、順序維持既有筆記之格式(新舊筆記不分裂);本文由 domain.renderNoteBody 產生。
+// 【產物契約(domain.contract)】摘要段對產物之全部認識只經契約:{ kind, fields(AI 項目之欄位 schema:required／type／maxChars／maxItems;納入閘之
+//   SS2 通用判定), buildNote(item, doc, { notesDir, nowIso, chars }) → { record(必含 id、docId), md:{ file, front, body }|null, text?(無 md 者供標準讀之
+//   內容文字) }, standards(落地前以筆記標準判之子集;無 md 者只能列不讀 md 之標準) }。內建 note 契約(noteContractOf)即現行組裝與全部筆記標準;
+//   自訂契約(如速報 domain/digestDomain)不落 md、記錄之欄位自定。
+
+import path from 'path'
+import isobj from 'wsemi/src/isobj.mjs'
+import isarr from 'wsemi/src/isarr.mjs'
+import isestr from 'wsemi/src/isestr.mjs'
+import { slugify, checkKeys } from '../core/capturePackage.mjs'
+import { SUMMARIZE_VOCAB_DEFAULT } from '../core/vocab/summarizeVocab.mjs'
+import { cleanStrList, NOTE_LIST_FIELDS, NOTE_TEXT_FIELDS } from '../standards/noteNormalize.mjs'
+import { CONCEPT_COUNT, NOTE_STANDARDS } from '../standards/noteStandards.mjs'
+
+/**
+ * 內建 note 契約之欄位(AI 項目之欄位 schema;與 isValidItem、noteItemFieldProblems 之硬性欄位同一組必填——title、summary、key_points、concepts;
+ *   其餘為選填且不設上限,上限由 createSummarizeDomain 之 opt.limits 或正規化之 NOTE_FIELD_LIMITS 處置)
+ *
+ * @type {Object}
+ */
+export const NOTE_CONTRACT_FIELDS = Object.freeze({
+    ...Object.fromEntries(NOTE_TEXT_FIELDS.map((f) => [f, Object.freeze({ type: 'string', ...(f === 'title' || f === 'summary' ? { required: true } : {}) })])),
+    ...Object.fromEntries(NOTE_LIST_FIELDS.map((f) => [f, Object.freeze({ type: 'string[]', ...(f === 'key_points' ? { required: true } : {}) })])),
+    concepts: Object.freeze({ required: true, type: 'string[]' }),
+    claim_type: Object.freeze({ type: 'string' }),
+    evidence_level: Object.freeze({ type: 'string' }),
+    parameters: Object.freeze({ type: 'object[]' }),
+    explore: Object.freeze({ type: 'object[]' }),
+})
+
+/**
+ * 內建 note 契約適用之標準(全部程式判定之筆記標準;NOTE_STANDARDS 之 id)
+ *
+ * @type {Array}
+ */
+export const NOTE_CONTRACT_STANDARDS = Object.freeze(NOTE_STANDARDS.map((s) => s.id))
+
+/**
+ * 契約欄位之上限覆寫之合併(createSummarizeDomain 之 opt.limits):{ 欄位: { maxChars?, maxItems? } } 併入 fields;鍵限 fields 之欄位、值須為正整數
+ *
+ * @param {Object} fields 輸入契約欄位
+ * @param {*} limits 輸入上限覆寫(未給＝不改)
+ * @returns {Object} 回傳合併後之欄位(新物件;未給 limits 即原物件)
+ * @throws {Error} limits 非物件、含不認得之欄位、或 maxChars／maxItems 非正整數時拋出
+ * @example
+ * console.log(mergeContractLimits({ title: { type: 'string', required: true } }, { title: { maxChars: 40 } }))
+ * // => { title: { type: 'string', required: true, maxChars: 40 } }
+ */
+export function mergeContractLimits(fields, limits) {
+    if (limits === undefined || limits === null) return fields
+    if (!isobj(limits)) throw new Error('contract.limits 須為物件 { 欄位: { maxChars?, maxItems? } }')
+    checkKeys(limits, Object.keys(fields), 'contract.limits')
+    const out = { ...fields }
+    for (const [f, l] of Object.entries(limits)) {
+        if (!isobj(l)) throw new Error(`contract.limits.${f} 須為物件 { maxChars?, maxItems? }`)
+        checkKeys(l, ['maxChars', 'maxItems'], `contract.limits.${f}`)
+        for (const k of ['maxChars', 'maxItems']) {
+            if (l[k] !== undefined &amp;&amp; !(Number.isInteger(l[k]) &amp;&amp; l[k] > 0)) throw new Error(`contract.limits.${f}.${k} 須為正整數`)
+        }
+        out[f] = Object.freeze({ ...fields[f], ...(l.maxChars !== undefined ? { maxChars: l.maxChars } : {}), ...(l.maxItems !== undefined ? { maxItems: l.maxItems } : {}) })
+    }
+    return Object.freeze(out)
+}
+
+/**
+ * 契約之形狀問題(注入之 domain 之 contract 於建構期驗;自組契約亦可自驗)
+ *
+ * @param {*} c 輸入契約
+ * @returns {String} 回傳問題說明(合格回 '')
+ * @example
+ * console.log(contractProblem({ kind: 'x', fields: {}, buildNote: () => ({}), standards: [] }))
+ * // =>
+ */
+export function contractProblem(c) {
+    if (!isobj(c)) return 'contract 須為物件 { kind, fields, buildNote, standards }'
+    if (!isestr(c.kind)) return 'contract.kind 須為非空字串'
+    if (!isobj(c.fields)) return 'contract.fields 須為物件 { 欄位: { required?, type?, maxChars?, maxItems? } }'
+    if (typeof c.buildNote !== 'function') return 'contract.buildNote 須為函數 (item, doc, { notesDir, nowIso, chars }) => { record, md, text? }'
+    if (!isarr(c.standards) || !c.standards.every(isestr)) return 'contract.standards 須為標準 id 之字串陣列'
+    const unknown = c.standards.filter((id) => !NOTE_CONTRACT_STANDARDS.includes(id))
+    if (unknown.length) return `contract.standards 含不認得之標準：${unknown.join('、')}（可用：${NOTE_CONTRACT_STANDARDS.join('、')}）`
+    return ''
+}
+
+/**
+ * 內建 note 契約(檔頭【產物契約】):欄位＝NOTE_CONTRACT_FIELDS(併 o.limits)、組裝＝本檔之 buildNote(經 domain 之 normalizeQuality／renderNoteBody)、
+ *   標準＝全部筆記標準。無 contract 之自組 domain(只具 normalizeQuality／renderNoteBody／vocab 者)亦以此取得契約(摘要段之退路)
+ *
+ * @param {Object} domain 輸入摘要領域物件(取 vocab、normalizeQuality、renderNoteBody)
+ * @param {Object} [o={}] 輸入 { limits }(欄位上限覆寫;見 mergeContractLimits)
+ * @returns {Object} 回傳契約 { kind:'note', fields, buildNote, standards }(凍結)
+ * @throws {Error} domain 非物件、或 o.limits 不合規格時拋出
+ * @example
+ * const contract = noteContractOf({}, { limits: { summary: { maxChars: 300 } } })
+ * console.log(contract.kind, contract.fields.summary)
+ * // => note { type: 'string', required: true, maxChars: 300 }
+ */
+export function noteContractOf(domain, o = {}) {
+    if (!isobj(domain)) throw new Error('noteContractOf 需要 domain 物件')
+    const fields = mergeContractLimits(NOTE_CONTRACT_FIELDS, isobj(o) ? o.limits : undefined)
+    return Object.freeze({
+        kind: 'note',
+        fields,
+        buildNote: (k, doc, c = {}) => {
+            const n = buildNote({ k, doc, domain, notesDir: c?.notesDir, nowIso: c?.nowIso, ...(isobj(c?.chars) ? { chars: c.chars } : {}), locale: domain.locale })
+            return { record: n.record, md: { file: n.file, front: n.front, body: n.body }, slug: n.slug, nowIso: n.nowIso, concepts: n.concepts, category: n.category, categoryRaw: n.categoryRaw }
+        },
+        standards: NOTE_CONTRACT_STANDARDS,
+    })
+}
+
+/**
+ * 生效之契約:domain.contract 有且合格者取之;無者退為內建 note 契約(摘要段與人工匯入同一取法)
+ *
+ * @param {Object} domain 輸入摘要領域物件
+ * @returns {Object} 回傳契約
+ * @throws {Error} domain.contract 給了而形狀不合時拋出
+ * @example
+ * console.log(contractOf({}).kind)
+ * // => note
+ *
+ * console.log(contractOf({ contract: { kind: 'digest', fields: {}, buildNote: () => ({}), standards: [] } }).kind)
+ * // => digest
+ */
+export function contractOf(domain) {
+    if (isobj(domain?.contract)) {
+        const p = contractProblem(domain.contract)
+        if (p) throw new Error(`domain.contract 不合：${p}`)
+        return domain.contract
+    }
+    return noteContractOf(domain)
+}
+
+/**
+ * 類別落點:去頭尾空白後在清單內即採用,否則落 fallbackCategory(並回傳原給之類別供 categoryRaw)
+ *
+ * @param {*} raw 輸入原給之類別
+ * @param {Object} vocab 輸入詞彙表(取 categories、fallbackCategory;未給 fallbackCategory 用本套件預設詞彙表之值)
+ * @returns {Object} 回傳 { category, categoryRaw }：categoryRaw 只在原給非空且不在清單時為原值，否則為 ''
+ * @example
+ * console.log(categoryOf(' 方法與技術 ', { categories: ['方法與技術', '其他'], fallbackCategory: '其他' }))
+ * // => { category: '方法與技術', categoryRaw: '' }
+ */
+export function categoryOf(raw, vocab) {
+    const cats = isarr(vocab?.categories) ? vocab.categories : []
+    const fb = isestr(vocab?.fallbackCategory) ? vocab.fallbackCategory : SUMMARIZE_VOCAB_DEFAULT.fallbackCategory
+    const s = String(raw ?? '').trim()
+    if (cats.includes(s)) return { category: s, categoryRaw: '' }
+    return { category: fb, categoryRaw: s }
+}
+
+/**
+ * 組裝一篇筆記(不落地):slug、md 路徑、frontmatter、本文、筆記索引記錄
+ *
+ * @param {Object} o 輸入物件
+ * @param {Object} o.k 輸入摘要項目(AI 輸出或人工匯入之 note;取 title、concepts、category、summary 與品質欄位)
+ * @param {Object} o.doc 輸入來源文件記錄(取 id、url、sourceName、publishedAt、textFrom、title)
+ * @param {Object} o.domain 輸入摘要領域物件(取 vocab、normalizeQuality、renderNoteBody)
+ * @param {String} o.notesDir 輸入筆記 md 目錄
+ * @param {String} o.nowIso 輸入建立時刻
+ * @param {Object} [o.chars] 輸入處理範圍 { sourceChars, processedChars }(摘要子階段之長文截斷明示;匯入不給)
+ * @param {Object} [o.locale] 輸入語言設定(抓取套件 resolveLocale 之產物;未給或無 slug 政策＝只收漢字與拉丁——既有 slug 不變;domain.locale 之 slug 政策:
+ *   非中文之語言收任何文字之字母與數字)
+ * @returns {Object} 回傳 { slug, file, nowIso, front, body, record, concepts, category, categoryRaw }
+ * @throws {Error} o 非物件或缺 k／doc／domain／notesDir 時拋出
+ * @example
+ * const domain = {
+ *     vocab: { categories: ['天文'], fallbackCategory: '其他' },
+ *     normalizeQuality: () => ({ claimType: '事實', evidenceLevel: '中', samplePeriod: '', caveats: [] }),
+ *     renderNoteBody: (k) => `# ${k.title}\n`,
+ * }
+ * const k = { title: '太陽黑子', summary: '週期約 11 年', category: '歷史', concepts: ['太陽黑子'] }
+ * const doc = { id: 'd1', url: '', sourceName: '示範站', publishedAt: '' }
+ * const note = buildNote({ k, doc, domain, notesDir: './notes', nowIso: new Date().toISOString() })
+ * console.log(note.slug, note.category, note.categoryRaw)
+ * // => 太陽黑子-ee17560c 其他 歷史
+ *
+ * console.log(note.record.file)
+ * // => notes/太陽黑子-ee17560c.md
+ */
+export function buildNote(o) {
+    if (!isobj(o) || !isobj(o.k) || !isobj(o.doc) || !isobj(o.domain) || !isestr(o.notesDir)) {
+        throw new Error('buildNote 需要 { k, doc, domain, notesDir }')
+    }
+    const { k, doc, domain, notesDir, nowIso } = o
+    const chars = isobj(o.chars) ? o.chars : {}
+    const locale = isobj(o.locale) ? o.locale : (isobj(domain.locale) ? domain.locale : null)
+    const slug = slugify(k.title, doc.id, isestr(locale?.slug) ? { chars: locale.slug } : {})
+    const file = path.join(notesDir, `${slug}.md`)
+    // 只收字串或數字元素(物件元素會成 "[object Object]";驗證端 isValidItem 同一清洗規則);至多 CONCEPT_COUNT.max 個
+    const concepts = cleanStrList(k.concepts).slice(0, CONCEPT_COUNT.max)
+    const q = domain.normalizeQuality(k)
+    const { category, categoryRaw } = categoryOf(k.category, domain.vocab)
+    const front = {
+        title: k.title,
+        slug,
+        category,
+        concepts,
+        claim_type: q.claimType,
+        evidence_level: q.evidenceLevel,
+        sample_period: q.samplePeriod,
+        caveats: q.caveats,
+        source_name: doc.sourceName,
+        source_url: doc.url,
+        published: doc.publishedAt || '',
+        created: nowIso,
+        doc_id: doc.id,
+        type: 'note',
+    }
+    const record = {
+        id: slug,
+        title: k.title,
+        category,
+        // 清單外類別之原值(分類法擴充之候選依據;見檔頭)
+        ...(categoryRaw ? { categoryRaw } : {}),
+        concepts,
+        summary: String(k.summary || '').slice(0, 300),
+        claimType: q.claimType,
+        evidenceLevel: q.evidenceLevel,
+        caveats: q.caveats,
+        samplePeriod: q.samplePeriod,
+        sourceUrl: doc.url,
+        sourceName: doc.sourceName,
+        docId: doc.id,
+        // 處理範圍(摘要子階段之長文規則):processedChars &lt; sourceChars 即摘要只讀了前段
+        ...(chars.sourceChars ? { sourceChars: chars.sourceChars, processedChars: chars.processedChars } : {}),
+        file: file.replace(/\\/g, '/'),
+        createdAt: nowIso,
+        // 下游工作之處理時刻(初值為空;由下游寫入)
+        relatedAt: '',
+        extractedAt: '',
+    }
+    return { slug, file, nowIso, front, body: domain.renderNoteBody(k, doc, q, chars), record, concepts, category, categoryRaw }
+}
+
+export default { NOTE_CONTRACT_FIELDS, NOTE_CONTRACT_STANDARDS, mergeContractLimits, contractProblem, noteContractOf, contractOf, categoryOf, buildNote }
+</code></pre>
+        </article>
+    </section>
+
+
+
+
+    
+    
+</div>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 4.0.5</a> on Sun Nov 01 2026 23:10:48 GMT+0800 (台北標準時間) using the <a href="https://github.com/clenemt/docdash">docdash</a> theme.
+</footer>
+
+<script>prettyPrint();</script>
+<script src="scripts/polyfill.js"></script>
+<script src="scripts/linenumber.js"></script>
+
+
+
+</body>
+</html>
