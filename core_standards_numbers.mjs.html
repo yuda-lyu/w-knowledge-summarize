@@ -1,0 +1,424 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    
+    <meta charset="utf-8">
+    <title>core/standards/numbers.mjs - Documentation</title>
+    
+    
+    <script src="scripts/prettify/prettify.js"></script>
+    <script src="scripts/prettify/lang-css.js"></script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc.css">
+    <script src="scripts/nav.js" defer></script>
+    
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+</head>
+<body>
+
+<input type="checkbox" id="nav-trigger" class="nav-trigger" />
+<label for="nav-trigger" class="navicon-button x">
+  <div class="navicon"></div>
+</label>
+
+<label for="nav-trigger" class="overlay"></label>
+
+<nav >
+    
+    
+    <h2><a href="index.html">Home</a></h2><h3>Global</h3><ul><li><a href="global.html#AI_ADAPTER_OPT">AI_ADAPTER_OPT</a></li><li><a href="global.html#AI_BATCH_LOG_KNOWN">AI_BATCH_LOG_KNOWN</a></li><li><a href="global.html#AI_BATCH_LOG_MUST_SEE">AI_BATCH_LOG_MUST_SEE</a></li><li><a href="global.html#AI_BATCH_REVIEW_LOG_KNOWN">AI_BATCH_REVIEW_LOG_KNOWN</a></li><li><a href="global.html#AI_PENDING_SOURCE">AI_PENDING_SOURCE</a></li><li><a href="global.html#CACHE">CACHE</a></li><li><a href="global.html#CFG_KEYS">CFG_KEYS</a></li><li><a href="global.html#CLAUSE_SPLIT">CLAUSE_SPLIT</a></li><li><a href="global.html#CLI">CLI</a></li><li><a href="global.html#COLLECTION_KEYS">COLLECTION_KEYS</a></li><li><a href="global.html#COMPILED">COMPILED</a></li><li><a href="global.html#CONCEPT_COUNT">CONCEPT_COUNT</a></li><li><a href="global.html#CONFIRM_SCHEMA">CONFIRM_SCHEMA</a></li><li><a href="global.html#CONTRACT_FIELD_TYPES">CONTRACT_FIELD_TYPES</a></li><li><a href="global.html#DATA_KEYS">DATA_KEYS</a></li><li><a href="global.html#DIGEST_DEFAULT">DIGEST_DEFAULT</a></li><li><a href="global.html#DIGEST_PROMPT_SIGS">DIGEST_PROMPT_SIGS</a></li><li><a href="global.html#DISABLED">DISABLED</a></li><li><a href="global.html#DOC_HOLD_NEXT">DOC_HOLD_NEXT</a></li><li><a href="global.html#DOC_STDS">DOC_STDS</a></li><li><a href="global.html#DOMAIN_FACTORY">DOMAIN_FACTORY</a></li><li><a href="global.html#DOMAIN_PROMPT_SIGS">DOMAIN_PROMPT_SIGS</a></li><li><a href="global.html#EVIDENCE_RULE_DEFAULT">EVIDENCE_RULE_DEFAULT</a></li><li><a href="global.html#EVIDENCE_RULE_KEYS">EVIDENCE_RULE_KEYS</a></li><li><a href="global.html#EVIDENCE_STD">EVIDENCE_STD</a></li><li><a href="global.html#FAITH_BLANK">FAITH_BLANK</a></li><li><a href="global.html#FAITH_HOLD_NEXT">FAITH_HOLD_NEXT</a></li><li><a href="global.html#FAITH_PAGE">FAITH_PAGE</a></li><li><a href="global.html#FAITH_VERDICTS">FAITH_VERDICTS</a></li><li><a href="global.html#GATE_STDS">GATE_STDS</a></li><li><a href="global.html#HOLD_OBJECT">HOLD_OBJECT</a></li><li><a href="global.html#LINE_BREAKS">LINE_BREAKS</a></li><li><a href="global.html#MATERIAL_EXCLUDE_PATTERNS_DEFAULT">MATERIAL_EXCLUDE_PATTERNS_DEFAULT</a></li><li><a href="global.html#MATERIAL_PROBLEM_PATTERNS_DEFAULT">MATERIAL_PROBLEM_PATTERNS_DEFAULT</a></li><li><a href="global.html#MIN_START_MS">MIN_START_MS</a></li><li><a href="global.html#NAMESPACES">NAMESPACES</a></li><li><a href="global.html#NON_CONTENT_SECTIONS">NON_CONTENT_SECTIONS</a></li><li><a href="global.html#NOTES_DIR">NOTES_DIR</a></li><li><a href="global.html#NOTE_ARRAY_FIELDS">NOTE_ARRAY_FIELDS</a></li><li><a href="global.html#NOTE_CONTRACT_FIELDS">NOTE_CONTRACT_FIELDS</a></li><li><a href="global.html#NOTE_CONTRACT_STANDARDS">NOTE_CONTRACT_STANDARDS</a></li><li><a href="global.html#NOTE_ENTRIES">NOTE_ENTRIES</a></li><li><a href="global.html#NOTE_FIELD_LABELS">NOTE_FIELD_LABELS</a></li><li><a href="global.html#NOTE_FIELD_LIMITS">NOTE_FIELD_LIMITS</a></li><li><a href="global.html#NOTE_FIX_STDS">NOTE_FIX_STDS</a></li><li><a href="global.html#NOTE_HOLD_DEADLINE_DAYS">NOTE_HOLD_DEADLINE_DAYS</a></li><li><a href="global.html#NOTE_HOLD_NEXT">NOTE_HOLD_NEXT</a></li><li><a href="global.html#NOTE_LIST_FIELDS">NOTE_LIST_FIELDS</a></li><li><a href="global.html#NOTE_PLACEHOLDERS">NOTE_PLACEHOLDERS</a></li><li><a href="global.html#NOTE_PROMPT_SIGS">NOTE_PROMPT_SIGS</a></li><li><a href="global.html#NOTE_QUALITY_LABELS">NOTE_QUALITY_LABELS</a></li><li><a href="global.html#NOTE_SECTION_ORDER">NOTE_SECTION_ORDER</a></li><li><a href="global.html#NOTE_SECTION_TITLES">NOTE_SECTION_TITLES</a></li><li><a href="global.html#NOTE_SOURCE_LABELS">NOTE_SOURCE_LABELS</a></li><li><a href="global.html#NOTE_STANDARDS">NOTE_STANDARDS</a></li><li><a href="global.html#NOTE_SYNC_STATE">NOTE_SYNC_STATE</a></li><li><a href="global.html#NOTE_TEXT_FIELDS">NOTE_TEXT_FIELDS</a></li><li><a href="global.html#NO_KNOWN_CONCEPT">NO_KNOWN_CONCEPT</a></li><li><a href="global.html#NO_MATERIAL_DETAIL">NO_MATERIAL_DETAIL</a></li><li><a href="global.html#OPTIONAL_DOMAIN_MEMBERS">OPTIONAL_DOMAIN_MEMBERS</a></li><li><a href="global.html#OPT_KEYS">OPT_KEYS</a></li><li><a href="global.html#PANEL_DEFS">PANEL_DEFS</a></li><li><a href="global.html#PANEL_SCHEMA">PANEL_SCHEMA</a></li><li><a href="global.html#PANEL_STAGES">PANEL_STAGES</a></li><li><a href="global.html#PANEL_THIRD_STOP">PANEL_THIRD_STOP</a></li><li><a href="global.html#PANEL_UNSURE">PANEL_UNSURE</a></li><li><a href="global.html#PANEL_WHY">PANEL_WHY</a></li><li><a href="global.html#PANEL_WHY_LABELS">PANEL_WHY_LABELS</a></li><li><a href="global.html#PIPELINE_NAME">PIPELINE_NAME</a></li><li><a href="global.html#PROJECTION_SECTION_TITLES">PROJECTION_SECTION_TITLES</a></li><li><a href="global.html#PROMPT_DOMAIN">PROMPT_DOMAIN</a></li><li><a href="global.html#PROMPT_KEYS">PROMPT_KEYS</a></li><li><a href="global.html#REJUDGE_REASON_LABELS">REJUDGE_REASON_LABELS</a></li><li><a href="global.html#RENAME_FIELDS">RENAME_FIELDS</a></li><li><a href="global.html#REPAIR_BLANK">REPAIR_BLANK</a></li><li><a href="global.html#RETAG_BLANK">RETAG_BLANK</a></li><li><a href="global.html#RETAG_HOLD_NEXT">RETAG_HOLD_NEXT</a></li><li><a href="global.html#RETAG_HOLD_STD">RETAG_HOLD_STD</a></li><li><a href="global.html#RETAG_MAX_FAILS">RETAG_MAX_FAILS</a></li><li><a href="global.html#RETAG_PROMPT_SIGS">RETAG_PROMPT_SIGS</a></li><li><a href="global.html#RETAG_REASONS">RETAG_REASONS</a></li><li><a href="global.html#S">S</a></li><li><a href="global.html#SEAT_FALLBACK_STAGES">SEAT_FALLBACK_STAGES</a></li><li><a href="global.html#SECTIONS">SECTIONS</a></li><li><a href="global.html#SHAPE_DOMAIN">SHAPE_DOMAIN</a></li><li><a href="global.html#SS14">SS14</a></li><li><a href="global.html#SS14_OBJECT">SS14_OBJECT</a></li><li><a href="global.html#SUMMARIZE_AI_DEFAULT">SUMMARIZE_AI_DEFAULT</a></li><li><a href="global.html#SUMMARIZE_AI_PENDING_STANDARD_IDS">SUMMARIZE_AI_PENDING_STANDARD_IDS</a></li><li><a href="global.html#SUMMARIZE_AI_SCHEMA">SUMMARIZE_AI_SCHEMA</a></li><li><a href="global.html#SUMMARIZE_AUDITED_STANDARD_IDS">SUMMARIZE_AUDITED_STANDARD_IDS</a></li><li><a href="global.html#SUMMARIZE_BENCH_CASES_FILES">SUMMARIZE_BENCH_CASES_FILES</a></li><li><a href="global.html#SUMMARIZE_BENCH_MODELS">SUMMARIZE_BENCH_MODELS</a></li><li><a href="global.html#SUMMARIZE_BENCH_ROLES">SUMMARIZE_BENCH_ROLES</a></li><li><a href="global.html#SUMMARIZE_BENCH_USAGE">SUMMARIZE_BENCH_USAGE</a></li><li><a href="global.html#SUMMARIZE_BLANK">SUMMARIZE_BLANK</a></li><li><a href="global.html#SUMMARIZE_CAPACITY_DESC">SUMMARIZE_CAPACITY_DESC</a></li><li><a href="global.html#SUMMARIZE_CTX_FLAGS">SUMMARIZE_CTX_FLAGS</a></li><li><a href="global.html#SUMMARIZE_DATA_KEYS">SUMMARIZE_DATA_KEYS</a></li><li><a href="global.html#SUMMARIZE_DEFAULT">SUMMARIZE_DEFAULT</a></li><li><a href="global.html#SUMMARIZE_DIRS">SUMMARIZE_DIRS</a></li><li><a href="global.html#SUMMARIZE_DOC_STATUS">SUMMARIZE_DOC_STATUS</a></li><li><a href="global.html#SUMMARIZE_DOMAIN_KEYS">SUMMARIZE_DOMAIN_KEYS</a></li><li><a href="global.html#SUMMARIZE_FEATURES">SUMMARIZE_FEATURES</a></li><li><a href="global.html#SUMMARIZE_GUIDE_FIELDS">SUMMARIZE_GUIDE_FIELDS</a></li><li><a href="global.html#SUMMARIZE_LOG_KNOWN">SUMMARIZE_LOG_KNOWN</a></li><li><a href="global.html#SUMMARIZE_LOG_MUST_SEE">SUMMARIZE_LOG_MUST_SEE</a></li><li><a href="global.html#SUMMARIZE_LOG_PARSE">SUMMARIZE_LOG_PARSE</a></li><li><a href="global.html#SUMMARIZE_PROMPT_SIGS">SUMMARIZE_PROMPT_SIGS</a></li><li><a href="global.html#SUMMARIZE_REPORT_KEYS">SUMMARIZE_REPORT_KEYS</a></li><li><a href="global.html#SUMMARIZE_SCAN_OBJECT">SUMMARIZE_SCAN_OBJECT</a></li><li><a href="global.html#SUMMARIZE_SCHEMA">SUMMARIZE_SCHEMA</a></li><li><a href="global.html#SUMMARIZE_SEATS">SUMMARIZE_SEATS</a></li><li><a href="global.html#SUMMARIZE_SEAT_LABELS">SUMMARIZE_SEAT_LABELS</a></li><li><a href="global.html#SUMMARIZE_SHARED_KEYS">SUMMARIZE_SHARED_KEYS</a></li><li><a href="global.html#SUMMARIZE_SKIP_KIND">SUMMARIZE_SKIP_KIND</a></li><li><a href="global.html#SUMMARIZE_STAGE_KEYS">SUMMARIZE_STAGE_KEYS</a></li><li><a href="global.html#SUMMARIZE_STANDARDS">SUMMARIZE_STANDARDS</a></li><li><a href="global.html#SUMMARIZE_STORE_KEYS">SUMMARIZE_STORE_KEYS</a></li><li><a href="global.html#SUMMARIZE_TAP_STAGE_KEYS">SUMMARIZE_TAP_STAGE_KEYS</a></li><li><a href="global.html#SUMMARIZE_VOCAB_DEFAULT">SUMMARIZE_VOCAB_DEFAULT</a></li><li><a href="global.html#SUMMARIZE_VOCAB_KEYS">SUMMARIZE_VOCAB_KEYS</a></li><li><a href="global.html#SUMMARIZE_VOCAB_NULL_AS">SUMMARIZE_VOCAB_NULL_AS</a></li><li><a href="global.html#SUMMARY_SECTION">SUMMARY_SECTION</a></li><li><a href="global.html#SYNC_KEYS">SYNC_KEYS</a></li><li><a href="global.html#TAXONOMY_STATE_FILE">TAXONOMY_STATE_FILE</a></li><li><a href="global.html#TAXONOMY_STATE_VERSION">TAXONOMY_STATE_VERSION</a></li><li><a href="global.html#TRIAGE_BLANK">TRIAGE_BLANK</a></li><li><a href="global.html#TRIAGE_PROMPT_SIGS">TRIAGE_PROMPT_SIGS</a></li><li><a href="global.html#TRIAGE_SKIP_PREFIX">TRIAGE_SKIP_PREFIX</a></li><li><a href="global.html#TRIAGE_STATE">TRIAGE_STATE</a></li><li><a href="global.html#WKnowledgeSummarize">WKnowledgeSummarize</a></li><li><a href="global.html#annotationOf">annotationOf</a></li><li><a href="global.html#applyNoteStockFix">applyNoteStockFix</a></li><li><a href="global.html#applyRepairs">applyRepairs</a></li><li><a href="global.html#assertSummarizeVocab">assertSummarizeVocab</a></li><li><a href="global.html#auditSummarizeStandards">auditSummarizeStandards</a></li><li><a href="global.html#benchAdmitNoteItem">benchAdmitNoteItem</a></li><li><a href="global.html#bodyPartsOf">bodyPartsOf</a></li><li><a href="global.html#buildNote">buildNote</a></li><li><a href="global.html#capacityWarningsOf">capacityWarningsOf</a></li><li><a href="global.html#categoryOf">categoryOf</a></li><li><a href="global.html#categoryProposals">categoryProposals</a></li><li><a href="global.html#changedUnitsOf">changedUnitsOf</a></li><li><a href="global.html#check">check</a></li><li><a href="global.html#checkFaithChecks">checkFaithChecks</a></li><li><a href="global.html#checkFaithVerdictOf">checkFaithVerdictOf</a></li><li><a href="global.html#checkNote">checkNote</a></li><li><a href="global.html#checkRepairReply">checkRepairReply</a></li><li><a href="global.html#cleanStrList">cleanStrList</a></li><li><a href="global.html#cnValue">cnValue</a></li><li><a href="global.html#compile">compile</a></li><li><a href="global.html#composeNoteMd">composeNoteMd</a></li><li><a href="global.html#conceptCountDetail">conceptCountDetail</a></li><li><a href="global.html#conceptLabelProblem">conceptLabelProblem</a></li><li><a href="global.html#conceptVocabulary">conceptVocabulary</a></li><li><a href="global.html#contractFieldProblems">contractFieldProblems</a></li><li><a href="global.html#contractOf">contractOf</a></li><li><a href="global.html#contractProblem">contractProblem</a></li><li><a href="global.html#createDigestDomain">createDigestDomain</a></li><li><a href="global.html#createKnowledgeSummarize">createKnowledgeSummarize</a></li><li><a href="global.html#createMaterialPolicy">createMaterialPolicy</a></li><li><a href="global.html#createNoteRestoreGate">createNoteRestoreGate</a></li><li><a href="global.html#createRetagDomain">createRetagDomain</a></li><li><a href="global.html#createSummarizeDomain">createSummarizeDomain</a></li><li><a href="global.html#createSummarizeObject">createSummarizeObject</a></li><li><a href="global.html#createSummarizeRuntime">createSummarizeRuntime</a></li><li><a href="global.html#createTaxonomyStore">createTaxonomyStore</a></li><li><a href="global.html#createTriageDomain">createTriageDomain</a></li><li><a href="global.html#decidePanel">decidePanel</a></li><li><a href="global.html#deepFreeze">deepFreeze</a></li><li><a href="global.html#describe">describe</a></li><li><a href="global.html#diffLabelOf">diffLabelOf</a></li><li><a href="global.html#diffTaxonomy">diffTaxonomy</a></li><li><a href="global.html#domainNeeds">domainNeeds</a></li><li><a href="global.html#dropSection">dropSection</a></li><li><a href="global.html#dropUngrounded">dropUngrounded</a></li><li><a href="global.html#escalateDocHolds">escalateDocHolds</a></li><li><a href="global.html#evidenceCaveatsOf">evidenceCaveatsOf</a></li><li><a href="global.html#evidenceMessagesOf">evidenceMessagesOf</a></li><li><a href="global.html#evidenceNoteOf">evidenceNoteOf</a></li><li><a href="global.html#evidenceRuleOf">evidenceRuleOf</a></li><li><a href="global.html#evidenceTexts">evidenceTexts</a></li><li><a href="global.html#faithBenchRole">faithBenchRole</a></li><li><a href="global.html#faithCaseProblems">faithCaseProblems</a></li><li><a href="global.html#faithMissingOf">faithMissingOf</a></li><li><a href="global.html#faithNoteText">faithNoteText</a></li><li><a href="global.html#faithVerdictOf">faithVerdictOf</a></li><li><a href="global.html#fieldPlaceOf">fieldPlaceOf</a></li><li><a href="global.html#flattenEl">flattenEl</a></li><li><a href="global.html#gateNoteItem">gateNoteItem</a></li><li><a href="global.html#guideDefaultOf">guideDefaultOf</a></li><li><a href="global.html#hold">hold</a></li><li><a href="global.html#inAddScope">inAddScope</a></li><li><a href="global.html#indexedArrayCheck">indexedArrayCheck</a></li><li><a href="global.html#info">info</a></li><li><a href="global.html#ingestNotes">ingestNotes</a></li><li><a href="global.html#inputVocabProblems">inputVocabProblems</a></li><li><a href="global.html#isEvidenceRule">isEvidenceRule</a></li><li><a href="global.html#isNoteRow">isNoteRow</a></li><li><a href="global.html#jobForRemoved">jobForRemoved</a></li><li><a href="global.html#jobIdOf">jobIdOf</a></li><li><a href="global.html#jobScope">jobScope</a></li><li><a href="global.html#knownConceptOf">knownConceptOf</a></li><li><a href="global.html#levelMapOf">levelMapOf</a></li><li><a href="global.html#load">load</a></li><li><a href="global.html#mapContentSections">mapContentSections</a></li><li><a href="global.html#materialDocOf">materialDocOf</a></li><li><a href="global.html#materialExactValues">materialExactValues</a></li><li><a href="global.html#materialProblems">materialProblems</a></li><li><a href="global.html#materialValues">materialValues</a></li><li><a href="global.html#mdOf">mdOf</a></li><li><a href="global.html#mdText">mdText</a></li><li><a href="global.html#mergeContractLimits">mergeContractLimits</a></li><li><a href="global.html#mwGateNote">mwGateNote</a></li><li><a href="global.html#mwMarkDoc">mwMarkDoc</a></li><li><a href="global.html#mwPersistNote">mwPersistNote</a></li><li><a href="global.html#mwRenderNote">mwRenderNote</a></li><li><a href="global.html#mwSaveClues">mwSaveClues</a></li><li><a href="global.html#mwSettleTriage">mwSettleTriage</a></li><li><a href="global.html#mwSkipGate">mwSkipGate</a></li><li><a href="global.html#needThird">needThird</a></li><li><a href="global.html#noTopEvidenceOf">noTopEvidenceOf</a></li><li><a href="global.html#normConcepts">normConcepts</a></li><li><a href="global.html#normalizeNoteItem">normalizeNoteItem</a></li><li><a href="global.html#noteContentText">noteContentText</a></li><li><a href="global.html#noteContractOf">noteContractOf</a></li><li><a href="global.html#noteFeedbackOf">noteFeedbackOf</a></li><li><a href="global.html#noteFixOf">noteFixOf</a></li><li><a href="global.html#noteHoldDeadlineOf">noteHoldDeadlineOf</a></li><li><a href="global.html#noteItemFieldProblems">noteItemFieldProblems</a></li><li><a href="global.html#noteItemProblems">noteItemProblems</a></li><li><a href="global.html#noteMaterialFor">noteMaterialFor</a></li><li><a href="global.html#noteMaterialOf">noteMaterialOf</a></li><li><a href="global.html#noteMaterialText">noteMaterialText</a></li><li><a href="global.html#noteStd">noteStd</a></li><li><a href="global.html#noteUnitsOf">noteUnitsOf</a></li><li><a href="global.html#notesInflowOf">notesInflowOf</a></li><li><a href="global.html#notesInflowProblem">notesInflowProblem</a></li><li><a href="global.html#numberSet">numberSet</a></li><li><a href="global.html#openDocHolds">openDocHolds</a></li><li><a href="global.html#openStores">openStores</a></li><li><a href="global.html#originalTitleOf">originalTitleOf</a></li><li><a href="global.html#outputNumbers">outputNumbers</a></li><li><a href="global.html#packDocsByChars">packDocsByChars</a></li><li><a href="global.html#packOptOf">packOptOf</a></li><li><a href="global.html#panelFindingsOf">panelFindingsOf</a></li><li><a href="global.html#panelGroupOf">panelGroupOf</a></li><li><a href="global.html#panelSameProviderWarnings">panelSameProviderWarnings</a></li><li><a href="global.html#panelSeatRowsOf">panelSeatRowsOf</a></li><li><a href="global.html#panelSeats">panelSeats</a></li><li><a href="global.html#parseFrontmatter">parseFrontmatter</a></li><li><a href="global.html#parseSummarizeBenchArgs">parseSummarizeBenchArgs</a></li><li><a href="global.html#patchNoteRecord">patchNoteRecord</a></li><li><a href="global.html#patternsOf">patternsOf</a></li><li><a href="global.html#pickSummarizeVocab">pickSummarizeVocab</a></li><li><a href="global.html#planNoteStockFix">planNoteStockFix</a></li><li><a href="global.html#planSummarizeBench">planSummarizeBench</a></li><li><a href="global.html#proposalsOf">proposalsOf</a></li><li><a href="global.html#publishedOf">publishedOf</a></li><li><a href="global.html#putDocHold">putDocHold</a></li><li><a href="global.html#putRetagHold">putRetagHold</a></li><li><a href="global.html#queueRejudge">queueRejudge</a></li><li><a href="global.html#quote">quote</a></li><li><a href="global.html#rawPoolSplitOf">rawPoolSplitOf</a></li><li><a href="global.html#reEscape">reEscape</a></li><li><a href="global.html#readMd">readMd</a></li><li><a href="global.html#readNoteStockLedger">readNoteStockLedger</a></li><li><a href="global.html#readWatermark">readWatermark</a></li><li><a href="global.html#recordPatchOf">recordPatchOf</a></li><li><a href="global.html#renameKeysObsoleteOf">renameKeysObsoleteOf</a></li><li><a href="global.html#renderFrontmatter">renderFrontmatter</a></li><li><a href="global.html#repairBenchRole">repairBenchRole</a></li><li><a href="global.html#repairCaseProblems">repairCaseProblems</a></li><li><a href="global.html#repairPlanOf">repairPlanOf</a></li><li><a href="global.html#repairProblemsOf">repairProblemsOf</a></li><li><a href="global.html#repairVerdictOf">repairVerdictOf</a></li><li><a href="global.html#requeueCategory">requeueCategory</a></li><li><a href="global.html#resolveDocHolds">resolveDocHolds</a></li><li><a href="global.html#resolveJob">resolveJob</a></li><li><a href="global.html#resolveNoteHolds">resolveNoteHolds</a></li><li><a href="global.html#resolveSummarizeData">resolveSummarizeData</a></li><li><a href="global.html#resolveSummarizeSettings">resolveSummarizeSettings</a></li><li><a href="global.html#resolveSummarizeVocab">resolveSummarizeVocab</a></li><li><a href="global.html#retagBenchRole">retagBenchRole</a></li><li><a href="global.html#retagCaseProblems">retagCaseProblems</a></li><li><a href="global.html#retagJobLabelOf">retagJobLabelOf</a></li><li><a href="global.html#retagPageProblems">retagPageProblems</a></li><li><a href="global.html#retagTargetOf">retagTargetOf</a></li><li><a href="global.html#retagVerdictOf">retagVerdictOf</a></li><li><a href="global.html#reviveFailedDocs">reviveFailedDocs</a></li><li><a href="global.html#rewriteFieldOf">rewriteFieldOf</a></li><li><a href="global.html#rewriteMdField">rewriteMdField</a></li><li><a href="global.html#rollbackNoteRow">rollbackNoteRow</a></li><li><a href="global.html#rollbackNoteStockFix">rollbackNoteStockFix</a></li><li><a href="global.html#runAiBatchStage">runAiBatchStage</a></li><li><a href="global.html#runFaithCheck">runFaithCheck</a></li><li><a href="global.html#runPanelPage">runPanelPage</a></li><li><a href="global.html#runSummarizeBench">runSummarizeBench</a></li><li><a href="global.html#runSummarizeBenchCli">runSummarizeBenchCli</a></li><li><a href="global.html#save">save</a></li><li><a href="global.html#seatFaithVotesOf">seatFaithVotesOf</a></li><li><a href="global.html#section">section</a></li><li><a href="global.html#sectionBodyOf">sectionBodyOf</a></li><li><a href="global.html#sectionItemsOf">sectionItemsOf</a></li><li><a href="global.html#sectionOf">sectionOf</a></li><li><a href="global.html#settleRetagHolds">settleRetagHolds</a></li><li><a href="global.html#shortText">shortText</a></li><li><a href="global.html#splitTopLevel">splitTopLevel</a></li><li><a href="global.html#stageRetag">stageRetag</a></li><li><a href="global.html#stageSummarize">stageSummarize</a></li><li><a href="global.html#stageSync">stageSync</a></li><li><a href="global.html#stageTriage">stageTriage</a></li><li><a href="global.html#standardsVocabOf">standardsVocabOf</a></li><li><a href="global.html#stateFileOf">stateFileOf</a></li><li><a href="global.html#strArr">strArr</a></li><li><a href="global.html#stripIdentifiers">stripIdentifiers</a></li><li><a href="global.html#stripPatternsOf">stripPatternsOf</a></li><li><a href="global.html#stripSlugs">stripSlugs</a></li><li><a href="global.html#suggestConceptRenames">suggestConceptRenames</a></li><li><a href="global.html#summarizeBenchRole">summarizeBenchRole</a></li><li><a href="global.html#summarizeBenchRoleOf">summarizeBenchRoleOf</a></li><li><a href="global.html#summarizeCapacityOf">summarizeCapacityOf</a></li><li><a href="global.html#summarizeCaseProblems">summarizeCaseProblems</a></li><li><a href="global.html#summarizeFeatureProblems">summarizeFeatureProblems</a></li><li><a href="global.html#summarizePanelsOf">summarizePanelsOf</a></li><li><a href="global.html#summarizeScanOf">summarizeScanOf</a></li><li><a href="global.html#summarizeSeatOf">summarizeSeatOf</a></li><li><a href="global.html#summarizeSeatsOf">summarizeSeatsOf</a></li><li><a href="global.html#summarizeSummaryOf">summarizeSummaryOf</a></li><li><a href="global.html#summarizeVerdictOf">summarizeVerdictOf</a></li><li><a href="global.html#summarizeVocabProblem">summarizeVocabProblem</a></li><li><a href="global.html#summarizeWarningsOf">summarizeWarningsOf</a></li><li><a href="global.html#summaryTextOf">summaryTextOf</a></li><li><a href="global.html#syncFieldsOf">syncFieldsOf</a></li><li><a href="global.html#syncHashOf">syncHashOf</a></li><li><a href="global.html#syncNoteHolds">syncNoteHolds</a></li><li><a href="global.html#syncNotes">syncNotes</a></li><li><a href="global.html#syncTaxonomy">syncTaxonomy</a></li><li><a href="global.html#syncVocabOf">syncVocabOf</a></li><li><a href="global.html#tagSuspects">tagSuspects</a></li><li><a href="global.html#taxonomyFixOf">taxonomyFixOf</a></li><li><a href="global.html#taxonomyOf">taxonomyOf</a></li><li><a href="global.html#taxonomySnapshotOf">taxonomySnapshotOf</a></li><li><a href="global.html#taxonomyStatus">taxonomyStatus</a></li><li><a href="global.html#taxonomyVersion">taxonomyVersion</a></li><li><a href="global.html#triageBenchRole">triageBenchRole</a></li><li><a href="global.html#triageCaseProblems">triageCaseProblems</a></li><li><a href="global.html#triageEnabledOf">triageEnabledOf</a></li><li><a href="global.html#triagePendingOf">triagePendingOf</a></li><li><a href="global.html#triageReadyOf">triageReadyOf</a></li><li><a href="global.html#triageVerdictOf">triageVerdictOf</a></li><li><a href="global.html#trimItem">trimItem</a></li><li><a href="global.html#ungroundedLinesOf">ungroundedLinesOf</a></li><li><a href="global.html#ungroundedNumbers">ungroundedNumbers</a></li><li><a href="global.html#unquote">unquote</a></li><li><a href="global.html#verifyNoteStockChain">verifyNoteStockChain</a></li><li><a href="global.html#wordsOf">wordsOf</a></li><li><a href="global.html#writeMd">writeMd</a></li></ul>
+    
+</nav>
+
+<div id="main">
+    
+    <h1 class="page-title">core/standards/numbers.mjs</h1>
+    
+
+    
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>// numbers.mjs — 數字紮根(摘要 SS4):抽取、正規化與比對之單一實作
+//
+// 【判準】受檢文字中之「數字事實」須能在材料中找到同值(依受檢數字之精度四捨五入比對;單位量級換算後亦可)。
+//   須避免之四類誤判:①先跳過一位數再正規化:受檢「2.0」、材料「2」→ 判未紮根(不對稱);②只抽阿拉伯數字且無 NFKC:全形數字不受檢;
+//   ③不換算量級:「397.7 億」對原文「39.77 billion」判未紮根(正確翻譯被殺);④材料不去代號連結:〔C12〕、[[…-e2e927cd]] 之數字
+//   被當內容(如 slug 雜湊尾碼之「927」)。
+// 【受檢側(輸出)】只抽阿拉伯數字(NFKC 後);一位整數須帶事實單位(%、倍、年、億…)才受檢,否則為序號／計數(3 種方法)不檢;
+//   中文數字不抽(以中文數字寫出之數字不受檢:已知限制)。
+// 【材料側】另抽中文數字(三成、百分之三十、二十年)與英文數字詞(twenty-five、two hundred、half)——原文為英文、筆記為中文,
+//   譯成阿拉伯數字之正確翻譯不得誤殺。黏連數字(5～8 位數串)之切段另列(materialExactValues),只供逐字相等,不依精度四捨五入。
+// 【精度】受檢數字有小數 → 依其小數位四捨五入比對(10.1% 對 10.09%);整數 → 須相等,但帶量級單位或約數詞(約、近、逾、about…)者,
+//   末尾之 0 視為四捨五入(約 400 億 對 397.7 億)。正負號不比(方向錯誤屬忠實性,另由 AI 標準判)。
+// 【先去識別碼】網址、[[連結]]、〔代號〕、@ref、slug 之 8 碼雜湊尾碼、DOI、arXiv 編號——兩側皆去。呼叫端另有識別碼(如下游之批內代號 N12)
+//   以 opt.stripPatterns(RegExp 陣列,須帶 g 旗標)傳入,不寫進本檔(本檔不認得下游之代號)。
+
+const SCALE = {
+    萬: 1e4, 億: 1e8, 兆: 1e12, 千: 1e3, 百萬: 1e6, 千萬: 1e7, 十億: 1e9, 百億: 1e10, 千億: 1e11,
+    thousand: 1e3, k: 1e3, K: 1e3, million: 1e6, mn: 1e6, mil: 1e6, m: 1e6, M: 1e6,
+    billion: 1e9, bn: 1e9, b: 1e9, B: 1e9, trillion: 1e12, tn: 1e12, t: 1e12, T: 1e12,
+    // 南亞計數(原文常見:12 lakh → 120 萬)
+    lakh: 1e5, lakhs: 1e5, lac: 1e5, crore: 1e7, crores: 1e7, cr: 1e7,
+}
+// 單字母之量級(m、b、t、k)亦可能是分鐘、噸等:兩種解讀皆列入(受檢側與材料側同法,只會讓比對更寬,不會誤殺)
+const AMBIGUOUS_SCALE = new Set(['k', 'K', 'm', 'M', 'b', 'B', 't', 'T'])
+const PCT = new Set(['%', 'percent', 'pct', '百分點', '個百分點', 'percentage point', 'percentage points'])
+const BPS = new Set(['bps', 'bp', '基點', '個基點', 'basis point', 'basis points'])
+// 一位整數帶這些單位才算數字事實
+const FACT_UNITS = new Set([...PCT, ...BPS, ...Object.keys(SCALE), '倍', 'x', '×', '年', '個月', '月', '週', '周', '天', '日', '小時', '分鐘', '秒', '美元', '元', '美分', '港元', '日圓', '歐元'])
+const UNIT_ALTS = [
+    '個百分點', '百分點', 'percentage points', 'percentage point', 'percent', 'pct', '%',
+    '個基點', '基點', 'basis points', 'basis point', 'bps', 'bp',
+    '百萬', '千萬', '十億', '百億', '千億', '萬', '億', '兆', '千',
+    'thousand', 'million', 'billion', 'trillion', 'lakhs', 'lakh', 'lac', 'crores', 'crore', 'cr', 'mn', 'mil', 'bn', 'tn', 'k', 'K', 'm', 'M', 'b', 'B', 't', 'T',
+    '倍', 'x', '×', '個月', '小時', '分鐘', '年', '月', '週', '周', '天', '日', '秒', '美元', '美分', '港元', '日圓', '歐元', '元',
+]
+const esc = (s) => s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&amp;')
+// 英文字母單位之後不得緊接字母(5 months 不是 5m)
+const UNIT_RE = UNIT_ALTS.map((u) => (/^[A-Za-z]/.test(u) ? `${esc(u)}(?![A-Za-z])` : esc(u))).join('|')
+// 數字:可小數點開頭(p &lt; .001、.041%)。受檢側:緊接拉丁字母之後者為名稱(H100、GPT4、COVID19)不抽;
+//   材料側照抽(原文之 COVID19 須能支持受檢文字之「COVID 19」——寬以待材料,只會少判、不會誤殺)
+const NUM_RE = new RegExp(`(?&lt;![\\d.A-Za-z_])(\\d*\\.\\d+|\\d+(?:\\.\\d+)?)(?:\\s*(${UNIT_RE}))?`, 'g')
+const NUM_RE_MATERIAL = new RegExp(`(?&lt;![\\d.])(\\d*\\.\\d+|\\d+(?:\\.\\d+)?)(?:\\s*(${UNIT_RE}))?`, 'g')
+const APPROX_BEFORE = /(?:約|大約|約略|近|逾|超過|超|將近|接近|about|approximately|around|nearly|roughly|over|~|≈)\s*$/i
+const APPROX_AFTER = /^\s*(?:左右|餘|多|以上|上下)/
+// slug 之雜湊尾碼(「-」＋8 碼十六進位、至少一個字母、其後不接英數小寫——全數字者可能是日期等內容,不去)與其前緊鄰之字母／數字串
+const SLUG_TAIL_RE = /-(?=[0-9]*[a-f])[0-9a-f]{8}(?![0-9a-z])/g
+const LETTER_OR_DIGIT_RE = /^[\p{L}\p{N}]$/u
+
+/**
+ * 去 slug(字母／數字串＋雜湊尾碼):以尾碼為錨向前併入緊鄰之字母／數字串(以碼位計,不越過上一處之結尾),每處代以一個空白——
+ *   與全域取代 /[\p{L}\p{N}]*-(?=[0-9]*[a-f])[0-9a-f]{8}(?![0-9a-z])/gu 之結果逐字相同(其最左匹配必起於該串之首或上一處之結尾);
+ *   該正則於每個起點皆把字母／數字串掃到底,長串中文近平方(大庫之符合度掃描剖析:單此一式約佔全量 1/10)
+ *
+ * @param {String} s 輸入文字
+ * @returns {String} 回傳去除後之文字
+ */
+function stripSlugs(s) {
+    let out = ''
+    let pos = 0
+    for (const m of s.matchAll(SLUG_TAIL_RE)) {
+        let st = m.index
+        while (st > pos) {
+            const lo = s.charCodeAt(st - 1)
+            const hi = st - 2 >= pos ? s.charCodeAt(st - 2) : 0
+            const w = lo >= 0xdc00 &amp;&amp; lo &lt;= 0xdfff &amp;&amp; hi >= 0xd800 &amp;&amp; hi &lt;= 0xdbff ? 2 : 1
+            if (!LETTER_OR_DIGIT_RE.test(s.slice(st - w, st))) break
+            st -= w
+        }
+        out += `${s.slice(pos, st)} `
+        pos = m.index + m[0].length
+    }
+    return pos ? out + s.slice(pos) : s
+}
+
+/**
+ * 去除兩側皆不屬內容之識別碼(網址、連結、代號、slug 尾碼、DOI、arXiv)並 NFKC
+ *
+ * @param {*} text 輸入文字
+ * @param {Array} [patterns] 輸入呼叫端另要去除之識別碼樣式(RegExp 陣列,須帶 g 旗標;於 NFKC 之後、內建樣式之前套用)
+ * @returns {String} 回傳清理後文字(去除處以空白代替,不黏合前後數字)
+ * @throws {Error} patterns 給了而非 RegExp 陣列、或任一樣式無 g 旗標時拋出
+ * @example
+ * console.log(JSON.stringify(stripIdentifiers('詳見 [[黑子-e2e927cd]] 與 〔C12〕，週期 1,000 年')))
+ * // => "詳見   與  、週期 1000 年"
+ *
+ * console.log(JSON.stringify(stripIdentifiers('批內代號 N12，週期 11 年', [/N\d+/g])))
+ * // => "批內代號  、週期 11 年"
+ */
+export function stripIdentifiers(text, patterns) {
+    const extra = stripPatternsOf(patterns)
+    let s = String(text ?? '')
+        // NFKC 之前:全形逗號是中文之列舉分隔,NFKC 後成半形會被當千分位(「2003–2018，530萬」→ 2018530萬);
+        //   字母後之上標是記號(R²、σ²),NFKC 後成一般數字會黏上後面之數(「R²0.9794」→ 20.9794)
+        .replace(/，/g, '、')
+        .replace(/([\p{L}])[⁰¹²³⁴⁵⁶⁷⁸⁹]+/gu, '$1 ')
+        .normalize('NFKC')
+    for (const re of extra) s = s.replace(re, ' ')
+    s = s
+        .replace(/https?:\/\/\S+|www\.\S+/gi, ' ')
+        .replace(/\[\[[^\]]*\]\]/g, ' ')
+        .replace(/〔[^〕]*〕/g, ' ')
+        .replace(/@[A-Za-z0-9_]+/g, ' ')
+        .replace(/\b10\.\d{4,9}\/\S+/g, ' ')
+        .replace(/arXiv:\s*\S+/gi, ' ')
+    // slug 之雜湊尾碼(stripSlugs)
+    return stripSlugs(s)
+        // 單獨之筆記雜湊(文字引用他篇筆記時常以「bdd7415f 提出…」稱呼對方):8 碼十六進位且兼有字母與數字者
+        .replace(/(?&lt;![0-9A-Za-z])(?=[0-9a-f]*[a-f])(?=[0-9a-f]*[0-9])[0-9a-f]{8}(?![0-9A-Za-z])/gi, ' ')
+        // 候選／篇章編號(篇55、第 12 篇)
+        .replace(/篇\s*\d+|第\s*\d+\s*篇/g, ' ')
+        .replace(/(\d),(?=\d{3}(?!\d))/g, '$1')
+        .replace(/(\d),(?=\d{3}(?!\d))/g, '$1')
+}
+
+const decimalsOf = (s) => (s.includes('.') ? s.split('.')[1].length : 0) // .041 → 3
+const trailingZeros = (s) => (s.includes('.') ? 0 : (s.match(/0+$/) || [''])[0].length)
+
+/**
+ * 呼叫端之識別碼樣式(opt.stripPatterns)之檢核:未給回 [];給了須為帶 g 旗標之 RegExp 陣列(無 g 之 replace 只去第一處,是靜默失效)
+ *
+ * @param {*} patterns 輸入樣式陣列
+ * @returns {Array} 回傳 RegExp 陣列
+ * @throws {Error} 形狀不合時拋出
+ */
+function stripPatternsOf(patterns) {
+    if (patterns === undefined || patterns === null) return []
+    if (!Array.isArray(patterns) || !patterns.every((re) => re instanceof RegExp &amp;&amp; re.flags.includes('g'))) throw new Error('stripPatterns 須為帶 g 旗標之 RegExp 陣列')
+    return patterns
+}
+
+/**
+ * 受檢側之數字事實(阿拉伯數字;一位整數須帶事實單位)
+ *
+ * @param {*} text 輸入受檢文字
+ * @param {Object} [opt={}] 輸入 { stripPatterns:Array(呼叫端另要去除之識別碼樣式;見 stripIdentifiers) }
+ * @returns {Array} 回傳 [{ raw, i, num, abs, pairs:[[值, 精度]] }]:abs＝量級換算後之值(無量級單位即 num)
+ * @example
+ * console.log(JSON.stringify(outputNumbers('週期約 11 年，共 3 種方法，亮度增加 2.5%').map((o) => [o.raw, o.abs])))
+ * // => [["11 年",11],["2.5%",2.5]]
+ *
+ * console.log(outputNumbers('距離 1.5 億公里')[0].abs)
+ * // => 150000000
+ */
+export function outputNumbers(text, opt = {}) {
+    const s = stripIdentifiers(text, opt?.stripPatterns)
+    const out = []
+    for (const m of s.matchAll(NUM_RE)) {
+        const digits = m[1]
+        const unit = m[2] || ''
+        const num = Number(digits)
+        if (!Number.isFinite(num)) continue
+        const dec = decimalsOf(digits)
+        if (dec === 0 &amp;&amp; num &lt; 10 &amp;&amp; !FACT_UNITS.has(unit)) continue
+        const scaled = Object.prototype.hasOwnProperty.call(SCALE, unit)
+        const approx = APPROX_BEFORE.test(s.slice(Math.max(0, m.index - 6), m.index)) || APPROX_AFTER.test(s.slice(m.index + m[0].length, m.index + m[0].length + 3))
+        let prec = dec > 0 ? 10 ** -dec : 1
+        if (dec === 0 &amp;&amp; (scaled || approx)) prec = 10 ** trailingZeros(digits)
+        const pairs = [[num, prec]]
+        if (scaled) pairs.push([num * SCALE[unit], prec * SCALE[unit]])
+        if (BPS.has(unit)) pairs.push([num / 100, prec / 100])
+        if (PCT.has(unit)) pairs.push([num * 100, prec * 100])
+        out.push({ raw: m[0].trim(), i: m.index, num, abs: scaled ? num * SCALE[unit] : num, pairs })
+    }
+    return out
+}
+
+const CN_DIGIT = { 零: 0, 〇: 0, 一: 1, 二: 2, 兩: 2, 两: 2, 三: 3, 四: 4, 五: 5, 六: 6, 七: 7, 八: 8, 九: 9 }
+const CN_UNIT = { 十: 10, 百: 100, 千: 1000 }
+const CN_BIG = { 萬: 1e4, 万: 1e4, 億: 1e8, 亿: 1e8 }
+
+/** 中文數字串之值(二十五→25、三千五百→3500、兩萬→20000;無法解析回 null) */
+function cnValue(t) {
+    let total = 0
+    let section = 0
+    let digit = null
+    for (const ch of t) {
+        if (ch in CN_DIGIT) digit = CN_DIGIT[ch]
+        else if (ch in CN_UNIT) {
+            section += (digit ?? 1) * CN_UNIT[ch]
+            digit = null
+        }
+        else if (ch in CN_BIG) {
+            total += (section + (digit ?? 0)) * CN_BIG[ch]
+            section = 0
+            digit = null
+        }
+        else return null
+    }
+    return total + section + (digit ?? 0)
+}
+
+const EN_SMALL = { zero: 0, one: 1, two: 2, three: 3, four: 4, five: 5, six: 6, seven: 7, eight: 8, nine: 9, ten: 10, eleven: 11, twelve: 12, thirteen: 13, fourteen: 14, fifteen: 15, sixteen: 16, seventeen: 17, eighteen: 18, nineteen: 19, twenty: 20, thirty: 30, forty: 40, fifty: 50, sixty: 60, seventy: 70, eighty: 80, ninety: 90 }
+const EN_MULT = { hundred: 100, thousand: 1e3, million: 1e6, billion: 1e9, trillion: 1e12 }
+const EN_SPECIAL = { half: [0.5, 50], quarter: [0.25, 25], double: [2], twice: [2], triple: [3], dozen: [12] }
+const EN_WORD = Object.keys({ ...EN_SMALL, ...EN_MULT }).join('|')
+const MONTHS = { jan: 1, feb: 2, mar: 3, apr: 4, may: 5, jun: 6, jul: 7, aug: 8, sep: 9, oct: 10, nov: 11, dec: 12 }
+const MONTH_RE = /\b(January|February|March|April|May|June|July|August|September|October|November|December|Jan|Feb|Mar|Apr|Jun|Jul|Aug|Sept?|Oct|Nov|Dec)\b\.?/g
+const EN_SEQ_RE = new RegExp(`\\b(?:${EN_WORD})(?:[\\s-]+(?:and[\\s-]+)?(?:${EN_WORD}))*\\b`, 'gi')
+
+function enValue(seq) {
+    let total = 0
+    let cur = 0
+    for (const w of seq.toLowerCase().split(/[\s-]+/).filter((x) => x &amp;&amp; x !== 'and')) {
+        if (w in EN_SMALL) cur += EN_SMALL[w]
+        else if (w === 'hundred') cur = (cur || 1) * 100
+        else if (w in EN_MULT) {
+            total += (cur || 1) * EN_MULT[w]
+            cur = 0
+        }
+    }
+    return total + cur
+}
+
+/**
+ * 材料側之數值集合(阿拉伯數字含量級換算、中文數字、英文數字詞;一位數亦收)
+ *
+ * @param {*} material 輸入材料(陣列則合併)
+ * @param {Object} [opt={}] 輸入 { stripPatterns }(見 stripIdentifiers)
+ * @returns {Array} 回傳數值陣列(去重)
+ * @example
+ * console.log(materialValues('週期 11 年，約三成黑子'))
+ * // => [ 11, 30 ]
+ */
+export function materialValues(material, opt = {}) {
+    const s = stripIdentifiers(Array.isArray(material) ? material.join('\n') : material, opt?.stripPatterns)
+    const vals = new Set()
+    for (const m of s.matchAll(NUM_RE_MATERIAL)) {
+        const num = Number(m[1])
+        if (!Number.isFinite(num)) continue
+        const unit = m[2] || ''
+        vals.add(num)
+        if (Object.prototype.hasOwnProperty.call(SCALE, unit)) vals.add(num * SCALE[unit])
+        if (BPS.has(unit)) vals.add(num / 100)
+        if (PCT.has(unit)) vals.add(num * 100)
+    }
+    // 中文數字(百分之三十、三成、二十年)
+    for (const m of s.matchAll(/百分之([零〇一二兩两三四五六七八九十百千]+)/g)) {
+        const v = cnValue(m[1])
+        if (v !== null) vals.add(v)
+    }
+    for (const m of s.matchAll(/([零〇一二兩两三四五六七八九十百千萬万億亿]+)(成)?/g)) {
+        const v = cnValue(m[1])
+        if (v === null) continue
+        vals.add(m[2] ? v * 10 : v)
+    }
+    // 英文數字詞
+    for (const m of s.matchAll(EN_SEQ_RE)) {
+        const v = enValue(m[0])
+        vals.add(v)
+        // 數字詞後接量級(three million 已含;1.5 million 由阿拉伯數字路徑處理)
+    }
+    for (const m of s.matchAll(/\b(half|halve[ds]?|halving|quarter|double[ds]?|doubling|twice|triple[ds]?|tripling|dozen)\b/gi)) {
+        const w = m[1].toLowerCase()
+        const key = /^hal/.test(w) ? 'half' : /^doub/.test(w) ? 'double' : /^trip/.test(w) ? 'triple' : w
+        for (const v of EN_SPECIAL[key]) vals.add(v)
+    }
+    // half a million、a quarter of a billion(more than half a million visitors → 逾 50 萬人)
+    for (const m of s.matchAll(/\b(half|quarter)\s+(?:of\s+)?an?\s+(thousand|million|billion|trillion)\b/gi)) {
+        vals.add((m[1].toLowerCase() === 'half' ? 0.5 : 0.25) * EN_MULT[m[2].toLowerCase()])
+    }
+    // 英文月份名(the week of May 12-18 → 5 月 12 日)
+    for (const m of s.matchAll(MONTH_RE)) vals.add(MONTHS[m[1].slice(0, 3).toLowerCase()])
+    // 12 小時制(Submit by 3 PM → 15:00 前提交)
+    for (const m of s.matchAll(/(?&lt;!\d)(\d{1,2})(?::(\d{2}))?\s*([ap])\.?m\.?(?![A-Za-z])/gi)) {
+        const h = Number(m[1])
+        if (h > 12) continue
+        vals.add(m[3].toLowerCase() === 'p' &amp;&amp; h &lt; 12 ? h + 12 : (m[3].toLowerCase() === 'a' &amp;&amp; h === 12 ? 0 : h))
+        if (m[2]) vals.add(Number(m[2]))
+    }
+    // 年份區間簡寫(2008-09 → 2009;1998-02 → 2002):受檢文字寫成完整年份是正確解讀
+    for (const m of s.matchAll(/(?&lt;!\d)((?:19|20)\d{2})\s*[-–~～至到]\s*(\d{2})(?!\d)/g)) {
+        const y = Number(m[1])
+        const yy = Number(m[2])
+        const century = Math.floor(y / 100) * 100
+        vals.add(yy >= y % 100 ? century + yy : century + 100 + yy)
+    }
+    return [...vals]
+}
+
+/**
+ * 材料側之黏連數字切段(只供逐字相等之比對):爬回之原文常有數字黏連(Annual Review in 20261. Overview、value = 100100),
+ *   5～8 位數之數字串另收其各種二分之兩段。切段不是原文之量值,**不參與依精度之四捨五入**——否則「3 萬」會經 299,792 之切段 29979
+ *   進位成 30000 而誤判紮根(量級差 10 倍)
+ *
+ * @param {*} material 輸入材料(陣列則合併)
+ * @param {Object} [opt={}] 輸入 { stripPatterns }(見 stripIdentifiers)
+ * @returns {Array} 回傳切段之數值陣列(去重)
+ * @example
+ * console.log(JSON.stringify(materialExactValues('編號 12345').sort((a, b) => a - b)))
+ * // => [1,5,12,45,123,345,1234,2345]
+ */
+export function materialExactValues(material, opt = {}) {
+    const s = stripIdentifiers(Array.isArray(material) ? material.join('\n') : material, opt?.stripPatterns)
+    const vals = new Set()
+    for (const m of s.matchAll(/(?&lt;!\d)(?&lt;!\d\.)\d{5,8}(?!\d)(?!\.\d)/g)) {
+        for (let k = 1; k &lt; m[0].length; k++) {
+            vals.add(Number(m[0].slice(0, k)))
+            vals.add(Number(m[0].slice(k)))
+        }
+    }
+    return [...vals]
+}
+
+function grounded(pairs, mats, exact = []) {
+    for (const [v, p] of pairs) {
+        for (const m of mats) {
+            const r = Math.round(m / p) * p
+            if (Math.abs(r - v) &lt;= Math.abs(p) * 1e-6 + 1e-12) return true
+        }
+        // 黏連切段:逐字相等才算(不四捨五入)
+        for (const m of exact) if (Math.abs(m - v) &lt;= 1e-12) return true
+    }
+    return false
+}
+
+/**
+ * 未紮根之數字:受檢文字中之數字事實在材料中找不到者
+ *
+ * @param {*} text 輸入受檢文字
+ * @param {*} material 輸入材料(字串或陣列)
+ * @param {Object} [opt={}] 輸入 { stripPatterns:Array(呼叫端另要去除之識別碼樣式,兩側皆去;見 stripIdentifiers) }
+ * @returns {Array} 回傳未紮根者之原文字串陣列(空＝全紮根)
+ * @example
+ * console.log(ungroundedNumbers('用戶 397.7 億人次，單日成長 10.1%', '39.77 billion visits, up 10.09% in one day'))
+ * // => []
+ */
+export function ungroundedNumbers(text, material, opt = {}) {
+    const outs = outputNumbers(text, opt)
+    if (!outs.length) return []
+    const mats = materialValues(material, opt)
+    const exact = materialExactValues(material, opt)
+    return outs.filter((o) => !grounded(o.pairs, mats, exact)).map((o) => o.raw)
+}
+
+/**
+ * 數字集合(判兩句是否同一主張時比對用):受檢側規則之數值,依量級換算後之值
+ *
+ * @param {*} text 輸入文字
+ * @param {Object} [opt={}] 輸入 { stripPatterns }(見 outputNumbers)
+ * @returns {Set} 回傳數值字串集合
+ * @example
+ * console.log(numberSet('距離 1.5 億公里，週期 11 年'))
+ * // => Set(2) { '150000000', '11' }
+ *
+ * console.log(numberSet('距離 15000 萬公里').has('150000000'))
+ * // => true
+ */
+export function numberSet(text, opt = {}) {
+    return new Set(outputNumbers(text, opt).map((o) => String(o.abs)))
+}
+
+export default { stripIdentifiers, outputNumbers, materialValues, materialExactValues, ungroundedNumbers, numberSet }
+</code></pre>
+        </article>
+    </section>
+
+
+
+
+    
+    
+</div>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 4.0.5</a> on Sun Nov 01 2026 23:10:48 GMT+0800 (台北標準時間) using the <a href="https://github.com/clenemt/docdash">docdash</a> theme.
+</footer>
+
+<script>prettyPrint();</script>
+<script src="scripts/polyfill.js"></script>
+<script src="scripts/linenumber.js"></script>
+
+
+
+</body>
+</html>

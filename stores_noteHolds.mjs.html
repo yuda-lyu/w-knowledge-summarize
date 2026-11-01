@@ -1,0 +1,384 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    
+    <meta charset="utf-8">
+    <title>stores/noteHolds.mjs - Documentation</title>
+    
+    
+    <script src="scripts/prettify/prettify.js"></script>
+    <script src="scripts/prettify/lang-css.js"></script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc.css">
+    <script src="scripts/nav.js" defer></script>
+    
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+</head>
+<body>
+
+<input type="checkbox" id="nav-trigger" class="nav-trigger" />
+<label for="nav-trigger" class="navicon-button x">
+  <div class="navicon"></div>
+</label>
+
+<label for="nav-trigger" class="overlay"></label>
+
+<nav >
+    
+    
+    <h2><a href="index.html">Home</a></h2><h3>Global</h3><ul><li><a href="global.html#AI_ADAPTER_OPT">AI_ADAPTER_OPT</a></li><li><a href="global.html#AI_BATCH_LOG_KNOWN">AI_BATCH_LOG_KNOWN</a></li><li><a href="global.html#AI_BATCH_LOG_MUST_SEE">AI_BATCH_LOG_MUST_SEE</a></li><li><a href="global.html#AI_BATCH_REVIEW_LOG_KNOWN">AI_BATCH_REVIEW_LOG_KNOWN</a></li><li><a href="global.html#AI_PENDING_SOURCE">AI_PENDING_SOURCE</a></li><li><a href="global.html#CACHE">CACHE</a></li><li><a href="global.html#CFG_KEYS">CFG_KEYS</a></li><li><a href="global.html#CLAUSE_SPLIT">CLAUSE_SPLIT</a></li><li><a href="global.html#CLI">CLI</a></li><li><a href="global.html#COLLECTION_KEYS">COLLECTION_KEYS</a></li><li><a href="global.html#COMPILED">COMPILED</a></li><li><a href="global.html#CONCEPT_COUNT">CONCEPT_COUNT</a></li><li><a href="global.html#CONFIRM_SCHEMA">CONFIRM_SCHEMA</a></li><li><a href="global.html#CONTRACT_FIELD_TYPES">CONTRACT_FIELD_TYPES</a></li><li><a href="global.html#DATA_KEYS">DATA_KEYS</a></li><li><a href="global.html#DIGEST_DEFAULT">DIGEST_DEFAULT</a></li><li><a href="global.html#DIGEST_PROMPT_SIGS">DIGEST_PROMPT_SIGS</a></li><li><a href="global.html#DISABLED">DISABLED</a></li><li><a href="global.html#DOC_HOLD_NEXT">DOC_HOLD_NEXT</a></li><li><a href="global.html#DOC_STDS">DOC_STDS</a></li><li><a href="global.html#DOMAIN_FACTORY">DOMAIN_FACTORY</a></li><li><a href="global.html#DOMAIN_PROMPT_SIGS">DOMAIN_PROMPT_SIGS</a></li><li><a href="global.html#EVIDENCE_RULE_DEFAULT">EVIDENCE_RULE_DEFAULT</a></li><li><a href="global.html#EVIDENCE_RULE_KEYS">EVIDENCE_RULE_KEYS</a></li><li><a href="global.html#EVIDENCE_STD">EVIDENCE_STD</a></li><li><a href="global.html#FAITH_BLANK">FAITH_BLANK</a></li><li><a href="global.html#FAITH_HOLD_NEXT">FAITH_HOLD_NEXT</a></li><li><a href="global.html#FAITH_PAGE">FAITH_PAGE</a></li><li><a href="global.html#FAITH_VERDICTS">FAITH_VERDICTS</a></li><li><a href="global.html#GATE_STDS">GATE_STDS</a></li><li><a href="global.html#HOLD_OBJECT">HOLD_OBJECT</a></li><li><a href="global.html#LINE_BREAKS">LINE_BREAKS</a></li><li><a href="global.html#MATERIAL_EXCLUDE_PATTERNS_DEFAULT">MATERIAL_EXCLUDE_PATTERNS_DEFAULT</a></li><li><a href="global.html#MATERIAL_PROBLEM_PATTERNS_DEFAULT">MATERIAL_PROBLEM_PATTERNS_DEFAULT</a></li><li><a href="global.html#MIN_START_MS">MIN_START_MS</a></li><li><a href="global.html#NAMESPACES">NAMESPACES</a></li><li><a href="global.html#NON_CONTENT_SECTIONS">NON_CONTENT_SECTIONS</a></li><li><a href="global.html#NOTES_DIR">NOTES_DIR</a></li><li><a href="global.html#NOTE_ARRAY_FIELDS">NOTE_ARRAY_FIELDS</a></li><li><a href="global.html#NOTE_CONTRACT_FIELDS">NOTE_CONTRACT_FIELDS</a></li><li><a href="global.html#NOTE_CONTRACT_STANDARDS">NOTE_CONTRACT_STANDARDS</a></li><li><a href="global.html#NOTE_ENTRIES">NOTE_ENTRIES</a></li><li><a href="global.html#NOTE_FIELD_LABELS">NOTE_FIELD_LABELS</a></li><li><a href="global.html#NOTE_FIELD_LIMITS">NOTE_FIELD_LIMITS</a></li><li><a href="global.html#NOTE_FIX_STDS">NOTE_FIX_STDS</a></li><li><a href="global.html#NOTE_HOLD_DEADLINE_DAYS">NOTE_HOLD_DEADLINE_DAYS</a></li><li><a href="global.html#NOTE_HOLD_NEXT">NOTE_HOLD_NEXT</a></li><li><a href="global.html#NOTE_LIST_FIELDS">NOTE_LIST_FIELDS</a></li><li><a href="global.html#NOTE_PLACEHOLDERS">NOTE_PLACEHOLDERS</a></li><li><a href="global.html#NOTE_PROMPT_SIGS">NOTE_PROMPT_SIGS</a></li><li><a href="global.html#NOTE_QUALITY_LABELS">NOTE_QUALITY_LABELS</a></li><li><a href="global.html#NOTE_SECTION_ORDER">NOTE_SECTION_ORDER</a></li><li><a href="global.html#NOTE_SECTION_TITLES">NOTE_SECTION_TITLES</a></li><li><a href="global.html#NOTE_SOURCE_LABELS">NOTE_SOURCE_LABELS</a></li><li><a href="global.html#NOTE_STANDARDS">NOTE_STANDARDS</a></li><li><a href="global.html#NOTE_SYNC_STATE">NOTE_SYNC_STATE</a></li><li><a href="global.html#NOTE_TEXT_FIELDS">NOTE_TEXT_FIELDS</a></li><li><a href="global.html#NO_KNOWN_CONCEPT">NO_KNOWN_CONCEPT</a></li><li><a href="global.html#NO_MATERIAL_DETAIL">NO_MATERIAL_DETAIL</a></li><li><a href="global.html#OPTIONAL_DOMAIN_MEMBERS">OPTIONAL_DOMAIN_MEMBERS</a></li><li><a href="global.html#OPT_KEYS">OPT_KEYS</a></li><li><a href="global.html#PANEL_DEFS">PANEL_DEFS</a></li><li><a href="global.html#PANEL_SCHEMA">PANEL_SCHEMA</a></li><li><a href="global.html#PANEL_STAGES">PANEL_STAGES</a></li><li><a href="global.html#PANEL_THIRD_STOP">PANEL_THIRD_STOP</a></li><li><a href="global.html#PANEL_UNSURE">PANEL_UNSURE</a></li><li><a href="global.html#PANEL_WHY">PANEL_WHY</a></li><li><a href="global.html#PANEL_WHY_LABELS">PANEL_WHY_LABELS</a></li><li><a href="global.html#PIPELINE_NAME">PIPELINE_NAME</a></li><li><a href="global.html#PROJECTION_SECTION_TITLES">PROJECTION_SECTION_TITLES</a></li><li><a href="global.html#PROMPT_DOMAIN">PROMPT_DOMAIN</a></li><li><a href="global.html#PROMPT_KEYS">PROMPT_KEYS</a></li><li><a href="global.html#REJUDGE_REASON_LABELS">REJUDGE_REASON_LABELS</a></li><li><a href="global.html#RENAME_FIELDS">RENAME_FIELDS</a></li><li><a href="global.html#REPAIR_BLANK">REPAIR_BLANK</a></li><li><a href="global.html#RETAG_BLANK">RETAG_BLANK</a></li><li><a href="global.html#RETAG_HOLD_NEXT">RETAG_HOLD_NEXT</a></li><li><a href="global.html#RETAG_HOLD_STD">RETAG_HOLD_STD</a></li><li><a href="global.html#RETAG_MAX_FAILS">RETAG_MAX_FAILS</a></li><li><a href="global.html#RETAG_PROMPT_SIGS">RETAG_PROMPT_SIGS</a></li><li><a href="global.html#RETAG_REASONS">RETAG_REASONS</a></li><li><a href="global.html#S">S</a></li><li><a href="global.html#SEAT_FALLBACK_STAGES">SEAT_FALLBACK_STAGES</a></li><li><a href="global.html#SECTIONS">SECTIONS</a></li><li><a href="global.html#SHAPE_DOMAIN">SHAPE_DOMAIN</a></li><li><a href="global.html#SS14">SS14</a></li><li><a href="global.html#SS14_OBJECT">SS14_OBJECT</a></li><li><a href="global.html#SUMMARIZE_AI_DEFAULT">SUMMARIZE_AI_DEFAULT</a></li><li><a href="global.html#SUMMARIZE_AI_PENDING_STANDARD_IDS">SUMMARIZE_AI_PENDING_STANDARD_IDS</a></li><li><a href="global.html#SUMMARIZE_AI_SCHEMA">SUMMARIZE_AI_SCHEMA</a></li><li><a href="global.html#SUMMARIZE_AUDITED_STANDARD_IDS">SUMMARIZE_AUDITED_STANDARD_IDS</a></li><li><a href="global.html#SUMMARIZE_BENCH_CASES_FILES">SUMMARIZE_BENCH_CASES_FILES</a></li><li><a href="global.html#SUMMARIZE_BENCH_MODELS">SUMMARIZE_BENCH_MODELS</a></li><li><a href="global.html#SUMMARIZE_BENCH_ROLES">SUMMARIZE_BENCH_ROLES</a></li><li><a href="global.html#SUMMARIZE_BENCH_USAGE">SUMMARIZE_BENCH_USAGE</a></li><li><a href="global.html#SUMMARIZE_BLANK">SUMMARIZE_BLANK</a></li><li><a href="global.html#SUMMARIZE_CAPACITY_DESC">SUMMARIZE_CAPACITY_DESC</a></li><li><a href="global.html#SUMMARIZE_CTX_FLAGS">SUMMARIZE_CTX_FLAGS</a></li><li><a href="global.html#SUMMARIZE_DATA_KEYS">SUMMARIZE_DATA_KEYS</a></li><li><a href="global.html#SUMMARIZE_DEFAULT">SUMMARIZE_DEFAULT</a></li><li><a href="global.html#SUMMARIZE_DIRS">SUMMARIZE_DIRS</a></li><li><a href="global.html#SUMMARIZE_DOC_STATUS">SUMMARIZE_DOC_STATUS</a></li><li><a href="global.html#SUMMARIZE_DOMAIN_KEYS">SUMMARIZE_DOMAIN_KEYS</a></li><li><a href="global.html#SUMMARIZE_FEATURES">SUMMARIZE_FEATURES</a></li><li><a href="global.html#SUMMARIZE_GUIDE_FIELDS">SUMMARIZE_GUIDE_FIELDS</a></li><li><a href="global.html#SUMMARIZE_LOG_KNOWN">SUMMARIZE_LOG_KNOWN</a></li><li><a href="global.html#SUMMARIZE_LOG_MUST_SEE">SUMMARIZE_LOG_MUST_SEE</a></li><li><a href="global.html#SUMMARIZE_LOG_PARSE">SUMMARIZE_LOG_PARSE</a></li><li><a href="global.html#SUMMARIZE_PROMPT_SIGS">SUMMARIZE_PROMPT_SIGS</a></li><li><a href="global.html#SUMMARIZE_REPORT_KEYS">SUMMARIZE_REPORT_KEYS</a></li><li><a href="global.html#SUMMARIZE_SCAN_OBJECT">SUMMARIZE_SCAN_OBJECT</a></li><li><a href="global.html#SUMMARIZE_SCHEMA">SUMMARIZE_SCHEMA</a></li><li><a href="global.html#SUMMARIZE_SEATS">SUMMARIZE_SEATS</a></li><li><a href="global.html#SUMMARIZE_SEAT_LABELS">SUMMARIZE_SEAT_LABELS</a></li><li><a href="global.html#SUMMARIZE_SHARED_KEYS">SUMMARIZE_SHARED_KEYS</a></li><li><a href="global.html#SUMMARIZE_SKIP_KIND">SUMMARIZE_SKIP_KIND</a></li><li><a href="global.html#SUMMARIZE_STAGE_KEYS">SUMMARIZE_STAGE_KEYS</a></li><li><a href="global.html#SUMMARIZE_STANDARDS">SUMMARIZE_STANDARDS</a></li><li><a href="global.html#SUMMARIZE_STORE_KEYS">SUMMARIZE_STORE_KEYS</a></li><li><a href="global.html#SUMMARIZE_TAP_STAGE_KEYS">SUMMARIZE_TAP_STAGE_KEYS</a></li><li><a href="global.html#SUMMARIZE_VOCAB_DEFAULT">SUMMARIZE_VOCAB_DEFAULT</a></li><li><a href="global.html#SUMMARIZE_VOCAB_KEYS">SUMMARIZE_VOCAB_KEYS</a></li><li><a href="global.html#SUMMARIZE_VOCAB_NULL_AS">SUMMARIZE_VOCAB_NULL_AS</a></li><li><a href="global.html#SUMMARY_SECTION">SUMMARY_SECTION</a></li><li><a href="global.html#SYNC_KEYS">SYNC_KEYS</a></li><li><a href="global.html#TAXONOMY_STATE_FILE">TAXONOMY_STATE_FILE</a></li><li><a href="global.html#TAXONOMY_STATE_VERSION">TAXONOMY_STATE_VERSION</a></li><li><a href="global.html#TRIAGE_BLANK">TRIAGE_BLANK</a></li><li><a href="global.html#TRIAGE_PROMPT_SIGS">TRIAGE_PROMPT_SIGS</a></li><li><a href="global.html#TRIAGE_SKIP_PREFIX">TRIAGE_SKIP_PREFIX</a></li><li><a href="global.html#TRIAGE_STATE">TRIAGE_STATE</a></li><li><a href="global.html#WKnowledgeSummarize">WKnowledgeSummarize</a></li><li><a href="global.html#annotationOf">annotationOf</a></li><li><a href="global.html#applyNoteStockFix">applyNoteStockFix</a></li><li><a href="global.html#applyRepairs">applyRepairs</a></li><li><a href="global.html#assertSummarizeVocab">assertSummarizeVocab</a></li><li><a href="global.html#auditSummarizeStandards">auditSummarizeStandards</a></li><li><a href="global.html#benchAdmitNoteItem">benchAdmitNoteItem</a></li><li><a href="global.html#bodyPartsOf">bodyPartsOf</a></li><li><a href="global.html#buildNote">buildNote</a></li><li><a href="global.html#capacityWarningsOf">capacityWarningsOf</a></li><li><a href="global.html#categoryOf">categoryOf</a></li><li><a href="global.html#categoryProposals">categoryProposals</a></li><li><a href="global.html#changedUnitsOf">changedUnitsOf</a></li><li><a href="global.html#check">check</a></li><li><a href="global.html#checkFaithChecks">checkFaithChecks</a></li><li><a href="global.html#checkFaithVerdictOf">checkFaithVerdictOf</a></li><li><a href="global.html#checkNote">checkNote</a></li><li><a href="global.html#checkRepairReply">checkRepairReply</a></li><li><a href="global.html#cleanStrList">cleanStrList</a></li><li><a href="global.html#cnValue">cnValue</a></li><li><a href="global.html#compile">compile</a></li><li><a href="global.html#composeNoteMd">composeNoteMd</a></li><li><a href="global.html#conceptCountDetail">conceptCountDetail</a></li><li><a href="global.html#conceptLabelProblem">conceptLabelProblem</a></li><li><a href="global.html#conceptVocabulary">conceptVocabulary</a></li><li><a href="global.html#contractFieldProblems">contractFieldProblems</a></li><li><a href="global.html#contractOf">contractOf</a></li><li><a href="global.html#contractProblem">contractProblem</a></li><li><a href="global.html#createDigestDomain">createDigestDomain</a></li><li><a href="global.html#createKnowledgeSummarize">createKnowledgeSummarize</a></li><li><a href="global.html#createMaterialPolicy">createMaterialPolicy</a></li><li><a href="global.html#createNoteRestoreGate">createNoteRestoreGate</a></li><li><a href="global.html#createRetagDomain">createRetagDomain</a></li><li><a href="global.html#createSummarizeDomain">createSummarizeDomain</a></li><li><a href="global.html#createSummarizeObject">createSummarizeObject</a></li><li><a href="global.html#createSummarizeRuntime">createSummarizeRuntime</a></li><li><a href="global.html#createTaxonomyStore">createTaxonomyStore</a></li><li><a href="global.html#createTriageDomain">createTriageDomain</a></li><li><a href="global.html#decidePanel">decidePanel</a></li><li><a href="global.html#deepFreeze">deepFreeze</a></li><li><a href="global.html#describe">describe</a></li><li><a href="global.html#diffLabelOf">diffLabelOf</a></li><li><a href="global.html#diffTaxonomy">diffTaxonomy</a></li><li><a href="global.html#domainNeeds">domainNeeds</a></li><li><a href="global.html#dropSection">dropSection</a></li><li><a href="global.html#dropUngrounded">dropUngrounded</a></li><li><a href="global.html#escalateDocHolds">escalateDocHolds</a></li><li><a href="global.html#evidenceCaveatsOf">evidenceCaveatsOf</a></li><li><a href="global.html#evidenceMessagesOf">evidenceMessagesOf</a></li><li><a href="global.html#evidenceNoteOf">evidenceNoteOf</a></li><li><a href="global.html#evidenceRuleOf">evidenceRuleOf</a></li><li><a href="global.html#evidenceTexts">evidenceTexts</a></li><li><a href="global.html#faithBenchRole">faithBenchRole</a></li><li><a href="global.html#faithCaseProblems">faithCaseProblems</a></li><li><a href="global.html#faithMissingOf">faithMissingOf</a></li><li><a href="global.html#faithNoteText">faithNoteText</a></li><li><a href="global.html#faithVerdictOf">faithVerdictOf</a></li><li><a href="global.html#fieldPlaceOf">fieldPlaceOf</a></li><li><a href="global.html#flattenEl">flattenEl</a></li><li><a href="global.html#gateNoteItem">gateNoteItem</a></li><li><a href="global.html#guideDefaultOf">guideDefaultOf</a></li><li><a href="global.html#hold">hold</a></li><li><a href="global.html#inAddScope">inAddScope</a></li><li><a href="global.html#indexedArrayCheck">indexedArrayCheck</a></li><li><a href="global.html#info">info</a></li><li><a href="global.html#ingestNotes">ingestNotes</a></li><li><a href="global.html#inputVocabProblems">inputVocabProblems</a></li><li><a href="global.html#isEvidenceRule">isEvidenceRule</a></li><li><a href="global.html#isNoteRow">isNoteRow</a></li><li><a href="global.html#jobForRemoved">jobForRemoved</a></li><li><a href="global.html#jobIdOf">jobIdOf</a></li><li><a href="global.html#jobScope">jobScope</a></li><li><a href="global.html#knownConceptOf">knownConceptOf</a></li><li><a href="global.html#levelMapOf">levelMapOf</a></li><li><a href="global.html#load">load</a></li><li><a href="global.html#mapContentSections">mapContentSections</a></li><li><a href="global.html#materialDocOf">materialDocOf</a></li><li><a href="global.html#materialExactValues">materialExactValues</a></li><li><a href="global.html#materialProblems">materialProblems</a></li><li><a href="global.html#materialValues">materialValues</a></li><li><a href="global.html#mdOf">mdOf</a></li><li><a href="global.html#mdText">mdText</a></li><li><a href="global.html#mergeContractLimits">mergeContractLimits</a></li><li><a href="global.html#mwGateNote">mwGateNote</a></li><li><a href="global.html#mwMarkDoc">mwMarkDoc</a></li><li><a href="global.html#mwPersistNote">mwPersistNote</a></li><li><a href="global.html#mwRenderNote">mwRenderNote</a></li><li><a href="global.html#mwSaveClues">mwSaveClues</a></li><li><a href="global.html#mwSettleTriage">mwSettleTriage</a></li><li><a href="global.html#mwSkipGate">mwSkipGate</a></li><li><a href="global.html#needThird">needThird</a></li><li><a href="global.html#noTopEvidenceOf">noTopEvidenceOf</a></li><li><a href="global.html#normConcepts">normConcepts</a></li><li><a href="global.html#normalizeNoteItem">normalizeNoteItem</a></li><li><a href="global.html#noteContentText">noteContentText</a></li><li><a href="global.html#noteContractOf">noteContractOf</a></li><li><a href="global.html#noteFeedbackOf">noteFeedbackOf</a></li><li><a href="global.html#noteFixOf">noteFixOf</a></li><li><a href="global.html#noteHoldDeadlineOf">noteHoldDeadlineOf</a></li><li><a href="global.html#noteItemFieldProblems">noteItemFieldProblems</a></li><li><a href="global.html#noteItemProblems">noteItemProblems</a></li><li><a href="global.html#noteMaterialFor">noteMaterialFor</a></li><li><a href="global.html#noteMaterialOf">noteMaterialOf</a></li><li><a href="global.html#noteMaterialText">noteMaterialText</a></li><li><a href="global.html#noteStd">noteStd</a></li><li><a href="global.html#noteUnitsOf">noteUnitsOf</a></li><li><a href="global.html#notesInflowOf">notesInflowOf</a></li><li><a href="global.html#notesInflowProblem">notesInflowProblem</a></li><li><a href="global.html#numberSet">numberSet</a></li><li><a href="global.html#openDocHolds">openDocHolds</a></li><li><a href="global.html#openStores">openStores</a></li><li><a href="global.html#originalTitleOf">originalTitleOf</a></li><li><a href="global.html#outputNumbers">outputNumbers</a></li><li><a href="global.html#packDocsByChars">packDocsByChars</a></li><li><a href="global.html#packOptOf">packOptOf</a></li><li><a href="global.html#panelFindingsOf">panelFindingsOf</a></li><li><a href="global.html#panelGroupOf">panelGroupOf</a></li><li><a href="global.html#panelSameProviderWarnings">panelSameProviderWarnings</a></li><li><a href="global.html#panelSeatRowsOf">panelSeatRowsOf</a></li><li><a href="global.html#panelSeats">panelSeats</a></li><li><a href="global.html#parseFrontmatter">parseFrontmatter</a></li><li><a href="global.html#parseSummarizeBenchArgs">parseSummarizeBenchArgs</a></li><li><a href="global.html#patchNoteRecord">patchNoteRecord</a></li><li><a href="global.html#patternsOf">patternsOf</a></li><li><a href="global.html#pickSummarizeVocab">pickSummarizeVocab</a></li><li><a href="global.html#planNoteStockFix">planNoteStockFix</a></li><li><a href="global.html#planSummarizeBench">planSummarizeBench</a></li><li><a href="global.html#proposalsOf">proposalsOf</a></li><li><a href="global.html#publishedOf">publishedOf</a></li><li><a href="global.html#putDocHold">putDocHold</a></li><li><a href="global.html#putRetagHold">putRetagHold</a></li><li><a href="global.html#queueRejudge">queueRejudge</a></li><li><a href="global.html#quote">quote</a></li><li><a href="global.html#rawPoolSplitOf">rawPoolSplitOf</a></li><li><a href="global.html#reEscape">reEscape</a></li><li><a href="global.html#readMd">readMd</a></li><li><a href="global.html#readNoteStockLedger">readNoteStockLedger</a></li><li><a href="global.html#readWatermark">readWatermark</a></li><li><a href="global.html#recordPatchOf">recordPatchOf</a></li><li><a href="global.html#renameKeysObsoleteOf">renameKeysObsoleteOf</a></li><li><a href="global.html#renderFrontmatter">renderFrontmatter</a></li><li><a href="global.html#repairBenchRole">repairBenchRole</a></li><li><a href="global.html#repairCaseProblems">repairCaseProblems</a></li><li><a href="global.html#repairPlanOf">repairPlanOf</a></li><li><a href="global.html#repairProblemsOf">repairProblemsOf</a></li><li><a href="global.html#repairVerdictOf">repairVerdictOf</a></li><li><a href="global.html#requeueCategory">requeueCategory</a></li><li><a href="global.html#resolveDocHolds">resolveDocHolds</a></li><li><a href="global.html#resolveJob">resolveJob</a></li><li><a href="global.html#resolveNoteHolds">resolveNoteHolds</a></li><li><a href="global.html#resolveSummarizeData">resolveSummarizeData</a></li><li><a href="global.html#resolveSummarizeSettings">resolveSummarizeSettings</a></li><li><a href="global.html#resolveSummarizeVocab">resolveSummarizeVocab</a></li><li><a href="global.html#retagBenchRole">retagBenchRole</a></li><li><a href="global.html#retagCaseProblems">retagCaseProblems</a></li><li><a href="global.html#retagJobLabelOf">retagJobLabelOf</a></li><li><a href="global.html#retagPageProblems">retagPageProblems</a></li><li><a href="global.html#retagTargetOf">retagTargetOf</a></li><li><a href="global.html#retagVerdictOf">retagVerdictOf</a></li><li><a href="global.html#reviveFailedDocs">reviveFailedDocs</a></li><li><a href="global.html#rewriteFieldOf">rewriteFieldOf</a></li><li><a href="global.html#rewriteMdField">rewriteMdField</a></li><li><a href="global.html#rollbackNoteRow">rollbackNoteRow</a></li><li><a href="global.html#rollbackNoteStockFix">rollbackNoteStockFix</a></li><li><a href="global.html#runAiBatchStage">runAiBatchStage</a></li><li><a href="global.html#runFaithCheck">runFaithCheck</a></li><li><a href="global.html#runPanelPage">runPanelPage</a></li><li><a href="global.html#runSummarizeBench">runSummarizeBench</a></li><li><a href="global.html#runSummarizeBenchCli">runSummarizeBenchCli</a></li><li><a href="global.html#save">save</a></li><li><a href="global.html#seatFaithVotesOf">seatFaithVotesOf</a></li><li><a href="global.html#section">section</a></li><li><a href="global.html#sectionBodyOf">sectionBodyOf</a></li><li><a href="global.html#sectionItemsOf">sectionItemsOf</a></li><li><a href="global.html#sectionOf">sectionOf</a></li><li><a href="global.html#settleRetagHolds">settleRetagHolds</a></li><li><a href="global.html#shortText">shortText</a></li><li><a href="global.html#splitTopLevel">splitTopLevel</a></li><li><a href="global.html#stageRetag">stageRetag</a></li><li><a href="global.html#stageSummarize">stageSummarize</a></li><li><a href="global.html#stageSync">stageSync</a></li><li><a href="global.html#stageTriage">stageTriage</a></li><li><a href="global.html#standardsVocabOf">standardsVocabOf</a></li><li><a href="global.html#stateFileOf">stateFileOf</a></li><li><a href="global.html#strArr">strArr</a></li><li><a href="global.html#stripIdentifiers">stripIdentifiers</a></li><li><a href="global.html#stripPatternsOf">stripPatternsOf</a></li><li><a href="global.html#stripSlugs">stripSlugs</a></li><li><a href="global.html#suggestConceptRenames">suggestConceptRenames</a></li><li><a href="global.html#summarizeBenchRole">summarizeBenchRole</a></li><li><a href="global.html#summarizeBenchRoleOf">summarizeBenchRoleOf</a></li><li><a href="global.html#summarizeCapacityOf">summarizeCapacityOf</a></li><li><a href="global.html#summarizeCaseProblems">summarizeCaseProblems</a></li><li><a href="global.html#summarizeFeatureProblems">summarizeFeatureProblems</a></li><li><a href="global.html#summarizePanelsOf">summarizePanelsOf</a></li><li><a href="global.html#summarizeScanOf">summarizeScanOf</a></li><li><a href="global.html#summarizeSeatOf">summarizeSeatOf</a></li><li><a href="global.html#summarizeSeatsOf">summarizeSeatsOf</a></li><li><a href="global.html#summarizeSummaryOf">summarizeSummaryOf</a></li><li><a href="global.html#summarizeVerdictOf">summarizeVerdictOf</a></li><li><a href="global.html#summarizeVocabProblem">summarizeVocabProblem</a></li><li><a href="global.html#summarizeWarningsOf">summarizeWarningsOf</a></li><li><a href="global.html#summaryTextOf">summaryTextOf</a></li><li><a href="global.html#syncFieldsOf">syncFieldsOf</a></li><li><a href="global.html#syncHashOf">syncHashOf</a></li><li><a href="global.html#syncNoteHolds">syncNoteHolds</a></li><li><a href="global.html#syncNotes">syncNotes</a></li><li><a href="global.html#syncTaxonomy">syncTaxonomy</a></li><li><a href="global.html#syncVocabOf">syncVocabOf</a></li><li><a href="global.html#tagSuspects">tagSuspects</a></li><li><a href="global.html#taxonomyFixOf">taxonomyFixOf</a></li><li><a href="global.html#taxonomyOf">taxonomyOf</a></li><li><a href="global.html#taxonomySnapshotOf">taxonomySnapshotOf</a></li><li><a href="global.html#taxonomyStatus">taxonomyStatus</a></li><li><a href="global.html#taxonomyVersion">taxonomyVersion</a></li><li><a href="global.html#triageBenchRole">triageBenchRole</a></li><li><a href="global.html#triageCaseProblems">triageCaseProblems</a></li><li><a href="global.html#triageEnabledOf">triageEnabledOf</a></li><li><a href="global.html#triagePendingOf">triagePendingOf</a></li><li><a href="global.html#triageReadyOf">triageReadyOf</a></li><li><a href="global.html#triageVerdictOf">triageVerdictOf</a></li><li><a href="global.html#trimItem">trimItem</a></li><li><a href="global.html#ungroundedLinesOf">ungroundedLinesOf</a></li><li><a href="global.html#ungroundedNumbers">ungroundedNumbers</a></li><li><a href="global.html#unquote">unquote</a></li><li><a href="global.html#verifyNoteStockChain">verifyNoteStockChain</a></li><li><a href="global.html#wordsOf">wordsOf</a></li><li><a href="global.html#writeMd">writeMd</a></li></ul>
+    
+</nav>
+
+<div id="main">
+    
+    <h1 class="page-title">stores/noteHolds.mjs</h1>
+    
+
+    
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>// noteHolds.mjs — 摘要之檢定標準待判(core/stores/holds 之摘要端用法:登錄、改判、結案、終態轉使用者)
+//
+// 【文件之待判(物件 doc,oid＝文件 id)】摘要納入閘判不納入(SS2／SS3／SS4／SS6／SS11)→ 登錄(負責者 pipeline,下一步「下輪附回饋重摘」);
+//   同一文件同時只留一筆未結之閘門待判——改判他標準時舊者結案(記「重摘後改判 X」)。重試耗盡轉 summarize-failed → 該文件未結之待判
+//   (閘門標準與 SS14)一律改由使用者處置(重開:ops/reviveFailed 之 reviveFailedDocs;或豁免:core/stores/holds 之 waiveHold＝確認不納入);
+//   SS14 不忠實之終態另登錄(SS14 判不了之兩段式流程不變——每次不忠實不登錄,否則下一次判不了會被當成「再判不了」直接轉使用者)。
+//   文件轉離 raw(納入、判非知識、素材退回抓取)→ 未結之閘門待判結案。
+// 【筆記之待判(物件 note,oid＝筆記 id)】同步入口(ops/syncNotes)確定性修正後仍不合格或未能判定之標準 → 登錄(負責者 user);
+//   之後該標準經判定合格 → 結案;筆記已不存在 → 結案。只處理經判定之標準(未判之標準——如無原文時之 SS4——不動其待判)。
+// 【重標之待判(物件 note、標準 SS9)】退役類別之重判逾次未成 → 筆記仍在清單外之類別 → 登錄(負責者 user;只記日誌會使之無處可追)。
+//   結案條件(重標子階段每輪檢查):筆記已不存在、或類別已在現行清單內。使用者要求重試(requestRetry)→ 重標子階段重排該退役類別之
+//   重判工作(其範圍＝仍在該類別之筆記,即逾次未成者);再次未成 → 重新登錄(重試要求隨之失效)。
+// 【期限】摘要之待判一律 NOTE_HOLD_DEADLINE_DAYS 天(noteHoldDeadlineOf——期限之機制為抓取套件之 holdDeadlineOf;摘要段之忠實性待判同讀此處);
+//   刻意不開放設定。
+// 【下一步之字樣】面向使用者:指本套件之處置 API(reviveFailedDocs、requestRetry、waiveHold),不指特定執行端之指令。
+
+import isarr from 'wsemi/src/isarr.mjs'
+import { putHold, resolveHold, holdKey, listHolds, holdDeadlineOf, retryRequestedOf } from '../core/capturePackage.mjs'
+import { NOTE_STANDARDS } from '../standards/noteStandards.mjs'
+import { shortText } from '../standards/noteNormalize.mjs'
+
+/** 摘要納入閘之標準(文件待判之標準) */
+const GATE_STDS = NOTE_STANDARDS.map((s) => s.id)
+/** 文件待判涵蓋之標準(閘門＋忠實性 SS14) */
+const DOC_STDS = [...GATE_STDS, 'SS14']
+
+/** 待判之期限(天;摘要之全部待判同一期限) */
+export const NOTE_HOLD_DEADLINE_DAYS = 30
+
+/**
+ * 摘要之待判之期限時刻(登錄時刻＋NOTE_HOLD_DEADLINE_DAYS 天;抓取套件之 holdDeadlineOf)
+ *
+ * @param {String} nowIso 輸入登錄時刻
+ * @returns {String} 回傳期限時刻(ISO 8601,UTC)
+ * @throws {RangeError} nowIso 不可解析時拋出
+ * @example
+ * console.log(noteHoldDeadlineOf('2026-10-05T10:00:00+08:00'))
+ * // => 2026-11-04T02:00:00.000Z
+ */
+export function noteHoldDeadlineOf(nowIso) {
+    return holdDeadlineOf(nowIso, NOTE_HOLD_DEADLINE_DAYS)
+}
+
+/** 文件待判之下一步 */
+export const DOC_HOLD_NEXT = Object.freeze({
+    retry: '下輪附回饋重摘',
+    user: '使用者處置：重開（reviveFailedDocs：原文自 docTexts 回填、狀態回 raw、tries 歸零，下輪重摘）或豁免（waiveHold：確認不納入）',
+})
+
+/** 筆記待判(同步入口)之下一步 */
+export const NOTE_HOLD_NEXT = '使用者修正 md 後由筆記同步重驗（合格即結案；改標題／概念／一句話重點以外之章亦會重驗），或豁免（waiveHold：確認維持）'
+
+/**
+ * 某文件未結之待判
+ *
+ * @param {Object} holds 輸入 holds 集合
+ * @param {String} docId 輸入文件 id
+ * @param {Array} [stds] 輸入標準(預設閘門＋SS14)
+ * @returns {Promise} 回傳 Promise，resolve 回傳未結案之登錄陣列
+ */
+async function openDocHolds(holds, docId, stds = DOC_STDS) {
+    const out = []
+    for (const s of stds) {
+        const h = await holds.get(holdKey('doc', docId, s))
+        if (h?.status === 'open') out.push(h)
+    }
+    return out
+}
+
+/**
+ * 登錄文件之不納入(閘門標準:每次;SS14:只在終態);終態時該文件其餘未結待判一併轉使用者
+ *
+ * @param {Object} holds 輸入 holds 集合
+ * @param {Object} doc 輸入文件記錄(取 id、title)
+ * @param {Object} o 輸入 { std:不納入之主要標準, why:原因, terminal:Boolean(已轉 summarize-failed), tries:Integer, nowIso }
+ * @returns {Promise} 回傳 Promise，resolve 回傳 { held:Integer, resolved:Integer, escalated:Integer }
+ * @example
+ * let rows = new Map()
+ * let holds = { get: async (id) => rows.get(id) ?? null, replace: async (r) => { rows.set(r.id, r) }, select: async () => [...rows.values()] }
+ * let nowIso = new Date().toISOString()
+ * let doc = { id: 'd1', title: '恆星分類' }
+ * console.log(await putDocHold(holds, doc, { std: 'SS6', why: '概念擠一標籤', nowIso }), rows.get('doc:d1:SS6').owner)
+ * // => { held: 1, resolved: 0, escalated: 0 } pipeline
+ * console.log(await putDocHold(holds, doc, { std: 'SS2', why: '缺標題', terminal: true, tries: 3, nowIso }), rows.get('doc:d1:SS6').status, rows.get('doc:d1:SS2').owner)
+ * // => { held: 1, resolved: 1, escalated: 0 } resolved user
+ */
+export async function putDocHold(holds, doc, o = {}) {
+    const out = { held: 0, resolved: 0, escalated: 0 }
+    const std = String(o.std || '')
+    const gate = GATE_STDS.includes(std)
+    if (gate) {
+        // 同一文件只留一筆未結之閘門待判:改判他標準 → 舊者結案
+        for (const h of await openDocHolds(holds, doc.id, GATE_STDS.filter((s) => s !== std))) {
+            if (await resolveHold(holds, h.id, { how: `重摘後改判 ${std}`, at: o.nowIso })) out.resolved++
+        }
+    }
+    if (gate || (std &amp;&amp; o.terminal)) {
+        await putHold(holds, {
+            object: 'doc', oid: doc.id, std,
+            reason: `摘要未達檢定標準（${std}）：〈${shortText(doc.title, 40)}〉${shortText(o.why, 300)}${o.terminal ? `——已試 ${o.tries ?? '?'} 次，轉 summarize-failed` : ''}`,
+            next: o.terminal ? DOC_HOLD_NEXT.user : DOC_HOLD_NEXT.retry,
+            owner: o.terminal ? 'user' : 'pipeline',
+            deadline: noteHoldDeadlineOf(o.nowIso),
+            ctx: { title: String(doc.title || ''), tries: String(o.tries ?? '') },
+        }, o.nowIso)
+        out.held++
+    }
+    if (o.terminal) out.escalated += await escalateDocHolds(holds, doc, { why: o.why, nowIso: o.nowIso, except: std })
+    return out
+}
+
+/**
+ * 文件轉 summarize-failed(終態)時,其未結之待判一律改由使用者處置
+ *
+ * @param {Object} holds 輸入 holds 集合
+ * @param {Object} doc 輸入文件記錄
+ * @param {Object} o 輸入 { why:終態原因, nowIso, except:不處理之標準(已由呼叫端登錄者) }
+ * @returns {Promise} 回傳 Promise，resolve 回傳轉使用者之筆數
+ * @example
+ * let rows = new Map()
+ * let holds = { get: async (id) => rows.get(id) ?? null, replace: async (r) => { rows.set(r.id, r) }, select: async () => [...rows.values()] }
+ * let nowIso = new Date().toISOString()
+ * let doc = { id: 'd1', title: '恆星分類' }
+ * await putDocHold(holds, doc, { std: 'SS6', why: '概念擠一標籤', nowIso })
+ * console.log(rows.get('doc:d1:SS6').owner, await escalateDocHolds(holds, doc, { why: '重試耗盡', nowIso }), rows.get('doc:d1:SS6').owner)
+ * // => pipeline 1 user
+ * console.log(await escalateDocHolds(holds, doc, { why: '重試耗盡', nowIso }))
+ * // => 0
+ */
+export async function escalateDocHolds(holds, doc, o = {}) {
+    let n = 0
+    for (const h of await openDocHolds(holds, doc.id, DOC_STDS.filter((s) => s !== o.except))) {
+        // 已轉使用者者不重複:以 owner 判,不比 next 字樣(既有之登錄可能為他版字樣——比字樣會重轉並重複附加原因)
+        if (h.owner === 'user') continue
+        await putHold(holds, { object: h.object, oid: h.oid, std: h.std, reason: `${shortText(h.reason, 400)}｜其後轉 summarize-failed（${shortText(o.why, 120)}）`, next: DOC_HOLD_NEXT.user, owner: 'user', deadline: noteHoldDeadlineOf(o.nowIso), ctx: h.ctx || {} }, o.nowIso)
+        n++
+    }
+    return n
+}
+
+/**
+ * 結案文件之未結待判(文件已納入、判非知識、退回抓取,或使用者重開)
+ *
+ * @param {Object} holds 輸入 holds 集合
+ * @param {String} docId 輸入文件 id
+ * @param {Object} o 輸入 { how:處置方式, nowIso, withFaith:Boolean(連同 SS14;預設只閘門標準) }
+ * @returns {Promise} 回傳 Promise，resolve 回傳結案筆數
+ * @example
+ * let rows = new Map()
+ * let holds = { get: async (id) => rows.get(id) ?? null, replace: async (r) => { rows.set(r.id, r) }, select: async () => [...rows.values()] }
+ * let nowIso = new Date().toISOString()
+ * await putDocHold(holds, { id: 'd1', title: '恆星分類' }, { std: 'SS6', why: '概念擠一標籤', nowIso })
+ * console.log(await resolveDocHolds(holds, 'd1', { how: '已納入', nowIso }), rows.get('doc:d1:SS6').status)
+ * // => 1 resolved
+ */
+export async function resolveDocHolds(holds, docId, o = {}) {
+    let n = 0
+    for (const h of await openDocHolds(holds, docId, o.withFaith ? DOC_STDS : GATE_STDS)) {
+        if (await resolveHold(holds, h.id, { how: String(o.how || ''), at: o.nowIso })) n++
+    }
+    return n
+}
+
+/**
+ * 筆記之待判依判定結果更新(同步入口):不合格／未能判定 → 登錄(使用者);經判定合格且有未結者 → 結案
+ *
+ * @param {Object} holds 輸入 holds 集合
+ * @param {Object} note 輸入筆記記錄(取 id、title、file)
+ * @param {Array} results 輸入 checkNote 之結果
+ * @param {Object} o 輸入 { nowIso, via:String(登錄來源說明,如「筆記同步」) }
+ * @returns {Promise} 回傳 Promise，resolve 回傳 { held:Array(標準), resolved:Array(標準) }
+ * @example
+ * let rows = new Map()
+ * let holds = { get: async (id) => rows.get(id) ?? null, replace: async (r) => { rows.set(r.id, r) }, select: async () => [...rows.values()] }
+ * let nowIso = new Date().toISOString()
+ * let note = { id: 'n1', title: '恆星分類', file: 'n1.md' }
+ * let bad = [{ std: 'SS6', status: 'violation', detail: '計數尾碼「主序星(12)」' }, { std: 'SS2', status: 'pass' }]
+ * console.log(await syncNoteHolds(holds, note, bad, { nowIso }))
+ * // => { held: [ 'SS6' ], resolved: [] }
+ * console.log(await syncNoteHolds(holds, note, [{ std: 'SS6', status: 'pass' }], { nowIso }), rows.get('note:n1:SS6').how)
+ * // => { held: [], resolved: [ 'SS6' ] } 筆記同步重驗合格
+ */
+export async function syncNoteHolds(holds, note, results, o = {}) {
+    const held = []
+    const resolved = []
+    for (const r of isarr(results) ? results : []) {
+        if (!GATE_STDS.includes(r?.std)) continue
+        const id = holdKey('note', note.id, r.std)
+        if (r.status === 'violation' || r.status === 'undetermined') {
+            await putHold(holds, {
+                object: 'note', oid: note.id, std: r.std,
+                reason: `${o.via || '筆記同步'}後${r.status === 'undetermined' ? '未能判定' : '未達檢定標準'}（${r.std}）：〈${shortText(note.title, 40)}〉${shortText(r.detail, 300)}`,
+                next: NOTE_HOLD_NEXT,
+                owner: 'user',
+                deadline: noteHoldDeadlineOf(o.nowIso),
+                ctx: { title: String(note.title || ''), file: String(note.file || '') },
+            }, o.nowIso)
+            held.push(r.std)
+        }
+        else if (r.status === 'pass') {
+            const h = await holds.get(id)
+            if (h?.status === 'open' &amp;&amp; await resolveHold(holds, id, { how: `${o.via || '筆記同步'}重驗合格`, at: o.nowIso })) resolved.push(r.std)
+        }
+    }
+    return { held, resolved }
+}
+
+/**
+ * 筆記已不存在者,其未結之筆記待判結案
+ *
+ * @param {Object} holds 輸入 holds 集合
+ * @param {String} noteId 輸入筆記 id
+ * @param {Object} o 輸入 { nowIso, how?:處置方式(預設「筆記已不存在」) }
+ * @returns {Promise} 回傳 Promise，resolve 回傳結案筆數
+ * @example
+ * let rows = new Map()
+ * let holds = { get: async (id) => rows.get(id) ?? null, replace: async (r) => { rows.set(r.id, r) }, select: async () => [...rows.values()] }
+ * let nowIso = new Date().toISOString()
+ * await syncNoteHolds(holds, { id: 'n1', title: '恆星分類' }, [{ std: 'SS2', status: 'undetermined', detail: '缺標題' }], { nowIso })
+ * console.log(await resolveNoteHolds(holds, 'n1', { nowIso }), rows.get('note:n1:SS2').how)
+ * // => 1 筆記已不存在
+ */
+export async function resolveNoteHolds(holds, noteId, o = {}) {
+    let n = 0
+    for (const s of GATE_STDS) {
+        const h = await holds.get(holdKey('note', noteId, s))
+        if (h?.status === 'open' &amp;&amp; await resolveHold(holds, h.id, { how: String(o.how || '筆記已不存在'), at: o.nowIso })) n++
+    }
+    return n
+}
+
+/** 重標待判之標準(檔頭【重標之待判】) */
+export const RETAG_HOLD_STD = 'SS9'
+/**
+ * 重標待判之下一步(面向使用者的處置字樣:要求重試或豁免;putRetagHold 登錄時寫入 next)
+ *
+ * @type {String}
+ */
+export const RETAG_HOLD_NEXT = '使用者處置：要求重試（requestRetry：重排該退役類別之重判；類別改到清單內即自動結案）或豁免（waiveHold：確認維持）'
+
+/** 同一筆記於同一重標工作 AI 重判至多幾次未成即略過之(退役類別者登錄待判);重標子階段與待判之原因同讀此值 */
+export const RETAG_MAX_FAILS = 2
+
+/**
+ * 登錄重標待判:退役類別之重判逾次未成(筆記仍在清單外之類別)
+ *
+ * @param {Object} holds 輸入 holds 集合
+ * @param {Object} note 輸入筆記記錄(取 id、title)
+ * @param {Object} o 輸入 { category:退役之類別, why:未成原因, fails:Integer, nowIso }
+ * @returns {Promise} 回傳 Promise，resolve 回傳 undefined
+ * @example
+ * let rows = new Map()
+ * let holds = { get: async (id) => rows.get(id) ?? null, replace: async (r) => { rows.set(r.id, r) }, select: async () => [...rows.values()] }
+ * let nowIso = new Date().toISOString()
+ * await putRetagHold(holds, { id: 'n1', title: '恆星分類' }, { category: '舊分類', why: '回覆不在清單', fails: 2, nowIso })
+ * console.log(rows.get('note:n1:SS9').reason)
+ * // => 退役類別「舊分類」之重判 2 次未成（回覆不在清單）：〈恆星分類〉仍在已退役之類別
+ * console.log(rows.get('note:n1:SS9').owner, rows.get('note:n1:SS9').next === RETAG_HOLD_NEXT)
+ * // => user true
+ */
+export async function putRetagHold(holds, note, o = {}) {
+    await putHold(holds, {
+        object: 'note', oid: note.id, std: RETAG_HOLD_STD,
+        reason: `退役類別「${o.category}」之重判 ${o.fails ?? RETAG_MAX_FAILS} 次未成（${shortText(o.why, 120)}）：〈${shortText(note.title, 40)}〉仍在已退役之類別`,
+        next: RETAG_HOLD_NEXT,
+        owner: 'user',
+        deadline: noteHoldDeadlineOf(o.nowIso),
+        ctx: { title: String(note.title || ''), category: String(o.category || '') },
+    }, o.nowIso)
+}
+
+/**
+ * 重標待判之結案與重試(重標子階段每輪):筆記不在 → 結案;類別已在清單內 → 結案;使用者要求重試(抓取套件之 retryRequestedOf:要求晚於
+ *   登錄之最後更新)→ 回傳該筆記現所在之退役類別(呼叫端重排其重判工作)
+ *
+ * @param {Object} holds 輸入 holds 集合
+ * @param {Map} notesById 輸入筆記 id → 記錄
+ * @param {Array} categories 輸入現行類別清單
+ * @param {Object} o 輸入 { nowIso }
+ * @returns {Promise} 回傳 Promise，resolve 回傳 { resolved:Integer, open:Integer, retry:Array(類別;去重) }
+ * @example
+ * let rows = new Map()
+ * let holds = { get: async (id) => rows.get(id) ?? null, replace: async (r) => { rows.set(r.id, r) }, select: async () => [...rows.values()] }
+ * let nowIso = new Date().toISOString()
+ * for (let id of ['n1', 'n2', 'n3']) await putRetagHold(holds, { id, title: `筆記 ${id}` }, { category: '舊分類', why: '回覆不在清單', nowIso })
+ * rows.get('note:n1:SS9').retryRequestedAt = new Date(Date.now() + 60000).toISOString() // 模擬使用者要求重試(requestRetry)之紀錄
+ * let notes = new Map([['n1', { id: 'n1', category: '舊分類' }], ['n3', { id: 'n3', category: '恆星' }]])
+ * console.log(await settleRetagHolds(holds, notes, ['恆星', '其他'], { nowIso }))
+ * // => { resolved: 2, open: 1, retry: [ '舊分類' ] }
+ * console.log(rows.get('note:n2:SS9').how, rows.get('note:n3:SS9').how)
+ * // => 筆記已不存在 類別已在清單內（恆星）
+ */
+export async function settleRetagHolds(holds, notesById, categories, o = {}) {
+    const out = { resolved: 0, open: 0, retry: [] }
+    const list = isarr(categories) ? categories : []
+    for (const h of await listHolds(holds, { status: 'open', object: 'note', std: RETAG_HOLD_STD })) {
+        const n = notesById instanceof Map ? notesById.get(h.oid) : null
+        const how = !n ? '筆記已不存在' : (list.includes(n.category) ? `類別已在清單內（${n.category}）` : '')
+        if (how) {
+            if (await resolveHold(holds, h.id, { how, at: o.nowIso })) out.resolved++
+            continue
+        }
+        out.open++
+        if (retryRequestedOf(h) &amp;&amp; !out.retry.includes(n.category)) out.retry.push(n.category)
+    }
+    return out
+}
+
+export default {
+    NOTE_HOLD_DEADLINE_DAYS, noteHoldDeadlineOf, DOC_HOLD_NEXT, NOTE_HOLD_NEXT,
+    putDocHold, escalateDocHolds, resolveDocHolds, syncNoteHolds, resolveNoteHolds, RETAG_HOLD_STD, RETAG_HOLD_NEXT, RETAG_MAX_FAILS, putRetagHold, settleRetagHolds,
+}
+</code></pre>
+        </article>
+    </section>
+
+
+
+
+    
+    
+</div>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 4.0.5</a> on Sun Nov 01 2026 23:10:48 GMT+0800 (台北標準時間) using the <a href="https://github.com/clenemt/docdash">docdash</a> theme.
+</footer>
+
+<script>prettyPrint();</script>
+<script src="scripts/polyfill.js"></script>
+<script src="scripts/linenumber.js"></script>
+
+
+
+</body>
+</html>

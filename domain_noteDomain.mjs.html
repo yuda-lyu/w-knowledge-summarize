@@ -1,0 +1,463 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    
+    <meta charset="utf-8">
+    <title>domain/noteDomain.mjs - Documentation</title>
+    
+    
+    <script src="scripts/prettify/prettify.js"></script>
+    <script src="scripts/prettify/lang-css.js"></script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc.css">
+    <script src="scripts/nav.js" defer></script>
+    
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+</head>
+<body>
+
+<input type="checkbox" id="nav-trigger" class="nav-trigger" />
+<label for="nav-trigger" class="navicon-button x">
+  <div class="navicon"></div>
+</label>
+
+<label for="nav-trigger" class="overlay"></label>
+
+<nav >
+    
+    
+    <h2><a href="index.html">Home</a></h2><h3>Global</h3><ul><li><a href="global.html#AI_ADAPTER_OPT">AI_ADAPTER_OPT</a></li><li><a href="global.html#AI_BATCH_LOG_KNOWN">AI_BATCH_LOG_KNOWN</a></li><li><a href="global.html#AI_BATCH_LOG_MUST_SEE">AI_BATCH_LOG_MUST_SEE</a></li><li><a href="global.html#AI_BATCH_REVIEW_LOG_KNOWN">AI_BATCH_REVIEW_LOG_KNOWN</a></li><li><a href="global.html#AI_PENDING_SOURCE">AI_PENDING_SOURCE</a></li><li><a href="global.html#CACHE">CACHE</a></li><li><a href="global.html#CFG_KEYS">CFG_KEYS</a></li><li><a href="global.html#CLAUSE_SPLIT">CLAUSE_SPLIT</a></li><li><a href="global.html#CLI">CLI</a></li><li><a href="global.html#COLLECTION_KEYS">COLLECTION_KEYS</a></li><li><a href="global.html#COMPILED">COMPILED</a></li><li><a href="global.html#CONCEPT_COUNT">CONCEPT_COUNT</a></li><li><a href="global.html#CONFIRM_SCHEMA">CONFIRM_SCHEMA</a></li><li><a href="global.html#CONTRACT_FIELD_TYPES">CONTRACT_FIELD_TYPES</a></li><li><a href="global.html#DATA_KEYS">DATA_KEYS</a></li><li><a href="global.html#DIGEST_DEFAULT">DIGEST_DEFAULT</a></li><li><a href="global.html#DIGEST_PROMPT_SIGS">DIGEST_PROMPT_SIGS</a></li><li><a href="global.html#DISABLED">DISABLED</a></li><li><a href="global.html#DOC_HOLD_NEXT">DOC_HOLD_NEXT</a></li><li><a href="global.html#DOC_STDS">DOC_STDS</a></li><li><a href="global.html#DOMAIN_FACTORY">DOMAIN_FACTORY</a></li><li><a href="global.html#DOMAIN_PROMPT_SIGS">DOMAIN_PROMPT_SIGS</a></li><li><a href="global.html#EVIDENCE_RULE_DEFAULT">EVIDENCE_RULE_DEFAULT</a></li><li><a href="global.html#EVIDENCE_RULE_KEYS">EVIDENCE_RULE_KEYS</a></li><li><a href="global.html#EVIDENCE_STD">EVIDENCE_STD</a></li><li><a href="global.html#FAITH_BLANK">FAITH_BLANK</a></li><li><a href="global.html#FAITH_HOLD_NEXT">FAITH_HOLD_NEXT</a></li><li><a href="global.html#FAITH_PAGE">FAITH_PAGE</a></li><li><a href="global.html#FAITH_VERDICTS">FAITH_VERDICTS</a></li><li><a href="global.html#GATE_STDS">GATE_STDS</a></li><li><a href="global.html#HOLD_OBJECT">HOLD_OBJECT</a></li><li><a href="global.html#LINE_BREAKS">LINE_BREAKS</a></li><li><a href="global.html#MATERIAL_EXCLUDE_PATTERNS_DEFAULT">MATERIAL_EXCLUDE_PATTERNS_DEFAULT</a></li><li><a href="global.html#MATERIAL_PROBLEM_PATTERNS_DEFAULT">MATERIAL_PROBLEM_PATTERNS_DEFAULT</a></li><li><a href="global.html#MIN_START_MS">MIN_START_MS</a></li><li><a href="global.html#NAMESPACES">NAMESPACES</a></li><li><a href="global.html#NON_CONTENT_SECTIONS">NON_CONTENT_SECTIONS</a></li><li><a href="global.html#NOTES_DIR">NOTES_DIR</a></li><li><a href="global.html#NOTE_ARRAY_FIELDS">NOTE_ARRAY_FIELDS</a></li><li><a href="global.html#NOTE_CONTRACT_FIELDS">NOTE_CONTRACT_FIELDS</a></li><li><a href="global.html#NOTE_CONTRACT_STANDARDS">NOTE_CONTRACT_STANDARDS</a></li><li><a href="global.html#NOTE_ENTRIES">NOTE_ENTRIES</a></li><li><a href="global.html#NOTE_FIELD_LABELS">NOTE_FIELD_LABELS</a></li><li><a href="global.html#NOTE_FIELD_LIMITS">NOTE_FIELD_LIMITS</a></li><li><a href="global.html#NOTE_FIX_STDS">NOTE_FIX_STDS</a></li><li><a href="global.html#NOTE_HOLD_DEADLINE_DAYS">NOTE_HOLD_DEADLINE_DAYS</a></li><li><a href="global.html#NOTE_HOLD_NEXT">NOTE_HOLD_NEXT</a></li><li><a href="global.html#NOTE_LIST_FIELDS">NOTE_LIST_FIELDS</a></li><li><a href="global.html#NOTE_PLACEHOLDERS">NOTE_PLACEHOLDERS</a></li><li><a href="global.html#NOTE_PROMPT_SIGS">NOTE_PROMPT_SIGS</a></li><li><a href="global.html#NOTE_QUALITY_LABELS">NOTE_QUALITY_LABELS</a></li><li><a href="global.html#NOTE_SECTION_ORDER">NOTE_SECTION_ORDER</a></li><li><a href="global.html#NOTE_SECTION_TITLES">NOTE_SECTION_TITLES</a></li><li><a href="global.html#NOTE_SOURCE_LABELS">NOTE_SOURCE_LABELS</a></li><li><a href="global.html#NOTE_STANDARDS">NOTE_STANDARDS</a></li><li><a href="global.html#NOTE_SYNC_STATE">NOTE_SYNC_STATE</a></li><li><a href="global.html#NOTE_TEXT_FIELDS">NOTE_TEXT_FIELDS</a></li><li><a href="global.html#NO_KNOWN_CONCEPT">NO_KNOWN_CONCEPT</a></li><li><a href="global.html#NO_MATERIAL_DETAIL">NO_MATERIAL_DETAIL</a></li><li><a href="global.html#OPTIONAL_DOMAIN_MEMBERS">OPTIONAL_DOMAIN_MEMBERS</a></li><li><a href="global.html#OPT_KEYS">OPT_KEYS</a></li><li><a href="global.html#PANEL_DEFS">PANEL_DEFS</a></li><li><a href="global.html#PANEL_SCHEMA">PANEL_SCHEMA</a></li><li><a href="global.html#PANEL_STAGES">PANEL_STAGES</a></li><li><a href="global.html#PANEL_THIRD_STOP">PANEL_THIRD_STOP</a></li><li><a href="global.html#PANEL_UNSURE">PANEL_UNSURE</a></li><li><a href="global.html#PANEL_WHY">PANEL_WHY</a></li><li><a href="global.html#PANEL_WHY_LABELS">PANEL_WHY_LABELS</a></li><li><a href="global.html#PIPELINE_NAME">PIPELINE_NAME</a></li><li><a href="global.html#PROJECTION_SECTION_TITLES">PROJECTION_SECTION_TITLES</a></li><li><a href="global.html#PROMPT_DOMAIN">PROMPT_DOMAIN</a></li><li><a href="global.html#PROMPT_KEYS">PROMPT_KEYS</a></li><li><a href="global.html#REJUDGE_REASON_LABELS">REJUDGE_REASON_LABELS</a></li><li><a href="global.html#RENAME_FIELDS">RENAME_FIELDS</a></li><li><a href="global.html#REPAIR_BLANK">REPAIR_BLANK</a></li><li><a href="global.html#RETAG_BLANK">RETAG_BLANK</a></li><li><a href="global.html#RETAG_HOLD_NEXT">RETAG_HOLD_NEXT</a></li><li><a href="global.html#RETAG_HOLD_STD">RETAG_HOLD_STD</a></li><li><a href="global.html#RETAG_MAX_FAILS">RETAG_MAX_FAILS</a></li><li><a href="global.html#RETAG_PROMPT_SIGS">RETAG_PROMPT_SIGS</a></li><li><a href="global.html#RETAG_REASONS">RETAG_REASONS</a></li><li><a href="global.html#S">S</a></li><li><a href="global.html#SEAT_FALLBACK_STAGES">SEAT_FALLBACK_STAGES</a></li><li><a href="global.html#SECTIONS">SECTIONS</a></li><li><a href="global.html#SHAPE_DOMAIN">SHAPE_DOMAIN</a></li><li><a href="global.html#SS14">SS14</a></li><li><a href="global.html#SS14_OBJECT">SS14_OBJECT</a></li><li><a href="global.html#SUMMARIZE_AI_DEFAULT">SUMMARIZE_AI_DEFAULT</a></li><li><a href="global.html#SUMMARIZE_AI_PENDING_STANDARD_IDS">SUMMARIZE_AI_PENDING_STANDARD_IDS</a></li><li><a href="global.html#SUMMARIZE_AI_SCHEMA">SUMMARIZE_AI_SCHEMA</a></li><li><a href="global.html#SUMMARIZE_AUDITED_STANDARD_IDS">SUMMARIZE_AUDITED_STANDARD_IDS</a></li><li><a href="global.html#SUMMARIZE_BENCH_CASES_FILES">SUMMARIZE_BENCH_CASES_FILES</a></li><li><a href="global.html#SUMMARIZE_BENCH_MODELS">SUMMARIZE_BENCH_MODELS</a></li><li><a href="global.html#SUMMARIZE_BENCH_ROLES">SUMMARIZE_BENCH_ROLES</a></li><li><a href="global.html#SUMMARIZE_BENCH_USAGE">SUMMARIZE_BENCH_USAGE</a></li><li><a href="global.html#SUMMARIZE_BLANK">SUMMARIZE_BLANK</a></li><li><a href="global.html#SUMMARIZE_CAPACITY_DESC">SUMMARIZE_CAPACITY_DESC</a></li><li><a href="global.html#SUMMARIZE_CTX_FLAGS">SUMMARIZE_CTX_FLAGS</a></li><li><a href="global.html#SUMMARIZE_DATA_KEYS">SUMMARIZE_DATA_KEYS</a></li><li><a href="global.html#SUMMARIZE_DEFAULT">SUMMARIZE_DEFAULT</a></li><li><a href="global.html#SUMMARIZE_DIRS">SUMMARIZE_DIRS</a></li><li><a href="global.html#SUMMARIZE_DOC_STATUS">SUMMARIZE_DOC_STATUS</a></li><li><a href="global.html#SUMMARIZE_DOMAIN_KEYS">SUMMARIZE_DOMAIN_KEYS</a></li><li><a href="global.html#SUMMARIZE_FEATURES">SUMMARIZE_FEATURES</a></li><li><a href="global.html#SUMMARIZE_GUIDE_FIELDS">SUMMARIZE_GUIDE_FIELDS</a></li><li><a href="global.html#SUMMARIZE_LOG_KNOWN">SUMMARIZE_LOG_KNOWN</a></li><li><a href="global.html#SUMMARIZE_LOG_MUST_SEE">SUMMARIZE_LOG_MUST_SEE</a></li><li><a href="global.html#SUMMARIZE_LOG_PARSE">SUMMARIZE_LOG_PARSE</a></li><li><a href="global.html#SUMMARIZE_PROMPT_SIGS">SUMMARIZE_PROMPT_SIGS</a></li><li><a href="global.html#SUMMARIZE_REPORT_KEYS">SUMMARIZE_REPORT_KEYS</a></li><li><a href="global.html#SUMMARIZE_SCAN_OBJECT">SUMMARIZE_SCAN_OBJECT</a></li><li><a href="global.html#SUMMARIZE_SCHEMA">SUMMARIZE_SCHEMA</a></li><li><a href="global.html#SUMMARIZE_SEATS">SUMMARIZE_SEATS</a></li><li><a href="global.html#SUMMARIZE_SEAT_LABELS">SUMMARIZE_SEAT_LABELS</a></li><li><a href="global.html#SUMMARIZE_SHARED_KEYS">SUMMARIZE_SHARED_KEYS</a></li><li><a href="global.html#SUMMARIZE_SKIP_KIND">SUMMARIZE_SKIP_KIND</a></li><li><a href="global.html#SUMMARIZE_STAGE_KEYS">SUMMARIZE_STAGE_KEYS</a></li><li><a href="global.html#SUMMARIZE_STANDARDS">SUMMARIZE_STANDARDS</a></li><li><a href="global.html#SUMMARIZE_STORE_KEYS">SUMMARIZE_STORE_KEYS</a></li><li><a href="global.html#SUMMARIZE_TAP_STAGE_KEYS">SUMMARIZE_TAP_STAGE_KEYS</a></li><li><a href="global.html#SUMMARIZE_VOCAB_DEFAULT">SUMMARIZE_VOCAB_DEFAULT</a></li><li><a href="global.html#SUMMARIZE_VOCAB_KEYS">SUMMARIZE_VOCAB_KEYS</a></li><li><a href="global.html#SUMMARIZE_VOCAB_NULL_AS">SUMMARIZE_VOCAB_NULL_AS</a></li><li><a href="global.html#SUMMARY_SECTION">SUMMARY_SECTION</a></li><li><a href="global.html#SYNC_KEYS">SYNC_KEYS</a></li><li><a href="global.html#TAXONOMY_STATE_FILE">TAXONOMY_STATE_FILE</a></li><li><a href="global.html#TAXONOMY_STATE_VERSION">TAXONOMY_STATE_VERSION</a></li><li><a href="global.html#TRIAGE_BLANK">TRIAGE_BLANK</a></li><li><a href="global.html#TRIAGE_PROMPT_SIGS">TRIAGE_PROMPT_SIGS</a></li><li><a href="global.html#TRIAGE_SKIP_PREFIX">TRIAGE_SKIP_PREFIX</a></li><li><a href="global.html#TRIAGE_STATE">TRIAGE_STATE</a></li><li><a href="global.html#WKnowledgeSummarize">WKnowledgeSummarize</a></li><li><a href="global.html#annotationOf">annotationOf</a></li><li><a href="global.html#applyNoteStockFix">applyNoteStockFix</a></li><li><a href="global.html#applyRepairs">applyRepairs</a></li><li><a href="global.html#assertSummarizeVocab">assertSummarizeVocab</a></li><li><a href="global.html#auditSummarizeStandards">auditSummarizeStandards</a></li><li><a href="global.html#benchAdmitNoteItem">benchAdmitNoteItem</a></li><li><a href="global.html#bodyPartsOf">bodyPartsOf</a></li><li><a href="global.html#buildNote">buildNote</a></li><li><a href="global.html#capacityWarningsOf">capacityWarningsOf</a></li><li><a href="global.html#categoryOf">categoryOf</a></li><li><a href="global.html#categoryProposals">categoryProposals</a></li><li><a href="global.html#changedUnitsOf">changedUnitsOf</a></li><li><a href="global.html#check">check</a></li><li><a href="global.html#checkFaithChecks">checkFaithChecks</a></li><li><a href="global.html#checkFaithVerdictOf">checkFaithVerdictOf</a></li><li><a href="global.html#checkNote">checkNote</a></li><li><a href="global.html#checkRepairReply">checkRepairReply</a></li><li><a href="global.html#cleanStrList">cleanStrList</a></li><li><a href="global.html#cnValue">cnValue</a></li><li><a href="global.html#compile">compile</a></li><li><a href="global.html#composeNoteMd">composeNoteMd</a></li><li><a href="global.html#conceptCountDetail">conceptCountDetail</a></li><li><a href="global.html#conceptLabelProblem">conceptLabelProblem</a></li><li><a href="global.html#conceptVocabulary">conceptVocabulary</a></li><li><a href="global.html#contractFieldProblems">contractFieldProblems</a></li><li><a href="global.html#contractOf">contractOf</a></li><li><a href="global.html#contractProblem">contractProblem</a></li><li><a href="global.html#createDigestDomain">createDigestDomain</a></li><li><a href="global.html#createKnowledgeSummarize">createKnowledgeSummarize</a></li><li><a href="global.html#createMaterialPolicy">createMaterialPolicy</a></li><li><a href="global.html#createNoteRestoreGate">createNoteRestoreGate</a></li><li><a href="global.html#createRetagDomain">createRetagDomain</a></li><li><a href="global.html#createSummarizeDomain">createSummarizeDomain</a></li><li><a href="global.html#createSummarizeObject">createSummarizeObject</a></li><li><a href="global.html#createSummarizeRuntime">createSummarizeRuntime</a></li><li><a href="global.html#createTaxonomyStore">createTaxonomyStore</a></li><li><a href="global.html#createTriageDomain">createTriageDomain</a></li><li><a href="global.html#decidePanel">decidePanel</a></li><li><a href="global.html#deepFreeze">deepFreeze</a></li><li><a href="global.html#describe">describe</a></li><li><a href="global.html#diffLabelOf">diffLabelOf</a></li><li><a href="global.html#diffTaxonomy">diffTaxonomy</a></li><li><a href="global.html#domainNeeds">domainNeeds</a></li><li><a href="global.html#dropSection">dropSection</a></li><li><a href="global.html#dropUngrounded">dropUngrounded</a></li><li><a href="global.html#escalateDocHolds">escalateDocHolds</a></li><li><a href="global.html#evidenceCaveatsOf">evidenceCaveatsOf</a></li><li><a href="global.html#evidenceMessagesOf">evidenceMessagesOf</a></li><li><a href="global.html#evidenceNoteOf">evidenceNoteOf</a></li><li><a href="global.html#evidenceRuleOf">evidenceRuleOf</a></li><li><a href="global.html#evidenceTexts">evidenceTexts</a></li><li><a href="global.html#faithBenchRole">faithBenchRole</a></li><li><a href="global.html#faithCaseProblems">faithCaseProblems</a></li><li><a href="global.html#faithMissingOf">faithMissingOf</a></li><li><a href="global.html#faithNoteText">faithNoteText</a></li><li><a href="global.html#faithVerdictOf">faithVerdictOf</a></li><li><a href="global.html#fieldPlaceOf">fieldPlaceOf</a></li><li><a href="global.html#flattenEl">flattenEl</a></li><li><a href="global.html#gateNoteItem">gateNoteItem</a></li><li><a href="global.html#guideDefaultOf">guideDefaultOf</a></li><li><a href="global.html#hold">hold</a></li><li><a href="global.html#inAddScope">inAddScope</a></li><li><a href="global.html#indexedArrayCheck">indexedArrayCheck</a></li><li><a href="global.html#info">info</a></li><li><a href="global.html#ingestNotes">ingestNotes</a></li><li><a href="global.html#inputVocabProblems">inputVocabProblems</a></li><li><a href="global.html#isEvidenceRule">isEvidenceRule</a></li><li><a href="global.html#isNoteRow">isNoteRow</a></li><li><a href="global.html#jobForRemoved">jobForRemoved</a></li><li><a href="global.html#jobIdOf">jobIdOf</a></li><li><a href="global.html#jobScope">jobScope</a></li><li><a href="global.html#knownConceptOf">knownConceptOf</a></li><li><a href="global.html#levelMapOf">levelMapOf</a></li><li><a href="global.html#load">load</a></li><li><a href="global.html#mapContentSections">mapContentSections</a></li><li><a href="global.html#materialDocOf">materialDocOf</a></li><li><a href="global.html#materialExactValues">materialExactValues</a></li><li><a href="global.html#materialProblems">materialProblems</a></li><li><a href="global.html#materialValues">materialValues</a></li><li><a href="global.html#mdOf">mdOf</a></li><li><a href="global.html#mdText">mdText</a></li><li><a href="global.html#mergeContractLimits">mergeContractLimits</a></li><li><a href="global.html#mwGateNote">mwGateNote</a></li><li><a href="global.html#mwMarkDoc">mwMarkDoc</a></li><li><a href="global.html#mwPersistNote">mwPersistNote</a></li><li><a href="global.html#mwRenderNote">mwRenderNote</a></li><li><a href="global.html#mwSaveClues">mwSaveClues</a></li><li><a href="global.html#mwSettleTriage">mwSettleTriage</a></li><li><a href="global.html#mwSkipGate">mwSkipGate</a></li><li><a href="global.html#needThird">needThird</a></li><li><a href="global.html#noTopEvidenceOf">noTopEvidenceOf</a></li><li><a href="global.html#normConcepts">normConcepts</a></li><li><a href="global.html#normalizeNoteItem">normalizeNoteItem</a></li><li><a href="global.html#noteContentText">noteContentText</a></li><li><a href="global.html#noteContractOf">noteContractOf</a></li><li><a href="global.html#noteFeedbackOf">noteFeedbackOf</a></li><li><a href="global.html#noteFixOf">noteFixOf</a></li><li><a href="global.html#noteHoldDeadlineOf">noteHoldDeadlineOf</a></li><li><a href="global.html#noteItemFieldProblems">noteItemFieldProblems</a></li><li><a href="global.html#noteItemProblems">noteItemProblems</a></li><li><a href="global.html#noteMaterialFor">noteMaterialFor</a></li><li><a href="global.html#noteMaterialOf">noteMaterialOf</a></li><li><a href="global.html#noteMaterialText">noteMaterialText</a></li><li><a href="global.html#noteStd">noteStd</a></li><li><a href="global.html#noteUnitsOf">noteUnitsOf</a></li><li><a href="global.html#notesInflowOf">notesInflowOf</a></li><li><a href="global.html#notesInflowProblem">notesInflowProblem</a></li><li><a href="global.html#numberSet">numberSet</a></li><li><a href="global.html#openDocHolds">openDocHolds</a></li><li><a href="global.html#openStores">openStores</a></li><li><a href="global.html#originalTitleOf">originalTitleOf</a></li><li><a href="global.html#outputNumbers">outputNumbers</a></li><li><a href="global.html#packDocsByChars">packDocsByChars</a></li><li><a href="global.html#packOptOf">packOptOf</a></li><li><a href="global.html#panelFindingsOf">panelFindingsOf</a></li><li><a href="global.html#panelGroupOf">panelGroupOf</a></li><li><a href="global.html#panelSameProviderWarnings">panelSameProviderWarnings</a></li><li><a href="global.html#panelSeatRowsOf">panelSeatRowsOf</a></li><li><a href="global.html#panelSeats">panelSeats</a></li><li><a href="global.html#parseFrontmatter">parseFrontmatter</a></li><li><a href="global.html#parseSummarizeBenchArgs">parseSummarizeBenchArgs</a></li><li><a href="global.html#patchNoteRecord">patchNoteRecord</a></li><li><a href="global.html#patternsOf">patternsOf</a></li><li><a href="global.html#pickSummarizeVocab">pickSummarizeVocab</a></li><li><a href="global.html#planNoteStockFix">planNoteStockFix</a></li><li><a href="global.html#planSummarizeBench">planSummarizeBench</a></li><li><a href="global.html#proposalsOf">proposalsOf</a></li><li><a href="global.html#publishedOf">publishedOf</a></li><li><a href="global.html#putDocHold">putDocHold</a></li><li><a href="global.html#putRetagHold">putRetagHold</a></li><li><a href="global.html#queueRejudge">queueRejudge</a></li><li><a href="global.html#quote">quote</a></li><li><a href="global.html#rawPoolSplitOf">rawPoolSplitOf</a></li><li><a href="global.html#reEscape">reEscape</a></li><li><a href="global.html#readMd">readMd</a></li><li><a href="global.html#readNoteStockLedger">readNoteStockLedger</a></li><li><a href="global.html#readWatermark">readWatermark</a></li><li><a href="global.html#recordPatchOf">recordPatchOf</a></li><li><a href="global.html#renameKeysObsoleteOf">renameKeysObsoleteOf</a></li><li><a href="global.html#renderFrontmatter">renderFrontmatter</a></li><li><a href="global.html#repairBenchRole">repairBenchRole</a></li><li><a href="global.html#repairCaseProblems">repairCaseProblems</a></li><li><a href="global.html#repairPlanOf">repairPlanOf</a></li><li><a href="global.html#repairProblemsOf">repairProblemsOf</a></li><li><a href="global.html#repairVerdictOf">repairVerdictOf</a></li><li><a href="global.html#requeueCategory">requeueCategory</a></li><li><a href="global.html#resolveDocHolds">resolveDocHolds</a></li><li><a href="global.html#resolveJob">resolveJob</a></li><li><a href="global.html#resolveNoteHolds">resolveNoteHolds</a></li><li><a href="global.html#resolveSummarizeData">resolveSummarizeData</a></li><li><a href="global.html#resolveSummarizeSettings">resolveSummarizeSettings</a></li><li><a href="global.html#resolveSummarizeVocab">resolveSummarizeVocab</a></li><li><a href="global.html#retagBenchRole">retagBenchRole</a></li><li><a href="global.html#retagCaseProblems">retagCaseProblems</a></li><li><a href="global.html#retagJobLabelOf">retagJobLabelOf</a></li><li><a href="global.html#retagPageProblems">retagPageProblems</a></li><li><a href="global.html#retagTargetOf">retagTargetOf</a></li><li><a href="global.html#retagVerdictOf">retagVerdictOf</a></li><li><a href="global.html#reviveFailedDocs">reviveFailedDocs</a></li><li><a href="global.html#rewriteFieldOf">rewriteFieldOf</a></li><li><a href="global.html#rewriteMdField">rewriteMdField</a></li><li><a href="global.html#rollbackNoteRow">rollbackNoteRow</a></li><li><a href="global.html#rollbackNoteStockFix">rollbackNoteStockFix</a></li><li><a href="global.html#runAiBatchStage">runAiBatchStage</a></li><li><a href="global.html#runFaithCheck">runFaithCheck</a></li><li><a href="global.html#runPanelPage">runPanelPage</a></li><li><a href="global.html#runSummarizeBench">runSummarizeBench</a></li><li><a href="global.html#runSummarizeBenchCli">runSummarizeBenchCli</a></li><li><a href="global.html#save">save</a></li><li><a href="global.html#seatFaithVotesOf">seatFaithVotesOf</a></li><li><a href="global.html#section">section</a></li><li><a href="global.html#sectionBodyOf">sectionBodyOf</a></li><li><a href="global.html#sectionItemsOf">sectionItemsOf</a></li><li><a href="global.html#sectionOf">sectionOf</a></li><li><a href="global.html#settleRetagHolds">settleRetagHolds</a></li><li><a href="global.html#shortText">shortText</a></li><li><a href="global.html#splitTopLevel">splitTopLevel</a></li><li><a href="global.html#stageRetag">stageRetag</a></li><li><a href="global.html#stageSummarize">stageSummarize</a></li><li><a href="global.html#stageSync">stageSync</a></li><li><a href="global.html#stageTriage">stageTriage</a></li><li><a href="global.html#standardsVocabOf">standardsVocabOf</a></li><li><a href="global.html#stateFileOf">stateFileOf</a></li><li><a href="global.html#strArr">strArr</a></li><li><a href="global.html#stripIdentifiers">stripIdentifiers</a></li><li><a href="global.html#stripPatternsOf">stripPatternsOf</a></li><li><a href="global.html#stripSlugs">stripSlugs</a></li><li><a href="global.html#suggestConceptRenames">suggestConceptRenames</a></li><li><a href="global.html#summarizeBenchRole">summarizeBenchRole</a></li><li><a href="global.html#summarizeBenchRoleOf">summarizeBenchRoleOf</a></li><li><a href="global.html#summarizeCapacityOf">summarizeCapacityOf</a></li><li><a href="global.html#summarizeCaseProblems">summarizeCaseProblems</a></li><li><a href="global.html#summarizeFeatureProblems">summarizeFeatureProblems</a></li><li><a href="global.html#summarizePanelsOf">summarizePanelsOf</a></li><li><a href="global.html#summarizeScanOf">summarizeScanOf</a></li><li><a href="global.html#summarizeSeatOf">summarizeSeatOf</a></li><li><a href="global.html#summarizeSeatsOf">summarizeSeatsOf</a></li><li><a href="global.html#summarizeSummaryOf">summarizeSummaryOf</a></li><li><a href="global.html#summarizeVerdictOf">summarizeVerdictOf</a></li><li><a href="global.html#summarizeVocabProblem">summarizeVocabProblem</a></li><li><a href="global.html#summarizeWarningsOf">summarizeWarningsOf</a></li><li><a href="global.html#summaryTextOf">summaryTextOf</a></li><li><a href="global.html#syncFieldsOf">syncFieldsOf</a></li><li><a href="global.html#syncHashOf">syncHashOf</a></li><li><a href="global.html#syncNoteHolds">syncNoteHolds</a></li><li><a href="global.html#syncNotes">syncNotes</a></li><li><a href="global.html#syncTaxonomy">syncTaxonomy</a></li><li><a href="global.html#syncVocabOf">syncVocabOf</a></li><li><a href="global.html#tagSuspects">tagSuspects</a></li><li><a href="global.html#taxonomyFixOf">taxonomyFixOf</a></li><li><a href="global.html#taxonomyOf">taxonomyOf</a></li><li><a href="global.html#taxonomySnapshotOf">taxonomySnapshotOf</a></li><li><a href="global.html#taxonomyStatus">taxonomyStatus</a></li><li><a href="global.html#taxonomyVersion">taxonomyVersion</a></li><li><a href="global.html#triageBenchRole">triageBenchRole</a></li><li><a href="global.html#triageCaseProblems">triageCaseProblems</a></li><li><a href="global.html#triageEnabledOf">triageEnabledOf</a></li><li><a href="global.html#triagePendingOf">triagePendingOf</a></li><li><a href="global.html#triageReadyOf">triageReadyOf</a></li><li><a href="global.html#triageVerdictOf">triageVerdictOf</a></li><li><a href="global.html#trimItem">trimItem</a></li><li><a href="global.html#ungroundedLinesOf">ungroundedLinesOf</a></li><li><a href="global.html#ungroundedNumbers">ungroundedNumbers</a></li><li><a href="global.html#unquote">unquote</a></li><li><a href="global.html#verifyNoteStockChain">verifyNoteStockChain</a></li><li><a href="global.html#wordsOf">wordsOf</a></li><li><a href="global.html#writeMd">writeMd</a></li></ul>
+    
+</nav>
+
+<div id="main">
+    
+    <h1 class="page-title">domain/noteDomain.mjs</h1>
+    
+
+    
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>// noteDomain.mjs — 摘要(summarize)的內建領域預設:提示詞、驗證、品質標注、筆記版型
+//
+// 【套件開發者擁有、隨版本演進】摘要指令／欄位 schema／md 版型是內建能力(領域中立)。安裝方之覆寫有三層:①詞彙表(主題範圍 domain、
+//   類別與標注清單、提示詞之領域句 guide.summarize／guide.faith 逐欄)②整個提示詞函數(opt.prompts 之 summarize、faith、repair;收原參數＋
+//   末參數 ctx { kbLabel, domain, vocab, defaultPrompt },defaultPrompt 為內建提示詞函數,可包裝之)③整組 domain(組裝者之 cfg.domains)。
+//   輸出欄位與格式說明、項目驗證(isValidItem)、品質標注正規化與 md 版型不隨提示詞覆寫改變(套件解析輸出之契約;覆寫者須依契約要求模型輸出,
+//   否則其輸出會被驗證擋下)。
+// 【版型逐字保真】md 版型與 JSON 欄位維持既有筆記之格式(含全形標點)——版型變動會讓新舊筆記格式分裂。
+// 【regime_dependency 之稱呼與 md 章節名同為「時效與機制相依」】章節名綁定既有筆記(不可改);「機制」即 regime,不綁領域。
+// 【提示詞之例句不綁領域】JSON 範例之內容類型與證據等級取自詞彙表(claimTypes 第一項;evidenceLevels 第二項,只有一級時取第一項);
+//   忠實性判準 ③④ 之條件詞與誇大例取自 guide.faith(預設為中立句)。
+// 【提示詞覆寫之共用件】promptOverridesOf(建構期驗證)與 overridablePrompt／promptCtxOf(呼叫期之分派、ctx 與回傳檢查)取抓取套件(各工作之 domain 工廠、執行期件與 cfg 層
+//   同一份驗證與訊息);本檔只宣告可覆寫之鍵與其形式(NOTE_PROMPT_SIGS)。
+
+import isarr from 'wsemi/src/isarr.mjs'
+import isobj from 'wsemi/src/isobj.mjs'
+import ispint from 'wsemi/src/ispint.mjs'
+import cint from 'wsemi/src/cint.mjs'
+import strTruncate from 'wsemi/src/strTruncate.mjs'
+import { section } from '../core/md/md.mjs'
+import { resolveSummarizeVocab, kbLabelOf } from '../core/vocab/summarizeVocab.mjs'
+import { SUMMARIZE_DEFAULT } from '../core/summarizeSettings.mjs'
+import { textFromLabelOf, promptOverridesOf, promptCtxOf, overridablePrompt, textValueOf, resolveLocale, DEFAULT_LANG } from '../core/capturePackage.mjs'
+import { NOTE_FIELD_LABELS, fieldPlaceOf } from '../standards/noteRepair.mjs'
+import { NOTE_PLACEHOLDERS, cleanStrList } from '../standards/noteNormalize.mjs'
+import { CONCEPT_COUNT } from '../standards/noteStandards.mjs'
+import { NOTE_SECTION_TITLES, NOTE_SOURCE_LABELS, NOTE_QUALITY_LABELS } from '../core/md/noteContent.mjs'
+import { noteContractOf } from '../stores/noteBuild.mjs'
+
+
+/**
+ * 清洗字串陣列欄位:非陣列視為空陣列,逐項轉字串修剪、去空值(不限量——上限由納入閘之正規化處置並記錄,見 normalizeQuality)
+ *
+ * @param {*} v 輸入待清洗值
+ * @returns {Array} 回傳字串陣列
+ */
+function strArr(v) {
+    // 只收字串與數字(物件元素以 String(x) 會落成 "[object Object]";攤平由納入閘之正規化先做,此處防線不造假字串)
+    return (Array.isArray(v) ? v : []).map((x) => (typeof x === 'string' || typeof x === 'number' ? String(x).trim() : '')).filter(Boolean)
+}
+
+
+/**
+ * 摘要 domain 可覆寫之提示詞與覆寫函數之形式(唯一一份;抓取套件之提示詞覆寫之 SIGS 形狀——cfg 層、執行期件與本工廠同讀,摘要執行期件之
+ *   SUMMARIZE_PROMPT_SIGS 由之組成):summarize＝摘要、faith＝忠實性覆核、repair＝欄位定向修補;末參數 ctx 為 { kbLabel, domain, vocab, defaultPrompt }
+ *
+ * @type {Object}
+ */
+export const NOTE_PROMPT_SIGS = Object.freeze({
+    summarize: Object.freeze({ params: '(docs, conceptVocab, o, ctx)' }),
+    faith: Object.freeze({ params: '(input, ctx)' }),
+    repair: Object.freeze({ params: '(input, ctx)' }),
+})
+
+
+/**
+ * 建立摘要之內建領域預設
+ *
+ * 回傳物件之全部函數皆可由組裝者整組置換(cfg.domains);提示詞可個別覆寫(opt.prompts)
+ *
+ * @param {Object} [opt={}] 輸入設定物件
+ * @param {Object} [opt.vocab=null] 輸入詞彙表覆寫物件(見 resolveSummarizeVocab;亦可為其產物)，含 domain(主題範圍)、kbLabel、categories、
+ *   evidenceLevels、guide.summarize／guide.faith(領域句)等，預設null代表全用內建
+ * @param {Integer} [opt.summarizeCharsPerDoc=6000] 輸入每篇送入提示詞之內文字數上限正整數，預設6000(＝summarize.charsPerDoc 之預設,取自 SUMMARIZE_DEFAULT)
+ * @param {Object} [opt.prompts] 輸入提示詞覆寫 { summarize?, faith?, repair? }：各為函數,收原參數＋末參數
+ *   ctx { kbLabel, domain, vocab, defaultPrompt(內建提示詞函數,參數同原方法) }，須回傳非空字串;未給者用內建
+ *   (summarize:(docs, conceptVocab, o, ctx)、faith:(input, ctx)、repair:(input, ctx))
+ * @param {Object} [opt.limits] 輸入產物契約之欄位上限覆寫 { 欄位: { maxChars?, maxItems? } }(併入 contract.fields;預設不設上限——逾者由納入閘
+ *   以「欄位 X 超過 N 字」不納入、附回饋重摘);鍵限 NOTE_CONTRACT_FIELDS 之欄位
+ * @param {String|Object} [opt.locale='zh-TW'] 輸入語言設定(語言代碼或抓取套件 resolveLocale 之產物):提示詞之輸出語言句取其稱呼、字形句只在臺灣正體
+ *   時要求繁體字形;產物之 slug 政策依之(domain.locale)。總組裝交其 cfg.lang;注入 domain 時須與 cfg.lang 同一語言
+ * @returns {Object} 回傳 domain 物件，含 vocab、locale(語言設定)、buildPrompt(docs, conceptVocab, { budgets })、isValidItem(it, count)、normalizeQuality(k)、
+ *   renderNoteBody(k, doc, q, { sourceChars, processedChars })、buildFaithCheckPrompt({ items })(SS14 覆核)、
+ *   buildRepairPrompt({ material, item, problems })(欄位定向修補呼叫)、contract(產物契約:stores/noteBuild 之 noteContractOf)
+ * @throws {Error} opt.vocab 不合規格(見 resolveSummarizeVocab)、opt.prompts 不合規格(見 promptOverridesOf)、opt.limits 或 opt.locale 不合規格時拋出
+ * @example
+ * let domain = createSummarizeDomain({ vocab: { domain: '機器學習' } })
+ * let prompt = domain.buildPrompt([{ title: 'T', sourceName: 'S', url: 'https://e.com/a', text: '內文' }], [])
+ * console.log(prompt.startsWith('你是「機器學習」知識庫的萃取器'))
+ * // => true
+ *
+ * let d2 = createSummarizeDomain({ prompts: { summarize: (docs, conceptVocab, o, ctx) => `${ctx.defaultPrompt(docs, conceptVocab, o)}\n（附註）` } })
+ * console.log(d2.buildPrompt([], []).endsWith('（附註）'))
+ * // => true
+ */
+export function createSummarizeDomain(opt = {}) {
+
+    //check
+    if (!isobj(opt)) {
+        opt = {}
+    }
+
+    const vocab = resolveSummarizeVocab(opt.vocab)
+    const custom = promptOverridesOf(opt.prompts, NOTE_PROMPT_SIGS, 'createSummarizeDomain')
+    // 語言設定:輸出語言之稱呼 L(預設「繁體中文」,提示詞逐字不變);字形句只在臺灣正體之字形政策下要求繁體字形;翻譯句於預設語言逐字維持
+    const locale = resolveLocale(opt.locale, 'createSummarizeDomain 之 opt.locale')
+    const L = locale.label
+    const twScript = locale.script.id === 'zh-Hant-TW'
+    const translateNote = locale.code === DEFAULT_LANG ? '原文為英文時翻譯成繁體中文' : `原文為其他語言時翻譯成${L}`
+
+    //charsPerDoc
+    let charsPerDoc = opt.summarizeCharsPerDoc
+    if (!ispint(charsPerDoc)) {
+        charsPerDoc = SUMMARIZE_DEFAULT.charsPerDoc
+    }
+    charsPerDoc = cint(charsPerDoc)
+
+    const kb = kbLabelOf(vocab)
+    const g = vocab.guide.summarize // 領域句(安裝方可經 vocab.guide.summarize 逐欄覆寫;輸出欄位與格式留在本檔)
+    const gf = vocab.guide.faith // 忠實性判準 ③④ 之領域措辭(vocab.guide.faith)
+    // 證據等級擇一清單依 vocab.evidenceLevels 產生(提示詞要求之等級即 normalizeQuality 驗證所認之等級)
+    const evidenceChoices = (isarr(vocab.evidenceLevels) ? vocab.evidenceLevels : []).map((lv) => (g.evidenceLevelDefs[lv] ? `${lv}（${g.evidenceLevelDefs[lv]}）` : lv)).join('／')
+    // JSON 範例之內容類型與證據等級(檔頭【提示詞之例句不綁領域】;清單之非空由詞彙表解析保證)
+    const exampleClaimType = vocab.claimTypes[0]
+    const exampleLevel = vocab.evidenceLevels[Math.min(1, vocab.evidenceLevels.length - 1)]
+    const quoted = (arr) => arr.map((x) => `「${x}」`).join('')
+    /** 覆寫函數之末參數(抓取套件之 promptCtxOf;defaultPrompt＝該提示詞之內建函數) */
+    const ctxOf = (defaultPrompt) => promptCtxOf(vocab, kb, defaultPrompt)
+
+    /**
+     * 內建之單批摘要提示詞
+     *
+     * @param {Array} docs 輸入本批文件陣列，各項需含 title、sourceName、url、text
+     * @param {Array} [conceptVocab=[]] 輸入既有概念標籤陣列(名稱，依使用篇數降冪；conceptVocabulary 之預設產出)，令模型沿用既有寫法
+     * @param {Object} [o={}] 輸入選項
+     * @param {Array} [o.budgets] 輸入逐篇內文字數上限(與 docs 同序;正整數者取代 summarizeCharsPerDoc——摘要段依字數打包,
+     *        長文獨佔一批時其預算為整批之字數)，未給或該項非正整數即用 summarizeCharsPerDoc
+     * @returns {String} 回傳提示詞字串
+     */
+    function builtinPrompt(docs, conceptVocab = [], o = {}) {
+        if (!isarr(docs)) docs = []
+        if (!isarr(conceptVocab)) conceptVocab = []
+        const budgets = isarr(o?.budgets) ? o.budgets : []
+        const blocks = docs.map((d, i) => [
+            `--- 第${i + 1}篇 ---`,
+            `標題：${d.title}`,
+            `來源：${d.sourceName}`,
+            `網址：${d.url}`,
+            // 上次之輸出未達檢定標準者附回饋(只在該篇帶 stdFeedback 時出現;其餘篇之提示詞逐字不變——評分題目識別不受影響)
+            ...(d.stdFeedback ? [`（上次之輸出未達標準：${String(d.stdFeedback).slice(0, 200)}——本次請依原文更正）`] : []),
+            `內文：`,
+            strTruncate(d.text, ispint(budgets[i]) ? cint(budgets[i]) : charsPerDoc),
+        ].join('\n')).join('\n\n')
+
+        return `你是${kb}的萃取器。請閱讀以下 ${docs.length} 篇資料，逐篇萃取${g.target}。
+
+要求：
+1. 先判斷該篇是否含有${g.relevance}（relevant）。下列一律 relevant 為 false：
+   ${g.rejects}，
+   以及「連結彙整、每週精選、文章清單」這類本身不含方法論、只是把別處文章列出來的匯流貼文。
+   這類匯流貼文雖不成筆記，但它列出的題目很有價值，請務必在 explore 給出對應的關鍵字線索。
+2. relevant 為 true 時，須以${L}萃取下列欄位；${translateNote}，專有名詞保留英文於括號內（concepts 除外，見第 4 條）。
+3. 只寫原文確實提到的內容，不可自行補充原文沒有的數字、參數或結論。原文沒提到的欄位請給空陣列。
+4. concepts 是用於跨篇關聯與提煉的概念標籤，${CONCEPT_COUNT.min} 到 ${CONCEPT_COUNT.max} 個，依與本篇之核心程度排序、第一個為本篇主概念，${twScript ? `**必須使用繁體字形（不可寫${quoted(g.simplifiedExamples)}這類簡體）**` : `**以${L}書寫**`}，${g.conceptExamples}。
+   標籤要「可跨篇共用」：優先用該領域的通用概念名稱，不要用只有這一篇才成立的長描述或論文專屬模型名。每個標籤只寫一個概念之名稱本身：多個概念請分成多個標籤，不加括號說明、英文對照或「是否在清單中」之註記；名稱本身帶括號者（如階數、參數）照寫。${conceptVocab.length
+        ? `
+   下列是知識庫既有的概念標籤（依使用篇數由多到少排列）。若本篇的概念與其中某個語意相同，請「直接沿用既有寫法」，不要另創同義詞；清單外之概念直接寫名稱，不必註明：
+   ${conceptVocab.join('、')}`
+        : ''}
+5. explore 是你從本篇看出「值得日後再深入抓取」的線索：type 為 keyword（關鍵字）、topic（主題）或 site（具體網站首頁網址）。site 只能填原文中確實出現過的網址，不可自行想像；沒有就不要給 site。每篇最多 4 項，只給真正值得追的，不要為湊數而列泛泛題目。
+6. category 從此清單擇一：${vocab.categories.join('、')}。
+7. 品質與證據標注（每篇必填，這是為了讓後續使用者看得到內容的可信度與邊界）：
+   - claim_type 擇一：${vocab.claimTypes.join('／')}。
+   - evidence_level 擇一：${evidenceChoices}；evidence_note 一句話說明判定依據。
+   - caveats：內容品質問題（陣列，誠實列出，無則空）——例：${quoted(g.caveatExamples)}。
+   - sample_period：原文數據樣本期間（如 "2015-2025"；未載明填「${NOTE_PLACEHOLDERS.samplePeriod}」）。
+8. 多元觀點（原文有依據才寫，不可捏造）：
+   - pros／cons：此方法或觀點的利與弊，各 0-4 條。
+   - regime_dependency：時效與機制相依（0-3 條）——${g.regime}、何時失效、利弊在何種條件下反轉。
+   - counter_views：原文提到的反方觀點、與主流相左的說法、或作者自己承認的爭議（0-3 條）。
+
+只回覆 JSON 陣列，不要任何其他說明文字，格式：
+[{"index":1,"relevant":true,"reason":"","title":"繁中標題","category":"${vocab.categories[0] || '其他'}","summary":"一句話重點","key_points":["..."],"parameters":[{"name":"參數名","value":"值或區間","note":"說明"}],"methods":["步驟或方法"],"conditions":["適用條件或限制"],"verifiable":["可驗證或可實作的要點"],"concepts":["概念1","概念2"],"claim_type":"${exampleClaimType}","evidence_level":"${exampleLevel}","evidence_note":"...","caveats":["..."],"sample_period":"...","pros":["..."],"cons":["..."],"regime_dependency":["..."],"counter_views":["..."],"explore":[{"type":"keyword","value":"...","why":"..."}]}]
+
+${blocks}`
+    }
+
+    /**
+     * 組單批摘要提示詞 (docs, conceptVocab = [], o = { budgets }) => String:有覆寫者交覆寫函數(opt.prompts.summarize;收原參數＋ctx,回傳須為非空字串——
+     *   抓取套件之 overridablePrompt),否則用內建
+     */
+    const buildPrompt = overridablePrompt(custom, 'summarize', builtinPrompt, { ctxOf, norm: (docs, conceptVocab = [], o = {}) => [isarr(docs) ? docs : [], isarr(conceptVocab) ? conceptVocab : [], isobj(o) ? o : {}] })
+
+    /**
+     * 判斷單一 AI 回傳項目是否結構完整(可安全採用)
+     *
+     * 驗證與落地同一規則:index 須為整數(1.5 之項目取不到目標);key_points／concepts 以清洗後(cleanStrList:只收字串／數字、trim、濾空)
+     * 之長度判非空——驗原始長度會讓 [' '] 或 [{}] 通過,落地成無概念筆記(永不分群)
+     *
+     * @param {Object} it 輸入 AI 回傳之單一項目
+     * @param {Integer} count 輸入本批文件數(index 須介於 1～count)
+     * @returns {Boolean} 回傳是否結構完整，relevant 為 true 者另須有 title、key_points 與 concepts
+     */
+    function isValidItem(it, count) {
+        if (!it || typeof it !== 'object') return false
+        if (!Number.isInteger(it.index) || it.index &lt; 1 || it.index > count) return false
+        if (typeof it.relevant !== 'boolean') return false
+        if (it.relevant) {
+            if (!String(it.title || '').trim()) return false
+            if (cleanStrList(it.key_points).length === 0) return false
+            if (cleanStrList(it.concepts).length === 0) return false
+        }
+        return true
+    }
+
+    /**
+     * 正規化品質標注欄位(模型漏給時以缺值字樣 NOTE_PLACEHOLDERS 呈現,不讓標注缺席)。只清洗、不截斷:欄位上限由納入閘之正規化
+     *   (standards/noteNormalize 之 NOTE_FIELD_LIMITS)處置並記修正說明(摘要與人工匯入皆先經 gateNoteItem 再落地)
+     *
+     * @param {Object} k 輸入 AI 回傳之單一項目
+     * @returns {Object} 回傳品質標注物件，含 claimType、evidenceLevel、evidenceNote、caveats、samplePeriod、pros、cons、regime、counterViews
+     */
+    function normalizeQuality(k) {
+        if (!isobj(k)) k = {}
+        return {
+            claimType: vocab.claimTypes.includes(k.claim_type) ? k.claim_type : NOTE_PLACEHOLDERS.claimType,
+            evidenceLevel: vocab.evidenceLevels.includes(k.evidence_level) ? k.evidence_level : NOTE_PLACEHOLDERS.evidenceLevel,
+            evidenceNote: String(k.evidence_note || '').trim(),
+            caveats: strArr(k.caveats),
+            samplePeriod: String(k.sample_period || '').trim() || NOTE_PLACEHOLDERS.samplePeriod,
+            pros: strArr(k.pros),
+            cons: strArr(k.cons),
+            regime: strArr(k.regime_dependency),
+            counterViews: strArr(k.counter_views),
+        }
+    }
+
+    /**
+     * 由結構化欄位組裝知識 md 本文(版型逐字同既有筆記;內文經截斷者於來源章多一行處理範圍)
+     *
+     * @param {Object} k 輸入 AI 回傳之單一項目(結構完整者)
+     * @param {Object} doc 輸入來源文件記錄，需含 title、sourceName、url、publishedAt、textFrom
+     * @param {Object} q 輸入 normalizeQuality 之產出
+     * @param {Object} [meta={}] 輸入處理範圍 { sourceChars, processedChars }：processedChars 小於 sourceChars(摘要只讀了前段)時
+     *        來源章加「內文處理範圍」一行——截斷明示(不得暴力裁剪而無從得知);未截斷者版型不變
+     * @returns {String} 回傳 md 本文字串(不含 frontmatter)
+     */
+    function renderNoteBody(k, doc, q, meta = {}) {
+        const src = Number(meta?.sourceChars) || 0
+        const done = Number(meta?.processedChars) || 0
+        const truncLine = src > 0 &amp;&amp; done > 0 &amp;&amp; done &lt; src ? [`${NOTE_SOURCE_LABELS.processed}：原文 ${src} 字，摘要只讀前 ${done} 字`] : []
+        // 表格儲存格一律轉義 |(名稱／值含 | 會撐破表格)
+        const cell = (v) => String(v || '').trim().replace(/\|/g, '／')
+        const paramTable = Array.isArray(k.parameters) &amp;&amp; k.parameters.length
+            ? ['| 參數 | 值／區間 | 說明 |', '| --- | --- | --- |',
+                ...k.parameters.map((p) => `| ${cell(p?.name)} | ${cell(p?.value)} | ${cell(p?.note)} |`)].join('\n')
+            : ''
+
+        // 利弊分欄呈現(單一 section 混列會失去對照性)
+        const prosCons = (q.pros.length || q.cons.length)
+            ? [`## ${NOTE_SECTION_TITLES.prosCons}`, '',
+                ...(q.pros.length ? ['**優勢／利**', '', ...q.pros.map((x) => `- ${x}`), ''] : []),
+                ...(q.cons.length ? ['**侷限／弊**', '', ...q.cons.map((x) => `- ${x}`)] : [])].join('\n')
+            : ''
+
+        const T = NOTE_SECTION_TITLES
+        const L = NOTE_SOURCE_LABELS
+        const Q = NOTE_QUALITY_LABELS
+        return [
+            `# ${k.title}`,
+            '',
+            section(T.summary, k.summary),
+            // 品質標注永遠存在(含缺值字樣):後續讀者一律先看到可信度邊界,再看內容
+            section(T.quality, [
+                `${Q.claimType}：${q.claimType}`,
+                `${Q.evidenceLevel}：${q.evidenceLevel}${q.evidenceNote ? `（${q.evidenceNote}）` : ''}`,
+                `${Q.samplePeriod}：${q.samplePeriod}`,
+                ...(q.caveats.length ? q.caveats.map((c) => `⚠ ${c}`) : ['（未發現明顯品質問題）']),
+            ]),
+            section(T.keyPoints, cleanStrList(k.key_points)),
+            paramTable ? `## ${T.parameters}\n\n${paramTable}` : '',
+            section(T.methods, k.methods),
+            section(T.conditions, k.conditions),
+            prosCons,
+            section(T.regime, q.regime),
+            section(T.counterViews, q.counterViews),
+            section(T.verifiable, k.verifiable),
+            section(T.source, [
+                `${L.originalTitle}：${doc.title || '（無）'}`,
+                `${L.sourceName}：${doc.sourceName}`,
+                `${L.url}：${doc.url}`,
+                `${L.published}：${doc.publishedAt || '（未提供）'}`,
+                // 內文取得方式之顯示名由抓取套件提供(textFrom 之值域屬抓取;本檔不自解讀)
+                `${L.textFrom}：${textFromLabelOf(doc.textFrom)}`,
+                ...truncLine,
+            ]),
+        ].filter(Boolean).join('\n\n')
+    }
+
+    /**
+     * 內建之忠實性覆核提示詞(檢定標準 SS14;standards/faithCheck):每項一篇原文(送給摘要 AI 之材料)與依它萃取之筆記,
+     *   判筆記是否忠實於原文;不確定為合法裁決。數字之紮根另由程式(SS4)核對。判準 ③④ 之領域措辭取 vocab.guide.faith。
+     *
+     * @param {Object} input 輸入 { items:[{ index, title, material(原文標題＋送出之內文), noteText(faithNoteText) }] }
+     * @returns {String} 回傳提示詞字串
+     */
+    function builtinFaithPrompt(input) {
+        const items = (Array.isArray(input?.items) ? input.items : []).map((it) => `--- 第${it.index}項 ---\n【原文】\n${String(it.material ?? '').trim()}\n\n【筆記】\n${String(it.noteText ?? '').trim()}`).join('\n\n')
+        return `你是${kb}的忠實性核對員。下列每一項是一篇原文，以及依它萃取之筆記。請逐項判斷：筆記是否忠實於原文。
+
+判準：
+- faithful：筆記之結論、方向與比較、條件與限制、證據等級皆與原文相符；省略細節、改寫措辭、翻譯成${L}不算不忠實。
+- unfaithful：有下列任一者——①筆記有原文沒有之結論或主張；②否定、方向或比較翻錯（如原文「不顯著」寫成「顯著」、「低於」寫成「高於」）；③原文只在${gf.scope}下成立之結論，筆記寫成普遍成立；④證據等級或其說明誇大原文（如${gf.overclaim}）。數字是否見於原文另有程式核對，不必逐一比對數字。
+- unsure：原文不足以判斷（如原文過短、被截斷而無從核對）；拿不準就回 unsure，不要猜。
+reason 用${L}一句話（至少十個字）：unfaithful 須指出筆記哪一欄與原文哪一處不符。
+
+只回覆一個 JSON 物件，每項一個裁決，以項之編號對應，不要任何其他說明文字，格式：
+{"checks":[{"index":1,"verdict":"faithful","reason":"..."},{"index":2,"verdict":"unfaithful","reason":"..."}]}
+
+${items}`
+    }
+
+    /** 忠實性覆核之提示詞 (input:{ items }) => String:有覆寫者交覆寫函數(opt.prompts.faith;收原參數＋ctx,回傳須為非空字串),否則用內建(見 builtinFaithPrompt) */
+    const buildFaithCheckPrompt = overridablePrompt(custom, 'faith', builtinFaithPrompt, { ctxOf })
+
+    /**
+     * 修補提示詞所附之筆記(逐欄;清單與參數列編號,與「需更正之處」之「第 N 行／列／個」同一編號)
+     *
+     * @param {Object} k 輸入正規化後之項目
+     * @returns {String} 回傳逐欄文字
+     */
+    function repairNoteText(k) {
+        const L = NOTE_FIELD_LABELS
+        const lines = []
+        const one = (f) => {
+            if (textValueOf(k[f])) lines.push(`${L[f]}：${textValueOf(k[f])}`)
+        }
+        const list = (f, xs, unit = '') => {
+            const ys = (Array.isArray(xs) ? xs : []).map((x, i) => `${i + 1}. ${x}`)
+            if (ys.length) lines.push(`${L[f]}${unit}：`, ...ys)
+        }
+        one('title')
+        one('summary')
+        one('claim_type')
+        one('evidence_level')
+        one('evidence_note')
+        one('sample_period')
+        for (const f of ['key_points', 'methods', 'conditions', 'verifiable', 'pros', 'cons', 'regime_dependency', 'counter_views', 'caveats']) list(f, k[f])
+        list('parameters', (Array.isArray(k.parameters) ? k.parameters : []).map((p) => `名稱「${textValueOf(p?.name)}」、值「${textValueOf(p?.value)}」、說明「${textValueOf(p?.note)}」`), '（逐列）')
+        list('concepts', k.concepts)
+        return lines.join('\n')
+    }
+
+    /**
+     * 內建之欄位定向修補呼叫提示詞(檢定標準 SS2／SS4「先修正、修不了才不納入」;standards/noteRepair;summarize.standards.repair.enabled):
+     *   只要求更正被指出之行／欄位、一律依原文、不得加入原文沒有之內容、改不成可刪該處(清單之一行、參數之一列、概念之一個);回覆以編號對應、
+     *   呼叫端只取被指出之編號套回後以同一納入閘重判。value 之形狀與套用端(standards/noteRepair 之 applyRepairs)逐類一致:
+     *   概念之一個(kind concept)給字串、概念整欄(kind concepts)給字串陣列——曾一律寫「概念給字串陣列」,單一概念之更正因形狀不合全數不採
+     *
+     * @param {Object} input 輸入 { material(送出之原文:原文標題＋送出之內文), item(正規化後之項目), problems:[{ field, kind, index, line, detail }] }
+     * @returns {String} 回傳提示詞字串
+     */
+    function builtinRepairPrompt(input) {
+        const k = isobj(input?.item) ? input.item : {}
+        const ps = isarr(input?.problems) ? input.problems : []
+        const probs = ps.map((p, i) => `${i + 1}. ${fieldPlaceOf(p)}：${String(p.line ?? '').trim() ? `「${String(p.line).trim()}」` : '（空白）'}——${p.detail}`).join('\n')
+        return `你是${kb}的萃取器。下列【筆記】是先前依【原文】萃取的結果，其中【需更正之處】所列各處未達檢定標準。請只更正這些地方；未列出之內容不在本次範圍，不必回覆。
+
+規則：
+1. 一律依原文：只能寫原文確實提到的內容與數字，不可加入原文沒有之數字、參數或結論。
+2. 數字與原文不符者，改為原文之數字；原文沒有對應之數字者，改寫為不含該數字之敘述。
+3. 清單之一行、參數表之一列或概念之一個無法依原文更正者，可刪除（value 給 null）；標題與一句話重點不可刪除。
+4. 內容類型擇一：${vocab.claimTypes.join('／')}；證據等級擇一：${evidenceChoices}。
+5. 概念為 ${CONCEPT_COUNT.min} 到 ${CONCEPT_COUNT.max} 個標籤，每個標籤只寫一個概念之名稱本身，${twScript ? '**必須使用繁體字形**' : `**以${L}書寫**`}。
+6. 以${L}書寫。
+
+【需更正之處】
+${probs}
+
+【筆記】
+${repairNoteText(k)}
+
+【原文】
+${String(input?.material ?? '').trim()}
+
+只回覆一個 JSON 物件，不要任何其他說明文字，每處一筆、以編號對應，格式：
+{"repairs":[{"no":1,"value":"更正後之文字"},{"no":2,"value":null}]}
+value 之形狀：標題、一句話重點、數據樣本期間、證據說明、內容類型、證據等級、清單之一行與概念之一個（標「第 N 個」者）給字串；概念整欄（只寫「概念」而未標第幾個者）給字串陣列；參數之一列給 {"name":"…","value":"…","note":"…"}；刪除給 null。`
+    }
+
+    /** 欄位定向修補呼叫之提示詞 (input:{ material, item, problems }) => String:有覆寫者交覆寫函數(opt.prompts.repair;收原參數＋ctx,回傳須為非空字串),否則用內建(見 builtinRepairPrompt) */
+    const buildRepairPrompt = overridablePrompt(custom, 'repair', builtinRepairPrompt, { ctxOf })
+
+    const domain = { vocab, locale, buildPrompt, isValidItem, normalizeQuality, renderNoteBody, buildFaithCheckPrompt, buildRepairPrompt }
+    // 產物契約(stores/noteBuild 之內建 note 契約:欄位、組裝、適用之標準;opt.limits 併入欄位上限)
+    domain.contract = noteContractOf(domain, { limits: opt.limits })
+    return domain
+}
+
+
+export default createSummarizeDomain
+</code></pre>
+        </article>
+    </section>
+
+
+
+
+    
+    
+</div>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 4.0.5</a> on Sun Nov 01 2026 23:10:48 GMT+0800 (台北標準時間) using the <a href="https://github.com/clenemt/docdash">docdash</a> theme.
+</footer>
+
+<script>prettyPrint();</script>
+<script src="scripts/polyfill.js"></script>
+<script src="scripts/linenumber.js"></script>
+
+
+
+</body>
+</html>

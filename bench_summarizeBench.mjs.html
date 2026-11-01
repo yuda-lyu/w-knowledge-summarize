@@ -1,0 +1,895 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    
+    <meta charset="utf-8">
+    <title>bench/summarizeBench.mjs - Documentation</title>
+    
+    
+    <script src="scripts/prettify/prettify.js"></script>
+    <script src="scripts/prettify/lang-css.js"></script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc.css">
+    <script src="scripts/nav.js" defer></script>
+    
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+</head>
+<body>
+
+<input type="checkbox" id="nav-trigger" class="nav-trigger" />
+<label for="nav-trigger" class="navicon-button x">
+  <div class="navicon"></div>
+</label>
+
+<label for="nav-trigger" class="overlay"></label>
+
+<nav >
+    
+    
+    <h2><a href="index.html">Home</a></h2><h3>Global</h3><ul><li><a href="global.html#AI_ADAPTER_OPT">AI_ADAPTER_OPT</a></li><li><a href="global.html#AI_BATCH_LOG_KNOWN">AI_BATCH_LOG_KNOWN</a></li><li><a href="global.html#AI_BATCH_LOG_MUST_SEE">AI_BATCH_LOG_MUST_SEE</a></li><li><a href="global.html#AI_BATCH_REVIEW_LOG_KNOWN">AI_BATCH_REVIEW_LOG_KNOWN</a></li><li><a href="global.html#AI_PENDING_SOURCE">AI_PENDING_SOURCE</a></li><li><a href="global.html#CACHE">CACHE</a></li><li><a href="global.html#CFG_KEYS">CFG_KEYS</a></li><li><a href="global.html#CLAUSE_SPLIT">CLAUSE_SPLIT</a></li><li><a href="global.html#CLI">CLI</a></li><li><a href="global.html#COLLECTION_KEYS">COLLECTION_KEYS</a></li><li><a href="global.html#COMPILED">COMPILED</a></li><li><a href="global.html#CONCEPT_COUNT">CONCEPT_COUNT</a></li><li><a href="global.html#CONFIRM_SCHEMA">CONFIRM_SCHEMA</a></li><li><a href="global.html#CONTRACT_FIELD_TYPES">CONTRACT_FIELD_TYPES</a></li><li><a href="global.html#DATA_KEYS">DATA_KEYS</a></li><li><a href="global.html#DIGEST_DEFAULT">DIGEST_DEFAULT</a></li><li><a href="global.html#DIGEST_PROMPT_SIGS">DIGEST_PROMPT_SIGS</a></li><li><a href="global.html#DISABLED">DISABLED</a></li><li><a href="global.html#DOC_HOLD_NEXT">DOC_HOLD_NEXT</a></li><li><a href="global.html#DOC_STDS">DOC_STDS</a></li><li><a href="global.html#DOMAIN_FACTORY">DOMAIN_FACTORY</a></li><li><a href="global.html#DOMAIN_PROMPT_SIGS">DOMAIN_PROMPT_SIGS</a></li><li><a href="global.html#EVIDENCE_RULE_DEFAULT">EVIDENCE_RULE_DEFAULT</a></li><li><a href="global.html#EVIDENCE_RULE_KEYS">EVIDENCE_RULE_KEYS</a></li><li><a href="global.html#EVIDENCE_STD">EVIDENCE_STD</a></li><li><a href="global.html#FAITH_BLANK">FAITH_BLANK</a></li><li><a href="global.html#FAITH_HOLD_NEXT">FAITH_HOLD_NEXT</a></li><li><a href="global.html#FAITH_PAGE">FAITH_PAGE</a></li><li><a href="global.html#FAITH_VERDICTS">FAITH_VERDICTS</a></li><li><a href="global.html#GATE_STDS">GATE_STDS</a></li><li><a href="global.html#HOLD_OBJECT">HOLD_OBJECT</a></li><li><a href="global.html#LINE_BREAKS">LINE_BREAKS</a></li><li><a href="global.html#MATERIAL_EXCLUDE_PATTERNS_DEFAULT">MATERIAL_EXCLUDE_PATTERNS_DEFAULT</a></li><li><a href="global.html#MATERIAL_PROBLEM_PATTERNS_DEFAULT">MATERIAL_PROBLEM_PATTERNS_DEFAULT</a></li><li><a href="global.html#MIN_START_MS">MIN_START_MS</a></li><li><a href="global.html#NAMESPACES">NAMESPACES</a></li><li><a href="global.html#NON_CONTENT_SECTIONS">NON_CONTENT_SECTIONS</a></li><li><a href="global.html#NOTES_DIR">NOTES_DIR</a></li><li><a href="global.html#NOTE_ARRAY_FIELDS">NOTE_ARRAY_FIELDS</a></li><li><a href="global.html#NOTE_CONTRACT_FIELDS">NOTE_CONTRACT_FIELDS</a></li><li><a href="global.html#NOTE_CONTRACT_STANDARDS">NOTE_CONTRACT_STANDARDS</a></li><li><a href="global.html#NOTE_ENTRIES">NOTE_ENTRIES</a></li><li><a href="global.html#NOTE_FIELD_LABELS">NOTE_FIELD_LABELS</a></li><li><a href="global.html#NOTE_FIELD_LIMITS">NOTE_FIELD_LIMITS</a></li><li><a href="global.html#NOTE_FIX_STDS">NOTE_FIX_STDS</a></li><li><a href="global.html#NOTE_HOLD_DEADLINE_DAYS">NOTE_HOLD_DEADLINE_DAYS</a></li><li><a href="global.html#NOTE_HOLD_NEXT">NOTE_HOLD_NEXT</a></li><li><a href="global.html#NOTE_LIST_FIELDS">NOTE_LIST_FIELDS</a></li><li><a href="global.html#NOTE_PLACEHOLDERS">NOTE_PLACEHOLDERS</a></li><li><a href="global.html#NOTE_PROMPT_SIGS">NOTE_PROMPT_SIGS</a></li><li><a href="global.html#NOTE_QUALITY_LABELS">NOTE_QUALITY_LABELS</a></li><li><a href="global.html#NOTE_SECTION_ORDER">NOTE_SECTION_ORDER</a></li><li><a href="global.html#NOTE_SECTION_TITLES">NOTE_SECTION_TITLES</a></li><li><a href="global.html#NOTE_SOURCE_LABELS">NOTE_SOURCE_LABELS</a></li><li><a href="global.html#NOTE_STANDARDS">NOTE_STANDARDS</a></li><li><a href="global.html#NOTE_SYNC_STATE">NOTE_SYNC_STATE</a></li><li><a href="global.html#NOTE_TEXT_FIELDS">NOTE_TEXT_FIELDS</a></li><li><a href="global.html#NO_KNOWN_CONCEPT">NO_KNOWN_CONCEPT</a></li><li><a href="global.html#NO_MATERIAL_DETAIL">NO_MATERIAL_DETAIL</a></li><li><a href="global.html#OPTIONAL_DOMAIN_MEMBERS">OPTIONAL_DOMAIN_MEMBERS</a></li><li><a href="global.html#OPT_KEYS">OPT_KEYS</a></li><li><a href="global.html#PANEL_DEFS">PANEL_DEFS</a></li><li><a href="global.html#PANEL_SCHEMA">PANEL_SCHEMA</a></li><li><a href="global.html#PANEL_STAGES">PANEL_STAGES</a></li><li><a href="global.html#PANEL_THIRD_STOP">PANEL_THIRD_STOP</a></li><li><a href="global.html#PANEL_UNSURE">PANEL_UNSURE</a></li><li><a href="global.html#PANEL_WHY">PANEL_WHY</a></li><li><a href="global.html#PANEL_WHY_LABELS">PANEL_WHY_LABELS</a></li><li><a href="global.html#PIPELINE_NAME">PIPELINE_NAME</a></li><li><a href="global.html#PROJECTION_SECTION_TITLES">PROJECTION_SECTION_TITLES</a></li><li><a href="global.html#PROMPT_DOMAIN">PROMPT_DOMAIN</a></li><li><a href="global.html#PROMPT_KEYS">PROMPT_KEYS</a></li><li><a href="global.html#REJUDGE_REASON_LABELS">REJUDGE_REASON_LABELS</a></li><li><a href="global.html#RENAME_FIELDS">RENAME_FIELDS</a></li><li><a href="global.html#REPAIR_BLANK">REPAIR_BLANK</a></li><li><a href="global.html#RETAG_BLANK">RETAG_BLANK</a></li><li><a href="global.html#RETAG_HOLD_NEXT">RETAG_HOLD_NEXT</a></li><li><a href="global.html#RETAG_HOLD_STD">RETAG_HOLD_STD</a></li><li><a href="global.html#RETAG_MAX_FAILS">RETAG_MAX_FAILS</a></li><li><a href="global.html#RETAG_PROMPT_SIGS">RETAG_PROMPT_SIGS</a></li><li><a href="global.html#RETAG_REASONS">RETAG_REASONS</a></li><li><a href="global.html#S">S</a></li><li><a href="global.html#SEAT_FALLBACK_STAGES">SEAT_FALLBACK_STAGES</a></li><li><a href="global.html#SECTIONS">SECTIONS</a></li><li><a href="global.html#SHAPE_DOMAIN">SHAPE_DOMAIN</a></li><li><a href="global.html#SS14">SS14</a></li><li><a href="global.html#SS14_OBJECT">SS14_OBJECT</a></li><li><a href="global.html#SUMMARIZE_AI_DEFAULT">SUMMARIZE_AI_DEFAULT</a></li><li><a href="global.html#SUMMARIZE_AI_PENDING_STANDARD_IDS">SUMMARIZE_AI_PENDING_STANDARD_IDS</a></li><li><a href="global.html#SUMMARIZE_AI_SCHEMA">SUMMARIZE_AI_SCHEMA</a></li><li><a href="global.html#SUMMARIZE_AUDITED_STANDARD_IDS">SUMMARIZE_AUDITED_STANDARD_IDS</a></li><li><a href="global.html#SUMMARIZE_BENCH_CASES_FILES">SUMMARIZE_BENCH_CASES_FILES</a></li><li><a href="global.html#SUMMARIZE_BENCH_MODELS">SUMMARIZE_BENCH_MODELS</a></li><li><a href="global.html#SUMMARIZE_BENCH_ROLES">SUMMARIZE_BENCH_ROLES</a></li><li><a href="global.html#SUMMARIZE_BENCH_USAGE">SUMMARIZE_BENCH_USAGE</a></li><li><a href="global.html#SUMMARIZE_BLANK">SUMMARIZE_BLANK</a></li><li><a href="global.html#SUMMARIZE_CAPACITY_DESC">SUMMARIZE_CAPACITY_DESC</a></li><li><a href="global.html#SUMMARIZE_CTX_FLAGS">SUMMARIZE_CTX_FLAGS</a></li><li><a href="global.html#SUMMARIZE_DATA_KEYS">SUMMARIZE_DATA_KEYS</a></li><li><a href="global.html#SUMMARIZE_DEFAULT">SUMMARIZE_DEFAULT</a></li><li><a href="global.html#SUMMARIZE_DIRS">SUMMARIZE_DIRS</a></li><li><a href="global.html#SUMMARIZE_DOC_STATUS">SUMMARIZE_DOC_STATUS</a></li><li><a href="global.html#SUMMARIZE_DOMAIN_KEYS">SUMMARIZE_DOMAIN_KEYS</a></li><li><a href="global.html#SUMMARIZE_FEATURES">SUMMARIZE_FEATURES</a></li><li><a href="global.html#SUMMARIZE_GUIDE_FIELDS">SUMMARIZE_GUIDE_FIELDS</a></li><li><a href="global.html#SUMMARIZE_LOG_KNOWN">SUMMARIZE_LOG_KNOWN</a></li><li><a href="global.html#SUMMARIZE_LOG_MUST_SEE">SUMMARIZE_LOG_MUST_SEE</a></li><li><a href="global.html#SUMMARIZE_LOG_PARSE">SUMMARIZE_LOG_PARSE</a></li><li><a href="global.html#SUMMARIZE_PROMPT_SIGS">SUMMARIZE_PROMPT_SIGS</a></li><li><a href="global.html#SUMMARIZE_REPORT_KEYS">SUMMARIZE_REPORT_KEYS</a></li><li><a href="global.html#SUMMARIZE_SCAN_OBJECT">SUMMARIZE_SCAN_OBJECT</a></li><li><a href="global.html#SUMMARIZE_SCHEMA">SUMMARIZE_SCHEMA</a></li><li><a href="global.html#SUMMARIZE_SEATS">SUMMARIZE_SEATS</a></li><li><a href="global.html#SUMMARIZE_SEAT_LABELS">SUMMARIZE_SEAT_LABELS</a></li><li><a href="global.html#SUMMARIZE_SHARED_KEYS">SUMMARIZE_SHARED_KEYS</a></li><li><a href="global.html#SUMMARIZE_SKIP_KIND">SUMMARIZE_SKIP_KIND</a></li><li><a href="global.html#SUMMARIZE_STAGE_KEYS">SUMMARIZE_STAGE_KEYS</a></li><li><a href="global.html#SUMMARIZE_STANDARDS">SUMMARIZE_STANDARDS</a></li><li><a href="global.html#SUMMARIZE_STORE_KEYS">SUMMARIZE_STORE_KEYS</a></li><li><a href="global.html#SUMMARIZE_TAP_STAGE_KEYS">SUMMARIZE_TAP_STAGE_KEYS</a></li><li><a href="global.html#SUMMARIZE_VOCAB_DEFAULT">SUMMARIZE_VOCAB_DEFAULT</a></li><li><a href="global.html#SUMMARIZE_VOCAB_KEYS">SUMMARIZE_VOCAB_KEYS</a></li><li><a href="global.html#SUMMARIZE_VOCAB_NULL_AS">SUMMARIZE_VOCAB_NULL_AS</a></li><li><a href="global.html#SUMMARY_SECTION">SUMMARY_SECTION</a></li><li><a href="global.html#SYNC_KEYS">SYNC_KEYS</a></li><li><a href="global.html#TAXONOMY_STATE_FILE">TAXONOMY_STATE_FILE</a></li><li><a href="global.html#TAXONOMY_STATE_VERSION">TAXONOMY_STATE_VERSION</a></li><li><a href="global.html#TRIAGE_BLANK">TRIAGE_BLANK</a></li><li><a href="global.html#TRIAGE_PROMPT_SIGS">TRIAGE_PROMPT_SIGS</a></li><li><a href="global.html#TRIAGE_SKIP_PREFIX">TRIAGE_SKIP_PREFIX</a></li><li><a href="global.html#TRIAGE_STATE">TRIAGE_STATE</a></li><li><a href="global.html#WKnowledgeSummarize">WKnowledgeSummarize</a></li><li><a href="global.html#annotationOf">annotationOf</a></li><li><a href="global.html#applyNoteStockFix">applyNoteStockFix</a></li><li><a href="global.html#applyRepairs">applyRepairs</a></li><li><a href="global.html#assertSummarizeVocab">assertSummarizeVocab</a></li><li><a href="global.html#auditSummarizeStandards">auditSummarizeStandards</a></li><li><a href="global.html#benchAdmitNoteItem">benchAdmitNoteItem</a></li><li><a href="global.html#bodyPartsOf">bodyPartsOf</a></li><li><a href="global.html#buildNote">buildNote</a></li><li><a href="global.html#capacityWarningsOf">capacityWarningsOf</a></li><li><a href="global.html#categoryOf">categoryOf</a></li><li><a href="global.html#categoryProposals">categoryProposals</a></li><li><a href="global.html#changedUnitsOf">changedUnitsOf</a></li><li><a href="global.html#check">check</a></li><li><a href="global.html#checkFaithChecks">checkFaithChecks</a></li><li><a href="global.html#checkFaithVerdictOf">checkFaithVerdictOf</a></li><li><a href="global.html#checkNote">checkNote</a></li><li><a href="global.html#checkRepairReply">checkRepairReply</a></li><li><a href="global.html#cleanStrList">cleanStrList</a></li><li><a href="global.html#cnValue">cnValue</a></li><li><a href="global.html#compile">compile</a></li><li><a href="global.html#composeNoteMd">composeNoteMd</a></li><li><a href="global.html#conceptCountDetail">conceptCountDetail</a></li><li><a href="global.html#conceptLabelProblem">conceptLabelProblem</a></li><li><a href="global.html#conceptVocabulary">conceptVocabulary</a></li><li><a href="global.html#contractFieldProblems">contractFieldProblems</a></li><li><a href="global.html#contractOf">contractOf</a></li><li><a href="global.html#contractProblem">contractProblem</a></li><li><a href="global.html#createDigestDomain">createDigestDomain</a></li><li><a href="global.html#createKnowledgeSummarize">createKnowledgeSummarize</a></li><li><a href="global.html#createMaterialPolicy">createMaterialPolicy</a></li><li><a href="global.html#createNoteRestoreGate">createNoteRestoreGate</a></li><li><a href="global.html#createRetagDomain">createRetagDomain</a></li><li><a href="global.html#createSummarizeDomain">createSummarizeDomain</a></li><li><a href="global.html#createSummarizeObject">createSummarizeObject</a></li><li><a href="global.html#createSummarizeRuntime">createSummarizeRuntime</a></li><li><a href="global.html#createTaxonomyStore">createTaxonomyStore</a></li><li><a href="global.html#createTriageDomain">createTriageDomain</a></li><li><a href="global.html#decidePanel">decidePanel</a></li><li><a href="global.html#deepFreeze">deepFreeze</a></li><li><a href="global.html#describe">describe</a></li><li><a href="global.html#diffLabelOf">diffLabelOf</a></li><li><a href="global.html#diffTaxonomy">diffTaxonomy</a></li><li><a href="global.html#domainNeeds">domainNeeds</a></li><li><a href="global.html#dropSection">dropSection</a></li><li><a href="global.html#dropUngrounded">dropUngrounded</a></li><li><a href="global.html#escalateDocHolds">escalateDocHolds</a></li><li><a href="global.html#evidenceCaveatsOf">evidenceCaveatsOf</a></li><li><a href="global.html#evidenceMessagesOf">evidenceMessagesOf</a></li><li><a href="global.html#evidenceNoteOf">evidenceNoteOf</a></li><li><a href="global.html#evidenceRuleOf">evidenceRuleOf</a></li><li><a href="global.html#evidenceTexts">evidenceTexts</a></li><li><a href="global.html#faithBenchRole">faithBenchRole</a></li><li><a href="global.html#faithCaseProblems">faithCaseProblems</a></li><li><a href="global.html#faithMissingOf">faithMissingOf</a></li><li><a href="global.html#faithNoteText">faithNoteText</a></li><li><a href="global.html#faithVerdictOf">faithVerdictOf</a></li><li><a href="global.html#fieldPlaceOf">fieldPlaceOf</a></li><li><a href="global.html#flattenEl">flattenEl</a></li><li><a href="global.html#gateNoteItem">gateNoteItem</a></li><li><a href="global.html#guideDefaultOf">guideDefaultOf</a></li><li><a href="global.html#hold">hold</a></li><li><a href="global.html#inAddScope">inAddScope</a></li><li><a href="global.html#indexedArrayCheck">indexedArrayCheck</a></li><li><a href="global.html#info">info</a></li><li><a href="global.html#ingestNotes">ingestNotes</a></li><li><a href="global.html#inputVocabProblems">inputVocabProblems</a></li><li><a href="global.html#isEvidenceRule">isEvidenceRule</a></li><li><a href="global.html#isNoteRow">isNoteRow</a></li><li><a href="global.html#jobForRemoved">jobForRemoved</a></li><li><a href="global.html#jobIdOf">jobIdOf</a></li><li><a href="global.html#jobScope">jobScope</a></li><li><a href="global.html#knownConceptOf">knownConceptOf</a></li><li><a href="global.html#levelMapOf">levelMapOf</a></li><li><a href="global.html#load">load</a></li><li><a href="global.html#mapContentSections">mapContentSections</a></li><li><a href="global.html#materialDocOf">materialDocOf</a></li><li><a href="global.html#materialExactValues">materialExactValues</a></li><li><a href="global.html#materialProblems">materialProblems</a></li><li><a href="global.html#materialValues">materialValues</a></li><li><a href="global.html#mdOf">mdOf</a></li><li><a href="global.html#mdText">mdText</a></li><li><a href="global.html#mergeContractLimits">mergeContractLimits</a></li><li><a href="global.html#mwGateNote">mwGateNote</a></li><li><a href="global.html#mwMarkDoc">mwMarkDoc</a></li><li><a href="global.html#mwPersistNote">mwPersistNote</a></li><li><a href="global.html#mwRenderNote">mwRenderNote</a></li><li><a href="global.html#mwSaveClues">mwSaveClues</a></li><li><a href="global.html#mwSettleTriage">mwSettleTriage</a></li><li><a href="global.html#mwSkipGate">mwSkipGate</a></li><li><a href="global.html#needThird">needThird</a></li><li><a href="global.html#noTopEvidenceOf">noTopEvidenceOf</a></li><li><a href="global.html#normConcepts">normConcepts</a></li><li><a href="global.html#normalizeNoteItem">normalizeNoteItem</a></li><li><a href="global.html#noteContentText">noteContentText</a></li><li><a href="global.html#noteContractOf">noteContractOf</a></li><li><a href="global.html#noteFeedbackOf">noteFeedbackOf</a></li><li><a href="global.html#noteFixOf">noteFixOf</a></li><li><a href="global.html#noteHoldDeadlineOf">noteHoldDeadlineOf</a></li><li><a href="global.html#noteItemFieldProblems">noteItemFieldProblems</a></li><li><a href="global.html#noteItemProblems">noteItemProblems</a></li><li><a href="global.html#noteMaterialFor">noteMaterialFor</a></li><li><a href="global.html#noteMaterialOf">noteMaterialOf</a></li><li><a href="global.html#noteMaterialText">noteMaterialText</a></li><li><a href="global.html#noteStd">noteStd</a></li><li><a href="global.html#noteUnitsOf">noteUnitsOf</a></li><li><a href="global.html#notesInflowOf">notesInflowOf</a></li><li><a href="global.html#notesInflowProblem">notesInflowProblem</a></li><li><a href="global.html#numberSet">numberSet</a></li><li><a href="global.html#openDocHolds">openDocHolds</a></li><li><a href="global.html#openStores">openStores</a></li><li><a href="global.html#originalTitleOf">originalTitleOf</a></li><li><a href="global.html#outputNumbers">outputNumbers</a></li><li><a href="global.html#packDocsByChars">packDocsByChars</a></li><li><a href="global.html#packOptOf">packOptOf</a></li><li><a href="global.html#panelFindingsOf">panelFindingsOf</a></li><li><a href="global.html#panelGroupOf">panelGroupOf</a></li><li><a href="global.html#panelSameProviderWarnings">panelSameProviderWarnings</a></li><li><a href="global.html#panelSeatRowsOf">panelSeatRowsOf</a></li><li><a href="global.html#panelSeats">panelSeats</a></li><li><a href="global.html#parseFrontmatter">parseFrontmatter</a></li><li><a href="global.html#parseSummarizeBenchArgs">parseSummarizeBenchArgs</a></li><li><a href="global.html#patchNoteRecord">patchNoteRecord</a></li><li><a href="global.html#patternsOf">patternsOf</a></li><li><a href="global.html#pickSummarizeVocab">pickSummarizeVocab</a></li><li><a href="global.html#planNoteStockFix">planNoteStockFix</a></li><li><a href="global.html#planSummarizeBench">planSummarizeBench</a></li><li><a href="global.html#proposalsOf">proposalsOf</a></li><li><a href="global.html#publishedOf">publishedOf</a></li><li><a href="global.html#putDocHold">putDocHold</a></li><li><a href="global.html#putRetagHold">putRetagHold</a></li><li><a href="global.html#queueRejudge">queueRejudge</a></li><li><a href="global.html#quote">quote</a></li><li><a href="global.html#rawPoolSplitOf">rawPoolSplitOf</a></li><li><a href="global.html#reEscape">reEscape</a></li><li><a href="global.html#readMd">readMd</a></li><li><a href="global.html#readNoteStockLedger">readNoteStockLedger</a></li><li><a href="global.html#readWatermark">readWatermark</a></li><li><a href="global.html#recordPatchOf">recordPatchOf</a></li><li><a href="global.html#renameKeysObsoleteOf">renameKeysObsoleteOf</a></li><li><a href="global.html#renderFrontmatter">renderFrontmatter</a></li><li><a href="global.html#repairBenchRole">repairBenchRole</a></li><li><a href="global.html#repairCaseProblems">repairCaseProblems</a></li><li><a href="global.html#repairPlanOf">repairPlanOf</a></li><li><a href="global.html#repairProblemsOf">repairProblemsOf</a></li><li><a href="global.html#repairVerdictOf">repairVerdictOf</a></li><li><a href="global.html#requeueCategory">requeueCategory</a></li><li><a href="global.html#resolveDocHolds">resolveDocHolds</a></li><li><a href="global.html#resolveJob">resolveJob</a></li><li><a href="global.html#resolveNoteHolds">resolveNoteHolds</a></li><li><a href="global.html#resolveSummarizeData">resolveSummarizeData</a></li><li><a href="global.html#resolveSummarizeSettings">resolveSummarizeSettings</a></li><li><a href="global.html#resolveSummarizeVocab">resolveSummarizeVocab</a></li><li><a href="global.html#retagBenchRole">retagBenchRole</a></li><li><a href="global.html#retagCaseProblems">retagCaseProblems</a></li><li><a href="global.html#retagJobLabelOf">retagJobLabelOf</a></li><li><a href="global.html#retagPageProblems">retagPageProblems</a></li><li><a href="global.html#retagTargetOf">retagTargetOf</a></li><li><a href="global.html#retagVerdictOf">retagVerdictOf</a></li><li><a href="global.html#reviveFailedDocs">reviveFailedDocs</a></li><li><a href="global.html#rewriteFieldOf">rewriteFieldOf</a></li><li><a href="global.html#rewriteMdField">rewriteMdField</a></li><li><a href="global.html#rollbackNoteRow">rollbackNoteRow</a></li><li><a href="global.html#rollbackNoteStockFix">rollbackNoteStockFix</a></li><li><a href="global.html#runAiBatchStage">runAiBatchStage</a></li><li><a href="global.html#runFaithCheck">runFaithCheck</a></li><li><a href="global.html#runPanelPage">runPanelPage</a></li><li><a href="global.html#runSummarizeBench">runSummarizeBench</a></li><li><a href="global.html#runSummarizeBenchCli">runSummarizeBenchCli</a></li><li><a href="global.html#save">save</a></li><li><a href="global.html#seatFaithVotesOf">seatFaithVotesOf</a></li><li><a href="global.html#section">section</a></li><li><a href="global.html#sectionBodyOf">sectionBodyOf</a></li><li><a href="global.html#sectionItemsOf">sectionItemsOf</a></li><li><a href="global.html#sectionOf">sectionOf</a></li><li><a href="global.html#settleRetagHolds">settleRetagHolds</a></li><li><a href="global.html#shortText">shortText</a></li><li><a href="global.html#splitTopLevel">splitTopLevel</a></li><li><a href="global.html#stageRetag">stageRetag</a></li><li><a href="global.html#stageSummarize">stageSummarize</a></li><li><a href="global.html#stageSync">stageSync</a></li><li><a href="global.html#stageTriage">stageTriage</a></li><li><a href="global.html#standardsVocabOf">standardsVocabOf</a></li><li><a href="global.html#stateFileOf">stateFileOf</a></li><li><a href="global.html#strArr">strArr</a></li><li><a href="global.html#stripIdentifiers">stripIdentifiers</a></li><li><a href="global.html#stripPatternsOf">stripPatternsOf</a></li><li><a href="global.html#stripSlugs">stripSlugs</a></li><li><a href="global.html#suggestConceptRenames">suggestConceptRenames</a></li><li><a href="global.html#summarizeBenchRole">summarizeBenchRole</a></li><li><a href="global.html#summarizeBenchRoleOf">summarizeBenchRoleOf</a></li><li><a href="global.html#summarizeCapacityOf">summarizeCapacityOf</a></li><li><a href="global.html#summarizeCaseProblems">summarizeCaseProblems</a></li><li><a href="global.html#summarizeFeatureProblems">summarizeFeatureProblems</a></li><li><a href="global.html#summarizePanelsOf">summarizePanelsOf</a></li><li><a href="global.html#summarizeScanOf">summarizeScanOf</a></li><li><a href="global.html#summarizeSeatOf">summarizeSeatOf</a></li><li><a href="global.html#summarizeSeatsOf">summarizeSeatsOf</a></li><li><a href="global.html#summarizeSummaryOf">summarizeSummaryOf</a></li><li><a href="global.html#summarizeVerdictOf">summarizeVerdictOf</a></li><li><a href="global.html#summarizeVocabProblem">summarizeVocabProblem</a></li><li><a href="global.html#summarizeWarningsOf">summarizeWarningsOf</a></li><li><a href="global.html#summaryTextOf">summaryTextOf</a></li><li><a href="global.html#syncFieldsOf">syncFieldsOf</a></li><li><a href="global.html#syncHashOf">syncHashOf</a></li><li><a href="global.html#syncNoteHolds">syncNoteHolds</a></li><li><a href="global.html#syncNotes">syncNotes</a></li><li><a href="global.html#syncTaxonomy">syncTaxonomy</a></li><li><a href="global.html#syncVocabOf">syncVocabOf</a></li><li><a href="global.html#tagSuspects">tagSuspects</a></li><li><a href="global.html#taxonomyFixOf">taxonomyFixOf</a></li><li><a href="global.html#taxonomyOf">taxonomyOf</a></li><li><a href="global.html#taxonomySnapshotOf">taxonomySnapshotOf</a></li><li><a href="global.html#taxonomyStatus">taxonomyStatus</a></li><li><a href="global.html#taxonomyVersion">taxonomyVersion</a></li><li><a href="global.html#triageBenchRole">triageBenchRole</a></li><li><a href="global.html#triageCaseProblems">triageCaseProblems</a></li><li><a href="global.html#triageEnabledOf">triageEnabledOf</a></li><li><a href="global.html#triagePendingOf">triagePendingOf</a></li><li><a href="global.html#triageReadyOf">triageReadyOf</a></li><li><a href="global.html#triageVerdictOf">triageVerdictOf</a></li><li><a href="global.html#trimItem">trimItem</a></li><li><a href="global.html#ungroundedLinesOf">ungroundedLinesOf</a></li><li><a href="global.html#ungroundedNumbers">ungroundedNumbers</a></li><li><a href="global.html#unquote">unquote</a></li><li><a href="global.html#verifyNoteStockChain">verifyNoteStockChain</a></li><li><a href="global.html#wordsOf">wordsOf</a></li><li><a href="global.html#writeMd">writeMd</a></li></ul>
+    
+</nav>
+
+<div id="main">
+    
+    <h1 class="page-title">bench/summarizeBench.mjs</h1>
+    
+
+    
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>// summarizeBench.mjs — 摘要之 AI 能力評分(五角色):以抓取套件之角色化評分核心(defineBenchRole、runBench、defineBenchRoles)定義
+//   預篩(triage)、摘要(summarize)、修補(repair)、忠實性(faith)、重標(retag);判準、失敗與停測、併發、報表與評比表皆在核心
+//
+// 【提示詞與判定同正式管線】各角色之提示詞一律以本套件之正式 domain 組(預篩 createTriageDomain;摘要、修補、忠實性 createSummarizeDomain;
+//   重標 createRetagDomain;建構參數取設定之預設 SUMMARIZE_DEFAULT,同總組裝),逐案之類別以正式之判定函數算出——量的是模型於正式
+//   提示詞與正式判準下之表現,不另立一套評分規則。詞彙經 opt.vocab／命令列 --vocab 注入即以之組提示詞;覆寫了提示詞者以
+//   opt.domain(或 opt.vocab＋opt.domainOf;核心只在有詞彙時用 domainOf)注入同一工廠之產物。
+// 【判準】逐案每回之類別皆＝應然才通過(核心之 judgeBenchCase;一回不符即不通過,不以比率放行);合契約率、耗時、呼叫失敗只列資訊。
+// 【交調度層之 check 驗外層形狀】調度層取回覆中最後一段過 check 之 JSON(抓取套件 core/ai/jsonReply):陣列輸出之角色(預篩、摘要、重標)
+//   要求至少一項為帶整數 index 之物件,物件輸出之角色(修補、忠實性)用正式呼叫之同一 check——只驗可解析會取到尾隨說明之小片段,
+//   與正式管線取的不是同一段;項之內容由逐案判定分類(不在 check 擋,否則合契約率量不到)。
+// 【分頁比照正式批量】預設取 SUMMARIZE_DEFAULT,roleOpt(命令列之角色專屬參數)可改:預篩每頁 summarize.triage.docsPerCall 案;
+//   摘要依字數打包(packDocsByChars;summarize.docsPerCall 篇、summarize.charsPerDoc 字);修補一頁一案;忠實性每頁 10 案(正式覆核
+//   以摘要之一批為一次呼叫,評分沿用檢定標準題組之頁量);重標同焦點之案同頁、每頁至多 summarize.retag.notesPerCall 案。
+//   同頁之案須同一份詞彙(核心之規則):自帶詞彙(input.vocab)不同之案分頁。
+// 【類別】
+//   預篩    relevant／irrelevant(同一 index 取第一個合 isValidItem 之項,同正式之部分接受)
+//   摘要    irrelevant(判非知識)／note-ok(判知識且過納入閘)／note-bad(判知識而未過閘)。納入閘＝正式新進閘之同一組函數、同一順序:
+//           正規化與硬性欄位、數字紮根(逐條移除後仍成立;gateNoteItem)→ 正規化後之項目合輸出格式 → 組版(buildNote,不落地)→
+//           筆記標準(checkNote;不合格或未能判定即不納入);同一 index 取第一個可收之項。概念詞彙為空、既有概念恆否(新庫:
+//           多概念擠一標籤者不拆)
+//   修補    fixed(套回後以同一閘重判〔同正式:正規化與硬性欄位、數字紮根 → 組版後之筆記標準;修補前已合格式,不再驗格式〕過閘且
+//           無逐條移除——被指出之處皆依原文更正或刪除)／unfixed
+//   忠實性  faithful／unfaithful／unsure;不合格之票(理由過短、裁決不在清單、同編號矛盾)為缺票＝無裁決,同正式規則
+//   重標    回覆類別經 retagTargetOf 落點(新增類別之工作,非落點筆記之平移不採、維持原類別)
+// 【題組】內建通用題組 bench/cases/&lt;角色 id>-generic.json(領域中立、合成材料、無外部連結)。預篩、忠實性、重標與 SS5(預篩)、SS14、SS9 之
+//   檢定標準題組同形;摘要與 SS5 摘要題組之自帶材料案同形(以樣本檔定位之案須先轉為自帶材料)。
+// 【命令列】runSummarizeBenchCli:--role &lt;角色 id|all>(預設 all:依序五角色)加核心之全部參數;--role 解析、--vocab-pick、全部角色之準備期
+//   (後面角色之錯誤不得在前面角色燒完額度後才拋)與停測帶過(前面角色已停測之模型不再於後續角色受測)皆為抓取套件之多角色命令列
+//   (defineBenchRoles;規則只在核心一份),本檔只給角色清單、pickSummarizeVocab 與子集檔名之主幹。各角色之列並存於同一評比表(--board)。
+//   bench/cli.mjs 為薄殼。
+
+import { fileURLToPath } from 'url'
+import isobj from 'wsemi/src/isobj.mjs'
+import isarr from 'wsemi/src/isarr.mjs'
+import isestr from 'wsemi/src/isestr.mjs'
+import {
+    defineBenchRole, defineBenchRoles, benchArgPint,
+    typeName, chunk, groupBy, vocabKeyOf, inputVocabProblemsOf, domainNeedsOf, noVerdict, benchPintOf, batchOption, textValueOf,
+    DEFAULT_FREE_MODELS, STATUS, oneline,
+} from '../core/capturePackage.mjs'
+import { SUMMARIZE_DEFAULT } from '../core/summarizeSettings.mjs'
+import { resolveSummarizeVocab, assertSummarizeVocab, pickSummarizeVocab } from '../core/vocab/summarizeVocab.mjs'
+import { PANEL_UNSURE } from '../core/standards/panel.mjs'
+import { createTriageDomain } from '../domain/triageDomain.mjs'
+import { createSummarizeDomain } from '../domain/noteDomain.mjs'
+import { createRetagDomain } from '../domain/retagDomain.mjs'
+import { gateNoteItem } from '../standards/noteGate.mjs'
+import { normalizeNoteItem } from '../standards/noteNormalize.mjs'
+import { checkNote } from '../standards/noteStandards.mjs'
+import { repairProblemsOf, applyRepairs, checkRepairReply, fieldPlaceOf } from '../standards/noteRepair.mjs'
+import { faithNoteText, checkFaithVerdictOf, seatFaithVotesOf, checkFaithChecks, FAITH_VERDICTS } from '../standards/faithCheck.mjs'
+import { packDocsByChars } from '../stores/packByChars.mjs'
+import { buildNote } from '../stores/noteBuild.mjs'
+import { taxonomyOf, retagTargetOf } from '../stores/taxonomy.mjs'
+
+/** 摘要設定之預設(分頁、受測名單與 domain 之建構參數取此,同總組裝) */
+const S = SUMMARIZE_DEFAULT
+
+/** 忠實性每頁案數(正式覆核以摘要之一批為一次呼叫;評分沿用檢定標準題組之頁量,量一次核對多項之能力) */
+const FAITH_PAGE = 10
+
+/** 既有概念之判定(評分以新庫為準:恆否——擠在一標籤之多概念不拆,同正式管線於空庫之行為) */
+const NO_KNOWN_CONCEPT = () => false
+
+/** 組版用之筆記目錄(只組不落地;只進記錄之 file 欄) */
+const NOTES_DIR = 'notes'
+
+/** 結構檢查用之 domain(isValidItem 只看形狀、不讀詞彙;題組驗證期尚無受測之 domain) */
+const SHAPE_DOMAIN = createSummarizeDomain()
+
+/**
+ * 內建通用題組之檔(模組所在資料夾之檔案,以 fileURLToPath 解析)
+ *
+ * @type {Object}
+ */
+export const SUMMARIZE_BENCH_CASES_FILES = Object.freeze(Object.fromEntries(['triage', 'summarize', 'repair', 'faith', 'retag']
+    .map((id) => [id, fileURLToPath(new URL(`./cases/${id}-generic.json`, import.meta.url))])))
+
+/**
+ * 預設受測名單:摘要之預設席位(summarize.ai 之 use 與 fallback)在前,其餘依核心之免費名單(DEFAULT_FREE_MODELS)
+ *
+ * @type {Array}
+ */
+export const SUMMARIZE_BENCH_MODELS = Object.freeze([...new Set([S.ai.use, ...(isarr(S.ai.fallback) ? S.ai.fallback : []), ...DEFAULT_FREE_MODELS])])
+
+// ════════════════ 共用小件(角色作者之通用件——型別名、切塊、分組、詞彙鍵、案詞彙之檢核、domain 之形狀檢核、無裁決、正整數參數、每頁案數選項——
+//   取抓取套件之 benchKit;本檔只放摘要專屬者)════════════════
+
+/**
+ * 陣列輸出之角色(預篩、摘要、重標)交調度層之 check:至少一項為帶整數 index 之物件——調度層取回覆中最後一段過 check 之 JSON,
+ *   check 須驗到逐案判定所讀之外層形狀(只驗可解析會取到尾隨說明之小片段;同正式各段之 check 只收帶 index 之項);項之內容由逐案判定分類
+ *
+ * @param {*} d 輸入解析後之回覆
+ * @returns {Boolean|String} 回傳 true 或不合格之原因
+ */
+const indexedArrayCheck = (d) => (isarr(d) &amp;&amp; d.some((x) => isobj(x) &amp;&amp; Number.isInteger(x.index)) ? true : `回覆無帶整數 index 之項（${typeName(d)}）`)
+
+/**
+ * 案自帶詞彙之檢核(以本套件詞彙表之規格驗;未帶不驗;抓取套件之 inputVocabProblemsOf)
+ *
+ * @param {Object} c 輸入案
+ * @returns {Array} 回傳問題說明陣列
+ */
+const inputVocabProblems = (c) => inputVocabProblemsOf(c, resolveSummarizeVocab)
+
+/**
+ * 材料之檢核(忠實性、修補):原文標題為首行(正式材料＝原文標題＋送出之內文)
+ *
+ * @param {Object} inp 輸入案之 input
+ * @returns {Array} 回傳問題說明陣列
+ */
+function materialProblems(inp) {
+    const p = []
+    if (!isestr(inp.title)) p.push('缺 input.title(原文標題)')
+    if (!isestr(inp.material)) p.push('缺 input.material(原文標題＋送出之內文)')
+    else if (isestr(inp.title) &amp;&amp; inp.material.split('\n')[0].trim() !== inp.title.trim()) p.push('input.material 須以原文標題為首行(與正式材料同一定義:原文標題＋送出之內文)')
+    return p
+}
+
+/**
+ * domain 之形狀檢核(角色之 domainProblem;抓取套件之 domainNeedsOf——須為物件、須具之函數):納入閘另讀已解析之詞彙表,重標另讀分類清單
+ *
+ * @param {Array} fns 輸入須具之函數名
+ * @param {Object} [opt={}] 輸入 { resolvedVocab:Boolean(vocab 須為 resolveSummarizeVocab 之產物), categories:Boolean(vocab 須含分類清單) }
+ * @returns {Function} 回傳 (d) => String(問題說明;空字串＝合格)
+ */
+const domainNeeds = (fns, opt = {}) => domainNeedsOf(fns, (d) => {
+    if (opt.resolvedVocab) {
+        try {
+            assertSummarizeVocab(d.vocab)
+        }
+        catch {
+            return '之 vocab 須為 resolveSummarizeVocab 之產物（納入閘之判定讀之）'
+        }
+    }
+    if (opt.categories &amp;&amp; !(isobj(d.vocab) &amp;&amp; isarr(d.vocab.categories) &amp;&amp; isestr(d.vocab.fallbackCategory))) return '之 vocab 須含分類清單（categories、fallbackCategory）'
+    return ''
+})
+
+// ════════════════ 納入閘(摘要、修補共用) ════════════════
+
+/**
+ * 評分用之納入閘:與正式新進閘同一組函數、同一順序——正規化與硬性欄位、數字紮根(gateNoteItem;逐條移除後仍成立)→
+ *   正規化後之項目合輸出格式(domain.isValidItem)→ 組版(buildNote,不落地)→ 筆記標準(checkNote;不合格或未能判定即不納入)
+ *
+ * stage 表示停在哪一關:'format'(項目不合輸出格式;正式管線視為未涵蓋)、'gate'(硬性欄位或數字紮根不合格;正式管線不收此項)、
+ * 'standards'(已收而組版後之筆記標準不合格;正式管線不落地)、''(納入)。正式管線同一 index 之重複項:前兩關未過者換下一項,
+ * 已收者即定(standards 不合格亦不再換)。修補後之重判同正式不再驗格式(o.format:false;項目於修補前已合格式,修補後之標題、
+ * 核心知識與概念由閘之 SS2 驗)。
+ *
+ * @param {Object} item 輸入 AI 回傳之單一知識項目(relevant 為 true;index 為本頁序號)
+ * @param {Object} o 輸入設定物件
+ * @param {Object} o.domain 輸入摘要 domain(createSummarizeDomain 之產物或相容者;vocab 須為已解析之詞彙表)
+ * @param {Object} o.doc 輸入來源文件 { id, title, sourceName, url }
+ * @param {String} o.material 輸入材料(原文標題＋送出之內文;SS4 之依據)
+ * @param {Integer} o.count 輸入本頁篇數(index 之範圍)
+ * @param {Object} [o.chars] 輸入處理範圍 { sourceChars, processedChars }(只進組版之來源章)
+ * @param {Boolean} [o.format=true] 輸入是否驗輸出格式(domain.isValidItem;修補後之重判為 false)
+ * @returns {Object} 回傳 { ok, stage, std(不納入之主要標準;格式不合為 '格式';納入為 ''), reasons:Array, removed:Array(逐條移除之紀錄), item(正規化後) }
+ * @throws {Error} o.domain.vocab 非本套件解析後之詞彙表時拋出
+ * @example
+ * let d = createSummarizeDomain()
+ * let it = { index: 1, relevant: true, title: '甲', summary: '乙', key_points: ['丙'], concepts: ['丁'], claim_type: '教學示範', evidence_level: '中' }
+ * console.log(benchAdmitNoteItem(it, { domain: d, doc: { id: 'x', title: '甲', sourceName: '', url: '' }, material: '甲\n丙', count: 1 }).reasons)
+ * // => [ '概念 1 個（須 2～6）' ]
+ */
+export function benchAdmitNoteItem(item, o) {
+    const { domain, doc, material, count } = o
+    const g = gateNoteItem(item, { vocab: domain.vocab, material, knownConcept: NO_KNOWN_CONCEPT })
+    if (o.format !== false &amp;&amp; !domain.isValidItem(g.item, count)) {
+        return { ok: false, stage: 'format', std: '格式', reasons: ['項目不合輸出格式（index、relevant；知識項須有標題、核心知識與概念）'], removed: [], item: g.item }
+    }
+    if (!g.ok) return { ok: false, stage: 'gate', std: g.std, reasons: g.reasons, removed: [], item: g.item }
+    const n = buildNote({ k: g.item, doc: { publishedAt: '', textFrom: '', ...doc }, domain, notesDir: NOTES_DIR, nowIso: '', ...(isobj(o.chars) ? { chars: o.chars } : {}) })
+    const rs = checkNote({ front: n.front, body: n.body, record: n.record }, { vocab: domain.vocab, material })
+    const bad = rs.filter((r) => r.status === STATUS.VIOLATION || r.status === STATUS.UNDETERMINED)
+    if (bad.length) {
+        return { ok: false, stage: 'standards', std: (bad.find((r) => r.status === STATUS.VIOLATION) || bad[0]).std, reasons: bad.map((r) => `${r.std} ${r.detail}`), removed: g.removed, item: g.item }
+    }
+    return { ok: true, stage: '', std: '', reasons: [], removed: g.removed, item: g.item }
+}
+
+// ════════════════ 預篩(triage) ════════════════
+
+/** 預篩之無回覆欄位 */
+const TRIAGE_BLANK = Object.freeze({ relevant: null, reason: '' })
+
+/**
+ * 預篩之逐案檢核(與 SS5 預篩題組同形)
+ *
+ * @param {Object} c 輸入案
+ * @returns {Array} 回傳問題說明陣列
+ */
+function triageCaseProblems(c) {
+    const inp = isobj(c.input) ? c.input : {}
+    const p = []
+    if (!isestr(inp.title)) p.push('缺 input.title')
+    if (typeof inp.text !== 'string' &amp;&amp; typeof inp.feedText !== 'string') p.push('缺 input.text(開頭片段之來源;字串)')
+    if (inp.sourceName !== undefined &amp;&amp; typeof inp.sourceName !== 'string') p.push('input.sourceName 須為字串')
+    if (!isobj(c.expect) || typeof c.expect.relevant !== 'boolean') p.push('expect.relevant 須為布林')
+    return [...p, ...inputVocabProblems(c)]
+}
+
+/**
+ * 預篩之逐案類別:同一 index 取第一個合 isValidItem 之項(正式預篩之部分接受)
+ *
+ * @param {*} data 輸入該頁回覆
+ * @param {Object} c 輸入該案
+ * @param {Object} at 輸入 { index, domain, cases }
+ * @returns {Object} 回傳 { cls, valid, problem, fields }
+ */
+function triageVerdictOf(data, c, at) {
+    if (!isarr(data)) return noVerdict(`回覆非 JSON 陣列（${typeName(data)}）`, TRIAGE_BLANK)
+    const it = data.find((x) => x?.index === at.index &amp;&amp; at.domain.isValidItem(x, at.cases.length))
+    if (!it) {
+        const raw = data.find((x) => isobj(x) &amp;&amp; x.index === at.index)
+        return noVerdict(raw ? `index ${at.index} 之項不合輸出格式（relevant 須為布林）` : (data.length ? `回覆無 index ${at.index} 之項` : '回覆為空陣列'), TRIAGE_BLANK)
+    }
+    return { cls: it.relevant ? 'relevant' : 'irrelevant', valid: true, problem: '', fields: { relevant: it.relevant, reason: oneline(textValueOf(it.reason), 60) } }
+}
+
+/**
+ * 預篩之評分角色:一頁多案(預設 20＝summarize.triage.docsPerCall);類別＝該案之 relevant
+ *
+ * @type {Object}
+ */
+export const triageBenchRole = defineBenchRole({
+    id: 'triage',
+    name: '預篩(triage)',
+    title: '預篩 AI 能力評分',
+    runnerName: 'runSummarizeBench(triage)',
+    std: 'SS5',
+    v: 1,
+    casesFile: SUMMARIZE_BENCH_CASES_FILES.triage,
+    models: SUMMARIZE_BENCH_MODELS,
+    caseProblems: triageCaseProblems,
+    expectOf: (c) => (c.expect.relevant ? 'relevant' : 'irrelevant'),
+    caseFieldsOf: (c) => ({ title: c.input.title }),
+    domainOf: (vocab) => createTriageDomain({ vocab, triageCharsPerDoc: S.triage.charsPerDoc, longDocChars: S.charsPerDoc }),
+    domainProblem: domainNeeds(['buildPrompt', 'isValidItem']),
+    paginate: (cases, ctx) => groupBy(cases, vocabKeyOf).flatMap((g) => chunk(g, benchPintOf(ctx.roleOpt?.batch, S.triage.docsPerCall, 'batch'))),
+    promptOf: (cases, domain) => domain.buildPrompt(cases.map((c) => c.input)),
+    check: indexedArrayCheck,
+    // 與正式預篩呼叫同一組選項:陣列輸出逐次截斷放行(部分接受)
+    callOpt: { acceptTruncated: true },
+    verdictOf: triageVerdictOf,
+    blankFields: TRIAGE_BLANK,
+    detailOf: (r) => (r.reason ? `（${r.reason}）` : ''),
+    report: {
+        criteria: [
+            '判準：逐案各回之類別（relevant／irrelevant）皆＝應然才計通過（各回因而一致），不以比率放行',
+            `分頁：每頁 ${S.triage.docsPerCall} 案共用一次呼叫（正式預篩之批量 summarize.triage.docsPerCall 之預設；--batch 可改）；同一 index 取第一個合輸出格式之項`,
+            '合契約率：成功取得回覆之各回中，該案有合輸出格式（index 在頁內範圍、relevant 為布林）之項者之比率；平均耗時取成功之呼叫',
+        ],
+        caseColumns: [{ name: '標題', key: 'title', md: true }],
+        runColumns: [{ name: '理由', key: 'reason' }],
+    },
+    cli: {
+        command: 'node bench/cli.mjs --role triage',
+        casesHelp: '題組檔(與 SS5 預篩題組同形);未給＝內建通用題組(bench/cases/triage-generic.json)',
+        options: [batchOption(S.triage.docsPerCall, 'summarize.triage.docsPerCall 之預設')],
+    },
+})
+
+// ════════════════ 摘要(summarize) ════════════════
+
+/** 摘要之無回覆欄位 */
+const SUMMARIZE_BLANK = Object.freeze({ relevant: null, noteTitle: '', gate: '', reasons: '', removed: 0, reason: '' })
+
+/**
+ * 摘要之逐案檢核(與 SS5 摘要題組之自帶材料案同形)
+ *
+ * @param {Object} c 輸入案
+ * @returns {Array} 回傳問題說明陣列
+ */
+function summarizeCaseProblems(c) {
+    const inp = isobj(c.input) ? c.input : {}
+    const p = []
+    if (inp.fixture !== undefined) p.push('以樣本檔定位之案(input.fixture)須先轉為自帶材料 input.material:{ title, sourceName, url, text }')
+    else if (!isobj(inp.material)) p.push('缺 input.material:{ title, sourceName, url, text }')
+    else {
+        const m = inp.material
+        if (!isestr(m.title)) p.push('input.material.title 須為非空字串')
+        if (!isestr(m.text) || !m.text.trim()) p.push('input.material.text 須為非空字串')
+        for (const k of ['sourceName', 'url']) if (typeof m[k] !== 'string') p.push(`input.material.${k} 須為字串(可為空字串)`)
+    }
+    if (!isobj(c.expect) || typeof c.expect.relevant !== 'boolean') p.push('expect.relevant 須為布林')
+    return [...p, ...inputVocabProblems(c)]
+}
+
+/**
+ * 案之來源文件(提示詞與組版所讀之欄位)
+ *
+ * @param {Object} c 輸入案
+ * @returns {Object} 回傳 { id, title, sourceName, url, text }
+ */
+function materialDocOf(c) {
+    const m = c.input.material
+    return { id: c.id, title: m.title, sourceName: m.sourceName, url: m.url, text: m.text }
+}
+
+/**
+ * 依字數打包之參數(預設同正式摘要)
+ *
+ * @param {Object} roleOpt 輸入角色參數 { docsPerCall?, charsPerDoc? }
+ * @returns {Object} 回傳 { batchSize, charsPerDoc }
+ */
+const packOptOf = (roleOpt) => ({ batchSize: benchPintOf(roleOpt?.docsPerCall, S.docsPerCall, 'docsPerCall'), charsPerDoc: benchPintOf(roleOpt?.charsPerDoc, S.charsPerDoc, 'charsPerDoc') })
+
+/**
+ * 摘要之逐案類別:同一 index 依序取第一個可收之項(正式摘要之部分接受)——判非知識者即收(irrelevant);知識項過格式與閘者即收,
+ *   再以組版後之筆記標準定 note-ok／note-bad;皆未收者為 note-bad(判知識而未過閘)
+ *
+ * @param {*} data 輸入該頁回覆
+ * @param {Object} c 輸入該案
+ * @param {Object} at 輸入 { index, domain, cases, roleOpt }
+ * @returns {Object} 回傳 { cls, valid, problem, fields }
+ */
+function summarizeVerdictOf(data, c, at) {
+    if (!isarr(data)) return noVerdict(`回覆非 JSON 陣列（${typeName(data)}）`, SUMMARIZE_BLANK)
+    const its = data.filter((x) => isobj(x) &amp;&amp; x.index === at.index)
+    if (!its.length) return noVerdict(data.length ? `回覆無 index ${at.index} 之項` : '回覆為空陣列', SUMMARIZE_BLANK)
+    const doc = materialDocOf(c)
+    // 送出之字數與正式摘要同一規則(packDocsByChars:預算只依本篇字數與每頁字數上限,與同頁他篇無關)
+    const budget = packDocsByChars(at.cases.map(materialDocOf), packOptOf(at.roleOpt)).budgets.get(c.id)
+    const material = `${doc.title || ''}\n${String(doc.text || '').slice(0, budget)}`
+    const chars = { sourceChars: doc.text.length, processedChars: Math.min(doc.text.length, budget) }
+    const fieldsOf = (adm) => ({ relevant: true, noteTitle: oneline(textValueOf(adm.item?.title), 60), gate: adm.ok ? '合格' : adm.std, reasons: oneline(adm.reasons.join('；'), 200), removed: adm.removed.length, reason: '' })
+    let first = null
+    for (const it of its) {
+        if (typeof it.relevant !== 'boolean') continue
+        if (!it.relevant) return { cls: 'irrelevant', valid: true, problem: '', fields: { ...SUMMARIZE_BLANK, relevant: false, reason: oneline(textValueOf(it.reason), 60) } }
+        const adm = benchAdmitNoteItem(it, { domain: at.domain, doc, material, count: at.cases.length, chars })
+        if (adm.ok || adm.stage === 'standards') return { cls: adm.ok ? 'note-ok' : 'note-bad', valid: true, problem: '', fields: fieldsOf(adm) }
+        if (!first) first = adm
+    }
+    if (first) return { cls: 'note-bad', valid: first.stage !== 'format', problem: '', fields: fieldsOf(first) }
+    return noVerdict(`index ${at.index} 之項無布林之 relevant`, SUMMARIZE_BLANK)
+}
+
+/**
+ * 摘要之評分角色:依字數打包(預設 docsPerCall 3、charsPerDoc 6000);類別 irrelevant／note-ok／note-bad
+ *
+ * @type {Object}
+ */
+export const summarizeBenchRole = defineBenchRole({
+    id: 'summarize',
+    name: '摘要(summarize)',
+    title: '摘要 AI 能力評分',
+    runnerName: 'runSummarizeBench(summarize)',
+    std: 'SS5',
+    v: 2,
+    casesFile: SUMMARIZE_BENCH_CASES_FILES.summarize,
+    models: SUMMARIZE_BENCH_MODELS,
+    caseProblems: summarizeCaseProblems,
+    expectOf: (c) => (c.expect.relevant ? 'note-ok' : 'irrelevant'),
+    caseFieldsOf: (c) => ({ title: c.input.material.title }),
+    domainOf: (vocab) => createSummarizeDomain({ vocab, summarizeCharsPerDoc: S.charsPerDoc }),
+    domainProblem: domainNeeds(['buildPrompt', 'isValidItem', 'normalizeQuality', 'renderNoteBody'], { resolvedVocab: true }),
+    paginate: (cases, ctx) => {
+        const opt = packOptOf(ctx.roleOpt)
+        return groupBy(cases, vocabKeyOf).flatMap((g) => packDocsByChars(g.map(materialDocOf), opt).batches.map((b) => b.map((d) => d.id)))
+    },
+    promptOf: (cases, domain, ctx) => {
+        const docs = cases.map(materialDocOf)
+        const { budgets } = packDocsByChars(docs, packOptOf(ctx.roleOpt))
+        return domain.buildPrompt(docs, [], { budgets: docs.map((d) => budgets.get(d.id)) })
+    },
+    check: indexedArrayCheck,
+    // 與正式摘要呼叫同一組選項:陣列輸出逐次截斷放行(部分接受)
+    callOpt: { acceptTruncated: true },
+    verdictOf: summarizeVerdictOf,
+    blankFields: SUMMARIZE_BLANK,
+    detailOf: (r) => {
+        if (r.cls === 'irrelevant') return r.reason ? `（${r.reason}）` : ''
+        if (r.cls === 'note-bad') return `（${r.gate}：${r.reasons}）`
+        return r.removed ? `（逐條移除 ${r.removed} 處）` : ''
+    },
+    report: {
+        criteria: [
+            '判準：逐案各回之類別皆＝應然才計通過（各回因而一致），不以比率放行；知識文件之應然為 note-ok，非知識文件為 irrelevant',
+            '類別：irrelevant＝判非知識；note-ok＝判知識且產出之項目過納入閘（正規化與硬性欄位 → 數字紮根，逐條移除後仍成立 → 組版後之筆記標準 SS2／SS3／SS4／SS6／SS11 皆合格）；note-bad＝判知識而未過閘（停在哪一關與原因見各回）',
+            `分頁：依字數打包同正式摘要（每頁至多 ${S.docsPerCall} 篇、字數 ≤ ${S.docsPerCall}×${S.charsPerDoc}，長文獨佔一頁並截至上限；--docs-per-call、--chars-per-doc 可改）；同一 index 取第一個可收之項；概念詞彙為空（新庫：多概念擠一標籤者不拆）`,
+            '合契約率：成功取得回覆之各回中，該案之項合輸出格式（index、relevant；知識項另須標題、核心知識與概念非空，於正規化後）者之比率；平均耗時取成功之呼叫',
+        ],
+        caseColumns: [{ name: '原文標題', key: 'title', md: true }],
+        runColumns: [{ name: '筆記標題', key: 'noteTitle' }, { name: '閘', key: 'gate' }, { name: '未過閘原因', key: 'reasons' }, { name: '逐條移除', key: 'removed' }, { name: '理由', key: 'reason' }],
+    },
+    cli: {
+        command: 'node bench/cli.mjs --role summarize',
+        casesHelp: '題組檔(與 SS5 摘要題組之自帶材料案同形;以樣本檔定位之案須先轉檔);未給＝內建通用題組(bench/cases/summarize-generic.json)',
+        options: [
+            { flag: '--docs-per-call', key: 'docsPerCall', arg: '&lt;n>', help: `每頁至多幾篇(預設 ${S.docsPerCall}＝summarize.docsPerCall 之預設)`, parse: benchArgPint },
+            { flag: '--chars-per-doc', key: 'charsPerDoc', arg: '&lt;n>', help: `每篇字數單位(預設 ${S.charsPerDoc}＝summarize.charsPerDoc 之預設;每頁字數上限＝篇數×本值)`, parse: benchArgPint },
+        ],
+    },
+})
+
+// ════════════════ 修補(repair) ════════════════
+
+/** 修補之無回覆欄位 */
+const REPAIR_BLANK = Object.freeze({ problems: '', applied: 0, left: '' })
+
+/**
+ * 修補之逐案檢核
+ *
+ * @param {Object} c 輸入案
+ * @returns {Array} 回傳問題說明陣列
+ */
+function repairCaseProblems(c) {
+    const inp = isobj(c.input) ? c.input : {}
+    const p = materialProblems(inp)
+    if (!isobj(inp.item)) p.push('缺 input.item(有已知問題之筆記項目)')
+    else if (!SHAPE_DOMAIN.isValidItem({ ...inp.item, index: 1, relevant: true }, 1)) p.push('input.item 須合輸出格式(標題、核心知識與概念非空;正式管線只對此類項目發修補呼叫)')
+    if (!isobj(c.expect) || c.expect.fixed !== true) p.push('expect.fixed 須為 true(題組只收依原文修得好之案)')
+    return [...p, ...inputVocabProblems(c)]
+}
+
+/**
+ * 修補之題目:正規化後之項目與須修補之處(同正式:normalizeNoteItem → repairProblemsOf;提示詞與判定共用)
+ *
+ * @param {Object} c 輸入案
+ * @param {Object} domain 輸入摘要 domain
+ * @returns {Object} 回傳 { material, item, problems }
+ */
+function repairPlanOf(c, domain) {
+    const material = String(c.input.material)
+    const n0 = normalizeNoteItem({ ...c.input.item, index: 1, relevant: true }, { vocab: domain.vocab, knownConcept: NO_KNOWN_CONCEPT })
+    return { material, item: n0.item, problems: repairProblemsOf(n0.item, { vocab: domain.vocab, material }) }
+}
+
+/**
+ * 修補之逐案類別:applyRepairs 只套回被指出之處 → 同一納入閘;過閘且無逐條移除才算修好
+ *
+ * @param {*} data 輸入回覆
+ * @param {Object} c 輸入該案
+ * @param {Object} at 輸入 { domain }
+ * @returns {Object} 回傳 { cls, valid, problem, fields }
+ */
+function repairVerdictOf(data, c, at) {
+    if (!checkRepairReply(data)) return noVerdict(`回覆非 {"repairs":[…]} 物件（${typeName(data)}）`, REPAIR_BLANK)
+    const plan = repairPlanOf(c, at.domain)
+    const a = applyRepairs(plan.item, plan.problems, data)
+    const adm = benchAdmitNoteItem(a.item, { domain: at.domain, doc: { id: c.id, title: c.input.title, sourceName: '', url: '' }, material: plan.material, count: 1, format: false })
+    const fixed = adm.ok &amp;&amp; adm.removed.length === 0
+    const left = adm.ok ? adm.removed.map((x) => `移除含原文沒有之數字：${x}`).join('；') : `${adm.std}：${adm.reasons.join('；')}`
+    const valid = data.repairs.every((r) => isobj(r) &amp;&amp; Number.isInteger(Number(r.no)) &amp;&amp; Number(r.no) >= 1 &amp;&amp; Number(r.no) &lt;= plan.problems.length &amp;&amp; Object.hasOwn(r, 'value'))
+    return { cls: fixed ? 'fixed' : 'unfixed', valid, problem: '', fields: { problems: plan.problems.map(fieldPlaceOf).join('、'), applied: a.applied, left: oneline(left, 200) } }
+}
+
+/**
+ * 修補之評分角色:一頁一案;類別 fixed／unfixed(應然一律 fixed)
+ *
+ * @type {Object}
+ */
+export const repairBenchRole = defineBenchRole({
+    id: 'repair',
+    name: '修補(repair)',
+    title: '欄位定向修補 AI 能力評分',
+    runnerName: 'runSummarizeBench(repair)',
+    std: ['SS2', 'SS4'],
+    v: 1,
+    casesFile: SUMMARIZE_BENCH_CASES_FILES.repair,
+    models: SUMMARIZE_BENCH_MODELS,
+    caseProblems: repairCaseProblems,
+    expectOf: (c) => (c.expect.fixed ? 'fixed' : 'unfixed'),
+    caseFieldsOf: (c) => ({ title: c.input.title }),
+    domainOf: (vocab) => createSummarizeDomain({ vocab, summarizeCharsPerDoc: S.charsPerDoc }),
+    domainProblem: domainNeeds(['buildRepairPrompt', 'isValidItem', 'normalizeQuality', 'renderNoteBody'], { resolvedVocab: true }),
+    promptOf: (cases, domain) => {
+        const c = cases[0]
+        const plan = repairPlanOf(c, domain)
+        if (!plan.problems.length) throw new Error(`修補之案 ${c.id} 依現行詞彙與原文無須修補之處（題組須給有已知問題之筆記；正式管線不對此類項目發修補呼叫）`)
+        return domain.buildRepairPrompt({ material: plan.material, item: plan.item, problems: plan.problems })
+    },
+    // 同正式修補呼叫之 check(checkRepairReply:物件且 repairs 為陣列;調度層取最後一段過 check 者)
+    check: (d) => (checkRepairReply(d) ? true : `回覆非 {"repairs":[…]} 物件（${typeName(d)}）`),
+    verdictOf: repairVerdictOf,
+    blankFields: REPAIR_BLANK,
+    detailOf: (r) => (r.cls === 'unfixed' &amp;&amp; r.left ? `（${r.left}）` : ''),
+    report: {
+        criteria: [
+            '判準：逐案各回之類別皆＝應然（fixed）才計通過，不以比率放行；fixed＝修補回覆只套回被指出之處（applyRepairs）後以同一閘重判（同正式：正規化與硬性欄位、數字紮根 → 組版後之筆記標準）而過閘，且無逐條移除——被指出之處皆依原文更正或刪除該行',
+            '一頁一案：提示詞為正式之欄位定向修補提示詞（buildRepairPrompt），須修補之處同正式（正規化後之 repairProblemsOf：SS2 欄位不合、SS4 含原文沒有之數字）',
+            '合契約率：成功取得回覆之各回中（回覆非 {"repairs":[…]} 物件者不過調度層之 check，同正式計為呼叫失敗〔回覆不合〕），各筆之 no 皆在範圍、皆有 value 者之比率；平均耗時取成功之呼叫',
+        ],
+        caseColumns: [{ name: '原文標題', key: 'title', md: true }],
+        runColumns: [{ name: '須修補之處', key: 'problems' }, { name: '採用處數', key: 'applied' }, { name: '仍未合格', key: 'left' }],
+    },
+    cli: {
+        command: 'node bench/cli.mjs --role repair',
+        casesHelp: '題組檔({ input:{ title, material, item }, expect:{ fixed:true } });未給＝內建通用題組(bench/cases/repair-generic.json)',
+    },
+})
+
+// ════════════════ 忠實性(faith) ════════════════
+
+/** 忠實性之無回覆欄位 */
+const FAITH_BLANK = Object.freeze({ reason: '' })
+
+/**
+ * 忠實性之逐案檢核(與 SS14 題組同形)
+ *
+ * @param {Object} c 輸入案
+ * @returns {Array} 回傳問題說明陣列
+ */
+function faithCaseProblems(c) {
+    const inp = isobj(c.input) ? c.input : {}
+    const p = materialProblems(inp)
+    if (!isobj(inp.note)) p.push('缺 input.note(依原文萃取之筆記項目)')
+    if (!isobj(c.expect) || !FAITH_VERDICTS.includes(c.expect.verdict)) p.push(`expect.verdict 須為 ${FAITH_VERDICTS.join('／')}`)
+    return [...p, ...inputVocabProblems(c)]
+}
+
+/**
+ * 缺票之原因(同編號之票皆不合格或互相矛盾)
+ *
+ * @param {Array} checks 輸入回覆之 checks
+ * @param {Integer} index 輸入項之編號
+ * @returns {String} 回傳原因
+ */
+function faithMissingOf(checks, index) {
+    const raws = checks.filter((x) => Number(x?.index) === index)
+    if (raws.some((x) => checkFaithVerdictOf(x) !== null)) return `同編號 ${index} 之裁決互相矛盾（同正式規則作廢為缺票）`
+    const r = raws[0]
+    if (!isobj(r)) return `index ${index} 之裁決非物件（缺票）`
+    if (String(r.verdict ?? '').trim().toLowerCase() === 'unfaithful') return 'unfaithful 之理由過短或缺（同正式規則視為缺票；須指出筆記哪一欄與原文何處不符）'
+    return `裁決「${oneline(String(r.verdict ?? ''), 30)}」非 ${FAITH_VERDICTS.join('／')}（缺票）`
+}
+
+/**
+ * 忠實性之逐案類別:以正式之單票驗證(seatFaithVotesOf)取該項之票;缺票為無裁決
+ *
+ * @param {*} data 輸入該頁回覆
+ * @param {Object} c 輸入該案
+ * @param {Object} at 輸入 { index, cases }
+ * @returns {Object} 回傳 { cls, valid, problem, fields }
+ */
+function faithVerdictOf(data, c, at) {
+    if (!isobj(data) || !isarr(data.checks)) return noVerdict(`回覆非 {"checks":[…]} 物件（${typeName(data)}）`, FAITH_BLANK)
+    const votes = seatFaithVotesOf(data, new Set(at.cases.map((_, j) => j + 1)))
+    if (!votes.has(at.index)) return noVerdict(`回覆無 index ${at.index} 之裁決`, FAITH_BLANK)
+    const v = votes.get(at.index)
+    if (v === PANEL_UNSURE) return { cls: PANEL_UNSURE, valid: true, problem: '', fields: { reason: '' } }
+    if (v === null) return noVerdict(faithMissingOf(data.checks, at.index), FAITH_BLANK)
+    return { cls: v.verdict, valid: true, problem: '', fields: { reason: oneline(v.reason, 120) } }
+}
+
+/**
+ * 忠實性之評分角色:一頁多案(預設 10);類別 faithful／unfaithful／unsure
+ *
+ * @type {Object}
+ */
+export const faithBenchRole = defineBenchRole({
+    id: 'faith',
+    name: '忠實性(faith)',
+    title: '筆記忠實性覆核 AI 能力評分',
+    runnerName: 'runSummarizeBench(faith)',
+    std: 'SS14',
+    v: 1,
+    casesFile: SUMMARIZE_BENCH_CASES_FILES.faith,
+    models: SUMMARIZE_BENCH_MODELS,
+    caseProblems: faithCaseProblems,
+    expectOf: (c) => c.expect.verdict,
+    caseFieldsOf: (c) => ({ title: c.input.title }),
+    domainOf: (vocab) => createSummarizeDomain({ vocab, summarizeCharsPerDoc: S.charsPerDoc }),
+    domainProblem: domainNeeds(['buildFaithCheckPrompt']),
+    paginate: (cases, ctx) => groupBy(cases, vocabKeyOf).flatMap((g) => chunk(g, benchPintOf(ctx.roleOpt?.batch, FAITH_PAGE, 'batch'))),
+    // 項之形狀同正式覆核(standards/faithCheck 之 runFaithCheck:標題去頭尾空白、材料原樣、筆記以 faithNoteText 逐欄列出)
+    promptOf: (cases, domain) => domain.buildFaithCheckPrompt({ items: cases.map((c, j) => ({ index: j + 1, title: c.input.title.trim(), material: String(c.input.material), noteText: faithNoteText(c.input.note) })) }),
+    // 同正式覆核呼叫之 check(checkFaithChecks:物件且 checks 為陣列;調度層取最後一段過 check 者)
+    check: (d) => (checkFaithChecks(d) ? true : `回覆非 {"checks":[…]} 物件（${typeName(d)}）`),
+    verdictOf: faithVerdictOf,
+    blankFields: FAITH_BLANK,
+    detailOf: (r) => (r.reason ? `（${oneline(r.reason, 60)}）` : ''),
+    report: {
+        criteria: [
+            '判準：逐案各回之裁決（faithful／unfaithful／unsure）皆＝應然才計通過（各回因而一致），不以比率放行',
+            `分頁：每頁 ${FAITH_PAGE} 案共用一次呼叫（--batch 可改）；票之驗證同正式（seatFaithVotesOf：unfaithful 之理由過短、裁決不在清單、同編號矛盾者為缺票＝無裁決）`,
+            '合契約率：成功取得回覆之各回中，該案有合格之票者之比率；平均耗時取成功之呼叫',
+        ],
+        caseColumns: [{ name: '原文標題', key: 'title', md: true }],
+        runColumns: [{ name: '理由', key: 'reason' }],
+    },
+    cli: {
+        command: 'node bench/cli.mjs --role faith',
+        casesHelp: '題組檔(與 SS14 題組同形);未給＝內建通用題組(bench/cases/faith-generic.json)',
+        options: [batchOption(FAITH_PAGE, '檢定標準題組之頁量')],
+    },
+})
+
+// ════════════════ 重標(retag) ════════════════
+
+/** 重標之無回覆欄位 */
+const RETAG_BLANK = Object.freeze({ replied: '' })
+
+/** 重判工作之焦點(新增類別、退役類別、維運排入) */
+const RETAG_REASONS = Object.freeze(['add', 'retire', 'requeue'])
+
+/**
+ * 重標之逐案檢核(與 SS9 題組同形:焦點在案之頂層);工作範圍同正式(新增類別之工作不含已屬該類者;退役與排入只含原類別＝焦點者)
+ *
+ * @param {Object} c 輸入案
+ * @returns {Array} 回傳問題說明陣列
+ */
+function retagCaseProblems(c) {
+    const p = []
+    const f = c.focus
+    const okFocus = isobj(f) &amp;&amp; RETAG_REASONS.includes(f.reason) &amp;&amp; isestr(f.category)
+    if (!okFocus) p.push(`focus 須為 { reason:${RETAG_REASONS.join('|')}, category }(本案所屬重判工作之焦點)`)
+    const inp = isobj(c.input) ? c.input : {}
+    if (!isestr(inp.title)) p.push('缺 input.title')
+    if (!isestr(inp.category)) p.push('缺 input.category(筆記之原類別)')
+    if (typeof inp.summary !== 'string') p.push('input.summary 須為字串')
+    if (inp.points !== undefined &amp;&amp; !(isarr(inp.points) &amp;&amp; inp.points.every((x) => typeof x === 'string'))) p.push('input.points 須為字串陣列(核心知識)')
+    if (!isobj(c.expect) || !isestr(c.expect.category)) p.push('expect.category 須為非空字串')
+    if (okFocus &amp;&amp; isestr(inp.category)) {
+        if (f.reason === 'add' &amp;&amp; inp.category === f.category) p.push('新增類別之工作不含已屬該類別之筆記(同正式之重判範圍)')
+        if (f.reason !== 'add' &amp;&amp; inp.category !== f.category) p.push(`${f.reason} 之工作只含原類別＝焦點類別之筆記(同正式之重判範圍)`)
+    }
+    return [...p, ...inputVocabProblems(c)]
+}
+
+/**
+ * 同頁之案與詞彙之一致(於組提示詞時驗,詞彙可由 --vocab 換):焦點類別之存在、應然類別在清單且可達——不合者恆不通過,是題組之缺陷
+ *
+ * @param {Array} cases 輸入同頁之案(同一焦點)
+ * @param {Object} vocab 輸入重標 domain 之詞彙表
+ * @returns {Array} 回傳問題說明陣列
+ */
+function retagPageProblems(cases, vocab) {
+    const f = cases[0].focus
+    const cats = vocab.categories
+    const p = []
+    if (f.reason === 'retire' &amp;&amp; cats.includes(f.category)) p.push(`焦點 retire 之類別「${f.category}」仍在分類清單`)
+    if (f.reason !== 'retire' &amp;&amp; !cats.includes(f.category)) p.push(`焦點 ${f.reason} 之類別「${f.category}」不在分類清單`)
+    for (const c of cases) {
+        const from = c.input.category
+        const exp = c.expect.category
+        if (!cats.includes(exp)) p.push(`案 ${c.id} 之應然類別「${exp}」不在分類清單`)
+        else if (f.reason === 'add' &amp;&amp; from !== vocab.fallbackCategory &amp;&amp; cats.includes(from) &amp;&amp; exp !== from &amp;&amp; exp !== f.category) {
+            p.push(`案 ${c.id} 之應然「${exp}」不可達（新增類別之工作，原類別在清單且非落點者只在原類別「${from}」與新類別「${f.category}」間擇一）`)
+        }
+    }
+    return p
+}
+
+/**
+ * 重標之逐案類別:同一 index 取第一個合 isValidItem 之項,回覆類別經 retagTargetOf 落點(同正式重標)
+ *
+ * @param {*} data 輸入該頁回覆
+ * @param {Object} c 輸入該案
+ * @param {Object} at 輸入 { index, domain, cases }
+ * @returns {Object} 回傳 { cls, valid, problem, fields }
+ */
+function retagVerdictOf(data, c, at) {
+    if (!isarr(data)) return noVerdict(`回覆非 JSON 陣列（${typeName(data)}）`, RETAG_BLANK)
+    const it = data.find((x) => x?.index === at.index &amp;&amp; at.domain.isValidItem(x, at.cases.length))
+    if (!it) {
+        const raw = data.find((x) => isobj(x) &amp;&amp; x.index === at.index)
+        return noVerdict(raw ? `index ${at.index} 之類別「${oneline(typeof raw.category === 'string' ? raw.category : JSON.stringify(raw.category ?? null), 40)}」不在分類清單` : (data.length ? `回覆無 index ${at.index} 之項` : '回覆為空陣列'), RETAG_BLANK)
+    }
+    const to = retagTargetOf(c.focus, c.input, it.category, taxonomyOf(at.domain.vocab))
+    return { cls: to, valid: true, problem: '', fields: { replied: it.category } }
+}
+
+/**
+ * 重標之評分角色:同焦點之案同頁(每頁至多 20＝summarize.retag.notesPerCall);類別＝依 retagTargetOf 落點之類別
+ *
+ * @type {Object}
+ */
+export const retagBenchRole = defineBenchRole({
+    id: 'retag',
+    name: '重標(retag)',
+    title: '重標 AI 能力評分',
+    runnerName: 'runSummarizeBench(retag)',
+    std: 'SS9',
+    v: 1,
+    casesFile: SUMMARIZE_BENCH_CASES_FILES.retag,
+    models: SUMMARIZE_BENCH_MODELS,
+    caseProblems: retagCaseProblems,
+    expectOf: (c) => c.expect.category,
+    caseFieldsOf: (c) => ({ focus: `${c.focus.reason}:${c.focus.category}`, title: c.input.title, from: c.input.category }),
+    domainOf: (vocab) => createRetagDomain({ vocab }),
+    domainProblem: domainNeeds(['buildPrompt', 'isValidItem'], { categories: true }),
+    paginate: (cases, ctx) => {
+        const n = benchPintOf(ctx.roleOpt?.batch, S.retag.notesPerCall, 'batch')
+        return groupBy(cases, (c) => `${JSON.stringify([c.focus.reason, c.focus.category])}\u0001${vocabKeyOf(c)}`).flatMap((g) => chunk(g, n))
+    },
+    promptOf: (cases, domain) => {
+        const problems = retagPageProblems(cases, domain.vocab)
+        if (problems.length) throw new Error(`重標之題組與詞彙不合（${problems.length} 項）：${problems.join('；')}`)
+        const f = cases[0].focus
+        // 項之形狀同正式重標(stages/retagStage:標題、原類別、一句話重點、核心知識)
+        return domain.buildPrompt(cases.map((c) => ({ title: c.input.title, category: c.input.category, summary: c.input.summary, points: c.input.points })), { focus: { reason: f.reason, category: f.category } })
+    },
+    check: indexedArrayCheck,
+    // 與正式重標呼叫同一組選項:陣列輸出逐次截斷放行(部分接受)
+    callOpt: { acceptTruncated: true },
+    verdictOf: retagVerdictOf,
+    blankFields: RETAG_BLANK,
+    detailOf: (r) => (r.replied &amp;&amp; r.replied !== r.cls ? `（回覆「${r.replied}」：新增類別之工作不採非落點筆記之平移，維持原類別）` : ''),
+    report: {
+        criteria: [
+            '判準：逐案各回之類別皆＝應然才計通過（各回因而一致），不以比率放行；類別＝回覆經 retagTargetOf 落點者（新增類別之工作，原類別在清單且非落點之筆記回覆平移至另一既有類別者，維持原類別——同正式重標）',
+            `分頁：同焦點（add／retire／requeue 與類別）之案同頁，每頁至多 ${S.retag.notesPerCall} 案（--batch 可改）；同一 index 取第一個類別在清單之項`,
+            '合契約率：成功取得回覆之各回中，該案有合輸出格式（index 在頁內範圍、category 照清單原字）之項者之比率；平均耗時取成功之呼叫',
+        ],
+        caseColumns: [{ name: '焦點', key: 'focus', md: true }, { name: '標題', key: 'title', md: true }, { name: '原類別', key: 'from', md: true }],
+        runColumns: [{ name: '回覆類別', key: 'replied' }],
+    },
+    cli: {
+        command: 'node bench/cli.mjs --role retag',
+        casesHelp: '題組檔(與 SS9 題組同形;焦點 focus 在案之頂層);未給＝內建通用題組(bench/cases/retag-generic.json)',
+        options: [batchOption(S.retag.notesPerCall, 'summarize.retag.notesPerCall 之預設')],
+    },
+})
+
+// ════════════════ 執行器與命令列 ════════════════
+
+/**
+ * 摘要之評分角色(依 --role all 之執行順序)
+ *
+ * @type {Array}
+ */
+export const SUMMARIZE_BENCH_ROLES = Object.freeze([triageBenchRole, summarizeBenchRole, repairBenchRole, faithBenchRole, retagBenchRole])
+
+/** 多角色之命令列(抓取套件之 defineBenchRoles:--role 解析、--vocab-pick、準備期、停測帶過) */
+const CLI = defineBenchRoles({ roles: SUMMARIZE_BENCH_ROLES, pickVocab: pickSummarizeVocab, pickName: 'pickSummarizeVocab', vocabPrefix: 'summarize' })
+
+/**
+ * 依 id 取角色
+ *
+ * @param {String} id 輸入角色 id(triage、summarize、repair、faith、retag)
+ * @returns {Object} 回傳角色(defineBenchRole 之產物)
+ * @throws {Error} 不認得之 id 時拋出(列出可用者)
+ * @example
+ * console.log(summarizeBenchRoleOf('faith').name)
+ * // => 忠實性(faith)
+ */
+export function summarizeBenchRoleOf(id) {
+    return CLI.roleOf(id)
+}
+
+/**
+ * 摘要之 AI 能力評分(單一角色;判準、分頁、失敗與停測、回傳形狀見核心之 runBench)
+ *
+ * @param {String} roleId 輸入角色 id(triage、summarize、repair、faith、retag)
+ * @param {Object} opt 輸入核心 runBench 之設定物件(models、cases、runs、aiAdapter｜adapterOf、vocab｜domain、domainOf、roleOpt、timeoutMs、
+ *   concurrency、stopAfterFails、onProgress、clock、timeZone);roleOpt 之鍵:預篩、忠實性、重標為 batch(每頁案數),摘要為 docsPerCall、charsPerDoc
+ * @returns {Promise} 回傳 Promise，resolve 回傳核心 runBench 之結果 { meta, models }
+ * @throws {Error} 角色 id 不認得,或核心於任何呼叫之前之檢核(題組、詞彙、分頁、提示詞)不合時拋出
+ * @example
+ * need test in nodejs.
+ *
+ * let r = await runSummarizeBench('faith', { models: ['oc:opencode/mimo-v2.6-flash-free'], aiAdapter: ai })
+ * console.log(r.models[0].score)
+ */
+export async function runSummarizeBench(roleId, opt = {}) {
+    return CLI.run(roleId, opt)
+}
+
+/**
+ * 評分之準備(不呼叫 AI):驗題組、建 domain、分頁、組各頁提示詞並算指紋(核心之 planBench)
+ *
+ * @param {String} roleId 輸入角色 id
+ * @param {Object} [opt={}] 輸入設定物件(cases、vocab、domain、domainOf、roleOpt)
+ * @returns {Object} 回傳 { set, pages:[{ ids, prompt }], promptFp }
+ * @throws {Error} 角色 id 不認得,或題組、詞彙、分頁、提示詞不合時拋出
+ * @example
+ * console.log(planSummarizeBench('triage').pages.length)
+ * // => 1
+ */
+export function planSummarizeBench(roleId, opt = {}) {
+    return CLI.plan(roleId, opt)
+}
+
+/**
+ * 命令列用法說明(--role 與各角色之參數;核心之多角色命令列所組)
+ *
+ * @type {String}
+ */
+export const SUMMARIZE_BENCH_USAGE = CLI.usage
+
+/**
+ * 解析 --role 並取出其餘參數(其餘參數交核心逐角色解析;--role 缺值、重複、不認得即拋;all 時給 --cases 或角色專屬參數即拋)
+ *
+ * @param {Array} argv 輸入參數陣列(不含 node 與腳本路徑);支援「--role 值」與「--role=值」
+ * @returns {Object} 回傳 { role:String(角色 id 或 'all'), roles:Array(依序之角色;help 時為 []), rest:Array(其餘參數), help:Boolean,
+ *   pick:Boolean(--vocab-pick;不留在 rest) }
+ * @throws {Error} --role 缺值、重複、不認得,all 時給 --cases 或角色專屬參數,或 --vocab-pick 帶值、重複或未配 --vocab 時拋出
+ * @example
+ * let a = parseSummarizeBenchArgs(['--role=faith', '--runs', '1'])
+ * console.log(a.role, a.roles.length, a.rest, a.pick)
+ * // => faith 1 [ '--runs', '1' ] false
+ */
+export function parseSummarizeBenchArgs(argv) {
+    return CLI.parseArgs(argv)
+}
+
+/**
+ * 命令列主流程:解析 --role → 各角色之準備期檢核(全部角色皆過才開始)→ 依序交核心之 runBenchCli(逐回進度檔、報表、--board 評比表)。
+ *   多角色時,前面角色已停測之模型(限流、連續呼叫失敗、條目不可用)不再於後續角色受測;受測模型皆已停測即略過其餘角色(核心之多角色命令列)
+ *
+ * @param {Array} argv 輸入參數陣列(不含 node 與腳本路徑;選項見 SUMMARIZE_BENCH_USAGE)
+ * @param {Object} [inject={}] 輸入注入物件
+ * @param {Object} [inject.aiAdapter] 輸入調度層(各角色共用),給了即不建內建調度層
+ * @param {Object} [inject.log] 輸入輸出物件 { info(msg), error(msg) }，預設 console
+ * @returns {Promise} 回傳 Promise，resolve 回傳 { role:String, runs:Array&lt;{ role(角色 id), result, report, progressFile, board }>,
+ *   stopped:Array(本次停測之模型), skipped:Array(因受測模型皆已停測而未跑之角色 id) }；--help 時回 { help:true }
+ * @throws {Error} 參數不合、題組不合、詞彙檔不存在或不合、提示詞組不出,或核心之評分前檢核失敗時拋出(--role all 時皆在任何呼叫之前)
+ * @example
+ * need test in nodejs.
+ *
+ * let r = await runSummarizeBenchCli(['--role', 'all', '--models', 'oc:opencode/mimo-v2.6-flash-free', '--board', './模型評比.csv'])
+ * console.log(r.runs.map((x) => x.role))
+ */
+export async function runSummarizeBenchCli(argv, inject = {}) {
+    return CLI.runCli(argv, inject)
+}
+
+export default runSummarizeBench
+</code></pre>
+        </article>
+    </section>
+
+
+
+
+    
+    
+</div>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 4.0.5</a> on Sun Nov 01 2026 23:10:48 GMT+0800 (台北標準時間) using the <a href="https://github.com/clenemt/docdash">docdash</a> theme.
+</footer>
+
+<script>prettyPrint();</script>
+<script src="scripts/polyfill.js"></script>
+<script src="scripts/linenumber.js"></script>
+
+
+
+</body>
+</html>

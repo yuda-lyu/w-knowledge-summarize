@@ -1,0 +1,584 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    
+    <meta charset="utf-8">
+    <title>stores/taxonomy.mjs - Documentation</title>
+    
+    
+    <script src="scripts/prettify/prettify.js"></script>
+    <script src="scripts/prettify/lang-css.js"></script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc.css">
+    <script src="scripts/nav.js" defer></script>
+    
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+</head>
+<body>
+
+<input type="checkbox" id="nav-trigger" class="nav-trigger" />
+<label for="nav-trigger" class="navicon-button x">
+  <div class="navicon"></div>
+</label>
+
+<label for="nav-trigger" class="overlay"></label>
+
+<nav >
+    
+    
+    <h2><a href="index.html">Home</a></h2><h3>Global</h3><ul><li><a href="global.html#AI_ADAPTER_OPT">AI_ADAPTER_OPT</a></li><li><a href="global.html#AI_BATCH_LOG_KNOWN">AI_BATCH_LOG_KNOWN</a></li><li><a href="global.html#AI_BATCH_LOG_MUST_SEE">AI_BATCH_LOG_MUST_SEE</a></li><li><a href="global.html#AI_BATCH_REVIEW_LOG_KNOWN">AI_BATCH_REVIEW_LOG_KNOWN</a></li><li><a href="global.html#AI_PENDING_SOURCE">AI_PENDING_SOURCE</a></li><li><a href="global.html#CACHE">CACHE</a></li><li><a href="global.html#CFG_KEYS">CFG_KEYS</a></li><li><a href="global.html#CLAUSE_SPLIT">CLAUSE_SPLIT</a></li><li><a href="global.html#CLI">CLI</a></li><li><a href="global.html#COLLECTION_KEYS">COLLECTION_KEYS</a></li><li><a href="global.html#COMPILED">COMPILED</a></li><li><a href="global.html#CONCEPT_COUNT">CONCEPT_COUNT</a></li><li><a href="global.html#CONFIRM_SCHEMA">CONFIRM_SCHEMA</a></li><li><a href="global.html#CONTRACT_FIELD_TYPES">CONTRACT_FIELD_TYPES</a></li><li><a href="global.html#DATA_KEYS">DATA_KEYS</a></li><li><a href="global.html#DIGEST_DEFAULT">DIGEST_DEFAULT</a></li><li><a href="global.html#DIGEST_PROMPT_SIGS">DIGEST_PROMPT_SIGS</a></li><li><a href="global.html#DISABLED">DISABLED</a></li><li><a href="global.html#DOC_HOLD_NEXT">DOC_HOLD_NEXT</a></li><li><a href="global.html#DOC_STDS">DOC_STDS</a></li><li><a href="global.html#DOMAIN_FACTORY">DOMAIN_FACTORY</a></li><li><a href="global.html#DOMAIN_PROMPT_SIGS">DOMAIN_PROMPT_SIGS</a></li><li><a href="global.html#EVIDENCE_RULE_DEFAULT">EVIDENCE_RULE_DEFAULT</a></li><li><a href="global.html#EVIDENCE_RULE_KEYS">EVIDENCE_RULE_KEYS</a></li><li><a href="global.html#EVIDENCE_STD">EVIDENCE_STD</a></li><li><a href="global.html#FAITH_BLANK">FAITH_BLANK</a></li><li><a href="global.html#FAITH_HOLD_NEXT">FAITH_HOLD_NEXT</a></li><li><a href="global.html#FAITH_PAGE">FAITH_PAGE</a></li><li><a href="global.html#FAITH_VERDICTS">FAITH_VERDICTS</a></li><li><a href="global.html#GATE_STDS">GATE_STDS</a></li><li><a href="global.html#HOLD_OBJECT">HOLD_OBJECT</a></li><li><a href="global.html#LINE_BREAKS">LINE_BREAKS</a></li><li><a href="global.html#MATERIAL_EXCLUDE_PATTERNS_DEFAULT">MATERIAL_EXCLUDE_PATTERNS_DEFAULT</a></li><li><a href="global.html#MATERIAL_PROBLEM_PATTERNS_DEFAULT">MATERIAL_PROBLEM_PATTERNS_DEFAULT</a></li><li><a href="global.html#MIN_START_MS">MIN_START_MS</a></li><li><a href="global.html#NAMESPACES">NAMESPACES</a></li><li><a href="global.html#NON_CONTENT_SECTIONS">NON_CONTENT_SECTIONS</a></li><li><a href="global.html#NOTES_DIR">NOTES_DIR</a></li><li><a href="global.html#NOTE_ARRAY_FIELDS">NOTE_ARRAY_FIELDS</a></li><li><a href="global.html#NOTE_CONTRACT_FIELDS">NOTE_CONTRACT_FIELDS</a></li><li><a href="global.html#NOTE_CONTRACT_STANDARDS">NOTE_CONTRACT_STANDARDS</a></li><li><a href="global.html#NOTE_ENTRIES">NOTE_ENTRIES</a></li><li><a href="global.html#NOTE_FIELD_LABELS">NOTE_FIELD_LABELS</a></li><li><a href="global.html#NOTE_FIELD_LIMITS">NOTE_FIELD_LIMITS</a></li><li><a href="global.html#NOTE_FIX_STDS">NOTE_FIX_STDS</a></li><li><a href="global.html#NOTE_HOLD_DEADLINE_DAYS">NOTE_HOLD_DEADLINE_DAYS</a></li><li><a href="global.html#NOTE_HOLD_NEXT">NOTE_HOLD_NEXT</a></li><li><a href="global.html#NOTE_LIST_FIELDS">NOTE_LIST_FIELDS</a></li><li><a href="global.html#NOTE_PLACEHOLDERS">NOTE_PLACEHOLDERS</a></li><li><a href="global.html#NOTE_PROMPT_SIGS">NOTE_PROMPT_SIGS</a></li><li><a href="global.html#NOTE_QUALITY_LABELS">NOTE_QUALITY_LABELS</a></li><li><a href="global.html#NOTE_SECTION_ORDER">NOTE_SECTION_ORDER</a></li><li><a href="global.html#NOTE_SECTION_TITLES">NOTE_SECTION_TITLES</a></li><li><a href="global.html#NOTE_SOURCE_LABELS">NOTE_SOURCE_LABELS</a></li><li><a href="global.html#NOTE_STANDARDS">NOTE_STANDARDS</a></li><li><a href="global.html#NOTE_SYNC_STATE">NOTE_SYNC_STATE</a></li><li><a href="global.html#NOTE_TEXT_FIELDS">NOTE_TEXT_FIELDS</a></li><li><a href="global.html#NO_KNOWN_CONCEPT">NO_KNOWN_CONCEPT</a></li><li><a href="global.html#NO_MATERIAL_DETAIL">NO_MATERIAL_DETAIL</a></li><li><a href="global.html#OPTIONAL_DOMAIN_MEMBERS">OPTIONAL_DOMAIN_MEMBERS</a></li><li><a href="global.html#OPT_KEYS">OPT_KEYS</a></li><li><a href="global.html#PANEL_DEFS">PANEL_DEFS</a></li><li><a href="global.html#PANEL_SCHEMA">PANEL_SCHEMA</a></li><li><a href="global.html#PANEL_STAGES">PANEL_STAGES</a></li><li><a href="global.html#PANEL_THIRD_STOP">PANEL_THIRD_STOP</a></li><li><a href="global.html#PANEL_UNSURE">PANEL_UNSURE</a></li><li><a href="global.html#PANEL_WHY">PANEL_WHY</a></li><li><a href="global.html#PANEL_WHY_LABELS">PANEL_WHY_LABELS</a></li><li><a href="global.html#PIPELINE_NAME">PIPELINE_NAME</a></li><li><a href="global.html#PROJECTION_SECTION_TITLES">PROJECTION_SECTION_TITLES</a></li><li><a href="global.html#PROMPT_DOMAIN">PROMPT_DOMAIN</a></li><li><a href="global.html#PROMPT_KEYS">PROMPT_KEYS</a></li><li><a href="global.html#REJUDGE_REASON_LABELS">REJUDGE_REASON_LABELS</a></li><li><a href="global.html#RENAME_FIELDS">RENAME_FIELDS</a></li><li><a href="global.html#REPAIR_BLANK">REPAIR_BLANK</a></li><li><a href="global.html#RETAG_BLANK">RETAG_BLANK</a></li><li><a href="global.html#RETAG_HOLD_NEXT">RETAG_HOLD_NEXT</a></li><li><a href="global.html#RETAG_HOLD_STD">RETAG_HOLD_STD</a></li><li><a href="global.html#RETAG_MAX_FAILS">RETAG_MAX_FAILS</a></li><li><a href="global.html#RETAG_PROMPT_SIGS">RETAG_PROMPT_SIGS</a></li><li><a href="global.html#RETAG_REASONS">RETAG_REASONS</a></li><li><a href="global.html#S">S</a></li><li><a href="global.html#SEAT_FALLBACK_STAGES">SEAT_FALLBACK_STAGES</a></li><li><a href="global.html#SECTIONS">SECTIONS</a></li><li><a href="global.html#SHAPE_DOMAIN">SHAPE_DOMAIN</a></li><li><a href="global.html#SS14">SS14</a></li><li><a href="global.html#SS14_OBJECT">SS14_OBJECT</a></li><li><a href="global.html#SUMMARIZE_AI_DEFAULT">SUMMARIZE_AI_DEFAULT</a></li><li><a href="global.html#SUMMARIZE_AI_PENDING_STANDARD_IDS">SUMMARIZE_AI_PENDING_STANDARD_IDS</a></li><li><a href="global.html#SUMMARIZE_AI_SCHEMA">SUMMARIZE_AI_SCHEMA</a></li><li><a href="global.html#SUMMARIZE_AUDITED_STANDARD_IDS">SUMMARIZE_AUDITED_STANDARD_IDS</a></li><li><a href="global.html#SUMMARIZE_BENCH_CASES_FILES">SUMMARIZE_BENCH_CASES_FILES</a></li><li><a href="global.html#SUMMARIZE_BENCH_MODELS">SUMMARIZE_BENCH_MODELS</a></li><li><a href="global.html#SUMMARIZE_BENCH_ROLES">SUMMARIZE_BENCH_ROLES</a></li><li><a href="global.html#SUMMARIZE_BENCH_USAGE">SUMMARIZE_BENCH_USAGE</a></li><li><a href="global.html#SUMMARIZE_BLANK">SUMMARIZE_BLANK</a></li><li><a href="global.html#SUMMARIZE_CAPACITY_DESC">SUMMARIZE_CAPACITY_DESC</a></li><li><a href="global.html#SUMMARIZE_CTX_FLAGS">SUMMARIZE_CTX_FLAGS</a></li><li><a href="global.html#SUMMARIZE_DATA_KEYS">SUMMARIZE_DATA_KEYS</a></li><li><a href="global.html#SUMMARIZE_DEFAULT">SUMMARIZE_DEFAULT</a></li><li><a href="global.html#SUMMARIZE_DIRS">SUMMARIZE_DIRS</a></li><li><a href="global.html#SUMMARIZE_DOC_STATUS">SUMMARIZE_DOC_STATUS</a></li><li><a href="global.html#SUMMARIZE_DOMAIN_KEYS">SUMMARIZE_DOMAIN_KEYS</a></li><li><a href="global.html#SUMMARIZE_FEATURES">SUMMARIZE_FEATURES</a></li><li><a href="global.html#SUMMARIZE_GUIDE_FIELDS">SUMMARIZE_GUIDE_FIELDS</a></li><li><a href="global.html#SUMMARIZE_LOG_KNOWN">SUMMARIZE_LOG_KNOWN</a></li><li><a href="global.html#SUMMARIZE_LOG_MUST_SEE">SUMMARIZE_LOG_MUST_SEE</a></li><li><a href="global.html#SUMMARIZE_LOG_PARSE">SUMMARIZE_LOG_PARSE</a></li><li><a href="global.html#SUMMARIZE_PROMPT_SIGS">SUMMARIZE_PROMPT_SIGS</a></li><li><a href="global.html#SUMMARIZE_REPORT_KEYS">SUMMARIZE_REPORT_KEYS</a></li><li><a href="global.html#SUMMARIZE_SCAN_OBJECT">SUMMARIZE_SCAN_OBJECT</a></li><li><a href="global.html#SUMMARIZE_SCHEMA">SUMMARIZE_SCHEMA</a></li><li><a href="global.html#SUMMARIZE_SEATS">SUMMARIZE_SEATS</a></li><li><a href="global.html#SUMMARIZE_SEAT_LABELS">SUMMARIZE_SEAT_LABELS</a></li><li><a href="global.html#SUMMARIZE_SHARED_KEYS">SUMMARIZE_SHARED_KEYS</a></li><li><a href="global.html#SUMMARIZE_SKIP_KIND">SUMMARIZE_SKIP_KIND</a></li><li><a href="global.html#SUMMARIZE_STAGE_KEYS">SUMMARIZE_STAGE_KEYS</a></li><li><a href="global.html#SUMMARIZE_STANDARDS">SUMMARIZE_STANDARDS</a></li><li><a href="global.html#SUMMARIZE_STORE_KEYS">SUMMARIZE_STORE_KEYS</a></li><li><a href="global.html#SUMMARIZE_TAP_STAGE_KEYS">SUMMARIZE_TAP_STAGE_KEYS</a></li><li><a href="global.html#SUMMARIZE_VOCAB_DEFAULT">SUMMARIZE_VOCAB_DEFAULT</a></li><li><a href="global.html#SUMMARIZE_VOCAB_KEYS">SUMMARIZE_VOCAB_KEYS</a></li><li><a href="global.html#SUMMARIZE_VOCAB_NULL_AS">SUMMARIZE_VOCAB_NULL_AS</a></li><li><a href="global.html#SUMMARY_SECTION">SUMMARY_SECTION</a></li><li><a href="global.html#SYNC_KEYS">SYNC_KEYS</a></li><li><a href="global.html#TAXONOMY_STATE_FILE">TAXONOMY_STATE_FILE</a></li><li><a href="global.html#TAXONOMY_STATE_VERSION">TAXONOMY_STATE_VERSION</a></li><li><a href="global.html#TRIAGE_BLANK">TRIAGE_BLANK</a></li><li><a href="global.html#TRIAGE_PROMPT_SIGS">TRIAGE_PROMPT_SIGS</a></li><li><a href="global.html#TRIAGE_SKIP_PREFIX">TRIAGE_SKIP_PREFIX</a></li><li><a href="global.html#TRIAGE_STATE">TRIAGE_STATE</a></li><li><a href="global.html#WKnowledgeSummarize">WKnowledgeSummarize</a></li><li><a href="global.html#annotationOf">annotationOf</a></li><li><a href="global.html#applyNoteStockFix">applyNoteStockFix</a></li><li><a href="global.html#applyRepairs">applyRepairs</a></li><li><a href="global.html#assertSummarizeVocab">assertSummarizeVocab</a></li><li><a href="global.html#auditSummarizeStandards">auditSummarizeStandards</a></li><li><a href="global.html#benchAdmitNoteItem">benchAdmitNoteItem</a></li><li><a href="global.html#bodyPartsOf">bodyPartsOf</a></li><li><a href="global.html#buildNote">buildNote</a></li><li><a href="global.html#capacityWarningsOf">capacityWarningsOf</a></li><li><a href="global.html#categoryOf">categoryOf</a></li><li><a href="global.html#categoryProposals">categoryProposals</a></li><li><a href="global.html#changedUnitsOf">changedUnitsOf</a></li><li><a href="global.html#check">check</a></li><li><a href="global.html#checkFaithChecks">checkFaithChecks</a></li><li><a href="global.html#checkFaithVerdictOf">checkFaithVerdictOf</a></li><li><a href="global.html#checkNote">checkNote</a></li><li><a href="global.html#checkRepairReply">checkRepairReply</a></li><li><a href="global.html#cleanStrList">cleanStrList</a></li><li><a href="global.html#cnValue">cnValue</a></li><li><a href="global.html#compile">compile</a></li><li><a href="global.html#composeNoteMd">composeNoteMd</a></li><li><a href="global.html#conceptCountDetail">conceptCountDetail</a></li><li><a href="global.html#conceptLabelProblem">conceptLabelProblem</a></li><li><a href="global.html#conceptVocabulary">conceptVocabulary</a></li><li><a href="global.html#contractFieldProblems">contractFieldProblems</a></li><li><a href="global.html#contractOf">contractOf</a></li><li><a href="global.html#contractProblem">contractProblem</a></li><li><a href="global.html#createDigestDomain">createDigestDomain</a></li><li><a href="global.html#createKnowledgeSummarize">createKnowledgeSummarize</a></li><li><a href="global.html#createMaterialPolicy">createMaterialPolicy</a></li><li><a href="global.html#createNoteRestoreGate">createNoteRestoreGate</a></li><li><a href="global.html#createRetagDomain">createRetagDomain</a></li><li><a href="global.html#createSummarizeDomain">createSummarizeDomain</a></li><li><a href="global.html#createSummarizeObject">createSummarizeObject</a></li><li><a href="global.html#createSummarizeRuntime">createSummarizeRuntime</a></li><li><a href="global.html#createTaxonomyStore">createTaxonomyStore</a></li><li><a href="global.html#createTriageDomain">createTriageDomain</a></li><li><a href="global.html#decidePanel">decidePanel</a></li><li><a href="global.html#deepFreeze">deepFreeze</a></li><li><a href="global.html#describe">describe</a></li><li><a href="global.html#diffLabelOf">diffLabelOf</a></li><li><a href="global.html#diffTaxonomy">diffTaxonomy</a></li><li><a href="global.html#domainNeeds">domainNeeds</a></li><li><a href="global.html#dropSection">dropSection</a></li><li><a href="global.html#dropUngrounded">dropUngrounded</a></li><li><a href="global.html#escalateDocHolds">escalateDocHolds</a></li><li><a href="global.html#evidenceCaveatsOf">evidenceCaveatsOf</a></li><li><a href="global.html#evidenceMessagesOf">evidenceMessagesOf</a></li><li><a href="global.html#evidenceNoteOf">evidenceNoteOf</a></li><li><a href="global.html#evidenceRuleOf">evidenceRuleOf</a></li><li><a href="global.html#evidenceTexts">evidenceTexts</a></li><li><a href="global.html#faithBenchRole">faithBenchRole</a></li><li><a href="global.html#faithCaseProblems">faithCaseProblems</a></li><li><a href="global.html#faithMissingOf">faithMissingOf</a></li><li><a href="global.html#faithNoteText">faithNoteText</a></li><li><a href="global.html#faithVerdictOf">faithVerdictOf</a></li><li><a href="global.html#fieldPlaceOf">fieldPlaceOf</a></li><li><a href="global.html#flattenEl">flattenEl</a></li><li><a href="global.html#gateNoteItem">gateNoteItem</a></li><li><a href="global.html#guideDefaultOf">guideDefaultOf</a></li><li><a href="global.html#hold">hold</a></li><li><a href="global.html#inAddScope">inAddScope</a></li><li><a href="global.html#indexedArrayCheck">indexedArrayCheck</a></li><li><a href="global.html#info">info</a></li><li><a href="global.html#ingestNotes">ingestNotes</a></li><li><a href="global.html#inputVocabProblems">inputVocabProblems</a></li><li><a href="global.html#isEvidenceRule">isEvidenceRule</a></li><li><a href="global.html#isNoteRow">isNoteRow</a></li><li><a href="global.html#jobForRemoved">jobForRemoved</a></li><li><a href="global.html#jobIdOf">jobIdOf</a></li><li><a href="global.html#jobScope">jobScope</a></li><li><a href="global.html#knownConceptOf">knownConceptOf</a></li><li><a href="global.html#levelMapOf">levelMapOf</a></li><li><a href="global.html#load">load</a></li><li><a href="global.html#mapContentSections">mapContentSections</a></li><li><a href="global.html#materialDocOf">materialDocOf</a></li><li><a href="global.html#materialExactValues">materialExactValues</a></li><li><a href="global.html#materialProblems">materialProblems</a></li><li><a href="global.html#materialValues">materialValues</a></li><li><a href="global.html#mdOf">mdOf</a></li><li><a href="global.html#mdText">mdText</a></li><li><a href="global.html#mergeContractLimits">mergeContractLimits</a></li><li><a href="global.html#mwGateNote">mwGateNote</a></li><li><a href="global.html#mwMarkDoc">mwMarkDoc</a></li><li><a href="global.html#mwPersistNote">mwPersistNote</a></li><li><a href="global.html#mwRenderNote">mwRenderNote</a></li><li><a href="global.html#mwSaveClues">mwSaveClues</a></li><li><a href="global.html#mwSettleTriage">mwSettleTriage</a></li><li><a href="global.html#mwSkipGate">mwSkipGate</a></li><li><a href="global.html#needThird">needThird</a></li><li><a href="global.html#noTopEvidenceOf">noTopEvidenceOf</a></li><li><a href="global.html#normConcepts">normConcepts</a></li><li><a href="global.html#normalizeNoteItem">normalizeNoteItem</a></li><li><a href="global.html#noteContentText">noteContentText</a></li><li><a href="global.html#noteContractOf">noteContractOf</a></li><li><a href="global.html#noteFeedbackOf">noteFeedbackOf</a></li><li><a href="global.html#noteFixOf">noteFixOf</a></li><li><a href="global.html#noteHoldDeadlineOf">noteHoldDeadlineOf</a></li><li><a href="global.html#noteItemFieldProblems">noteItemFieldProblems</a></li><li><a href="global.html#noteItemProblems">noteItemProblems</a></li><li><a href="global.html#noteMaterialFor">noteMaterialFor</a></li><li><a href="global.html#noteMaterialOf">noteMaterialOf</a></li><li><a href="global.html#noteMaterialText">noteMaterialText</a></li><li><a href="global.html#noteStd">noteStd</a></li><li><a href="global.html#noteUnitsOf">noteUnitsOf</a></li><li><a href="global.html#notesInflowOf">notesInflowOf</a></li><li><a href="global.html#notesInflowProblem">notesInflowProblem</a></li><li><a href="global.html#numberSet">numberSet</a></li><li><a href="global.html#openDocHolds">openDocHolds</a></li><li><a href="global.html#openStores">openStores</a></li><li><a href="global.html#originalTitleOf">originalTitleOf</a></li><li><a href="global.html#outputNumbers">outputNumbers</a></li><li><a href="global.html#packDocsByChars">packDocsByChars</a></li><li><a href="global.html#packOptOf">packOptOf</a></li><li><a href="global.html#panelFindingsOf">panelFindingsOf</a></li><li><a href="global.html#panelGroupOf">panelGroupOf</a></li><li><a href="global.html#panelSameProviderWarnings">panelSameProviderWarnings</a></li><li><a href="global.html#panelSeatRowsOf">panelSeatRowsOf</a></li><li><a href="global.html#panelSeats">panelSeats</a></li><li><a href="global.html#parseFrontmatter">parseFrontmatter</a></li><li><a href="global.html#parseSummarizeBenchArgs">parseSummarizeBenchArgs</a></li><li><a href="global.html#patchNoteRecord">patchNoteRecord</a></li><li><a href="global.html#patternsOf">patternsOf</a></li><li><a href="global.html#pickSummarizeVocab">pickSummarizeVocab</a></li><li><a href="global.html#planNoteStockFix">planNoteStockFix</a></li><li><a href="global.html#planSummarizeBench">planSummarizeBench</a></li><li><a href="global.html#proposalsOf">proposalsOf</a></li><li><a href="global.html#publishedOf">publishedOf</a></li><li><a href="global.html#putDocHold">putDocHold</a></li><li><a href="global.html#putRetagHold">putRetagHold</a></li><li><a href="global.html#queueRejudge">queueRejudge</a></li><li><a href="global.html#quote">quote</a></li><li><a href="global.html#rawPoolSplitOf">rawPoolSplitOf</a></li><li><a href="global.html#reEscape">reEscape</a></li><li><a href="global.html#readMd">readMd</a></li><li><a href="global.html#readNoteStockLedger">readNoteStockLedger</a></li><li><a href="global.html#readWatermark">readWatermark</a></li><li><a href="global.html#recordPatchOf">recordPatchOf</a></li><li><a href="global.html#renameKeysObsoleteOf">renameKeysObsoleteOf</a></li><li><a href="global.html#renderFrontmatter">renderFrontmatter</a></li><li><a href="global.html#repairBenchRole">repairBenchRole</a></li><li><a href="global.html#repairCaseProblems">repairCaseProblems</a></li><li><a href="global.html#repairPlanOf">repairPlanOf</a></li><li><a href="global.html#repairProblemsOf">repairProblemsOf</a></li><li><a href="global.html#repairVerdictOf">repairVerdictOf</a></li><li><a href="global.html#requeueCategory">requeueCategory</a></li><li><a href="global.html#resolveDocHolds">resolveDocHolds</a></li><li><a href="global.html#resolveJob">resolveJob</a></li><li><a href="global.html#resolveNoteHolds">resolveNoteHolds</a></li><li><a href="global.html#resolveSummarizeData">resolveSummarizeData</a></li><li><a href="global.html#resolveSummarizeSettings">resolveSummarizeSettings</a></li><li><a href="global.html#resolveSummarizeVocab">resolveSummarizeVocab</a></li><li><a href="global.html#retagBenchRole">retagBenchRole</a></li><li><a href="global.html#retagCaseProblems">retagCaseProblems</a></li><li><a href="global.html#retagJobLabelOf">retagJobLabelOf</a></li><li><a href="global.html#retagPageProblems">retagPageProblems</a></li><li><a href="global.html#retagTargetOf">retagTargetOf</a></li><li><a href="global.html#retagVerdictOf">retagVerdictOf</a></li><li><a href="global.html#reviveFailedDocs">reviveFailedDocs</a></li><li><a href="global.html#rewriteFieldOf">rewriteFieldOf</a></li><li><a href="global.html#rewriteMdField">rewriteMdField</a></li><li><a href="global.html#rollbackNoteRow">rollbackNoteRow</a></li><li><a href="global.html#rollbackNoteStockFix">rollbackNoteStockFix</a></li><li><a href="global.html#runAiBatchStage">runAiBatchStage</a></li><li><a href="global.html#runFaithCheck">runFaithCheck</a></li><li><a href="global.html#runPanelPage">runPanelPage</a></li><li><a href="global.html#runSummarizeBench">runSummarizeBench</a></li><li><a href="global.html#runSummarizeBenchCli">runSummarizeBenchCli</a></li><li><a href="global.html#save">save</a></li><li><a href="global.html#seatFaithVotesOf">seatFaithVotesOf</a></li><li><a href="global.html#section">section</a></li><li><a href="global.html#sectionBodyOf">sectionBodyOf</a></li><li><a href="global.html#sectionItemsOf">sectionItemsOf</a></li><li><a href="global.html#sectionOf">sectionOf</a></li><li><a href="global.html#settleRetagHolds">settleRetagHolds</a></li><li><a href="global.html#shortText">shortText</a></li><li><a href="global.html#splitTopLevel">splitTopLevel</a></li><li><a href="global.html#stageRetag">stageRetag</a></li><li><a href="global.html#stageSummarize">stageSummarize</a></li><li><a href="global.html#stageSync">stageSync</a></li><li><a href="global.html#stageTriage">stageTriage</a></li><li><a href="global.html#standardsVocabOf">standardsVocabOf</a></li><li><a href="global.html#stateFileOf">stateFileOf</a></li><li><a href="global.html#strArr">strArr</a></li><li><a href="global.html#stripIdentifiers">stripIdentifiers</a></li><li><a href="global.html#stripPatternsOf">stripPatternsOf</a></li><li><a href="global.html#stripSlugs">stripSlugs</a></li><li><a href="global.html#suggestConceptRenames">suggestConceptRenames</a></li><li><a href="global.html#summarizeBenchRole">summarizeBenchRole</a></li><li><a href="global.html#summarizeBenchRoleOf">summarizeBenchRoleOf</a></li><li><a href="global.html#summarizeCapacityOf">summarizeCapacityOf</a></li><li><a href="global.html#summarizeCaseProblems">summarizeCaseProblems</a></li><li><a href="global.html#summarizeFeatureProblems">summarizeFeatureProblems</a></li><li><a href="global.html#summarizePanelsOf">summarizePanelsOf</a></li><li><a href="global.html#summarizeScanOf">summarizeScanOf</a></li><li><a href="global.html#summarizeSeatOf">summarizeSeatOf</a></li><li><a href="global.html#summarizeSeatsOf">summarizeSeatsOf</a></li><li><a href="global.html#summarizeSummaryOf">summarizeSummaryOf</a></li><li><a href="global.html#summarizeVerdictOf">summarizeVerdictOf</a></li><li><a href="global.html#summarizeVocabProblem">summarizeVocabProblem</a></li><li><a href="global.html#summarizeWarningsOf">summarizeWarningsOf</a></li><li><a href="global.html#summaryTextOf">summaryTextOf</a></li><li><a href="global.html#syncFieldsOf">syncFieldsOf</a></li><li><a href="global.html#syncHashOf">syncHashOf</a></li><li><a href="global.html#syncNoteHolds">syncNoteHolds</a></li><li><a href="global.html#syncNotes">syncNotes</a></li><li><a href="global.html#syncTaxonomy">syncTaxonomy</a></li><li><a href="global.html#syncVocabOf">syncVocabOf</a></li><li><a href="global.html#tagSuspects">tagSuspects</a></li><li><a href="global.html#taxonomyFixOf">taxonomyFixOf</a></li><li><a href="global.html#taxonomyOf">taxonomyOf</a></li><li><a href="global.html#taxonomySnapshotOf">taxonomySnapshotOf</a></li><li><a href="global.html#taxonomyStatus">taxonomyStatus</a></li><li><a href="global.html#taxonomyVersion">taxonomyVersion</a></li><li><a href="global.html#triageBenchRole">triageBenchRole</a></li><li><a href="global.html#triageCaseProblems">triageCaseProblems</a></li><li><a href="global.html#triageEnabledOf">triageEnabledOf</a></li><li><a href="global.html#triagePendingOf">triagePendingOf</a></li><li><a href="global.html#triageReadyOf">triageReadyOf</a></li><li><a href="global.html#triageVerdictOf">triageVerdictOf</a></li><li><a href="global.html#trimItem">trimItem</a></li><li><a href="global.html#ungroundedLinesOf">ungroundedLinesOf</a></li><li><a href="global.html#ungroundedNumbers">ungroundedNumbers</a></li><li><a href="global.html#unquote">unquote</a></li><li><a href="global.html#verifyNoteStockChain">verifyNoteStockChain</a></li><li><a href="global.html#wordsOf">wordsOf</a></li><li><a href="global.html#writeMd">writeMd</a></li></ul>
+    
+</nav>
+
+<div id="main">
+    
+    <h1 class="page-title">stores/taxonomy.mjs</h1>
+    
+
+    
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>// taxonomy.mjs — 分類法之版本、狀態與差異(分類得要能擴充;分類器之調整與擴充要能觸發既有知識之調整)
+//
+// 【版本】分類法＝categories／claimTypes／evidenceLevels／fallbackCategory 與變更宣告(categoryRenames、categoryRetire、categoryHints、
+//   claimTypeRenames、evidenceLevelRenames)之排序後序列化;版本＝其雜湊。只含清單與對照表:guide 措辭變動不自動重標
+//   (改由維運之 requeue 明示排入);清單只換順序不算變動。
+// 【狀態】&lt;state 目錄>/TAXONOMY_STATE_FILE:已套用之清單(applied)、版本、工作(jobs)、未宣告之移除(pending)、md 待修補(mdStale)、歷史(history)。
+//   真理檔:原子寫;檔案存在而解析失敗即拋錯(不得當作首次而重建——工作進度會靜默丟失)。檔名只定義於此(子階段與維運同讀)。
+// 【差異 → 工作】類別改名、內容類型改名、證據等級改名 → 機械(rename);新增類別 → AI 重判(rejudge/add:落點類別之筆記
+//   ＋categoryHints 相符者,另 categoryRaw 恰為該類別者直接機械改,零 AI);退役類別 → AI 重判(rejudge/retire:該類筆記);
+//   自清單移除而未宣告去向者 → 守門(pending,每輪 WARN 至宣告或恢復為止,資料不動)。首次記錄只建狀態、不重判既有筆記。
+// 【連續改版】工作於處理時依「現行」分類法重新定界(resolveJob):改名之目標已不在清單 → 循現行改名對照前進;類別目標已退役／
+//   無對照 → 轉為退役重判;新增類別又被移除 → 作廢。新版到來時未完工作保留。
+// 【可採類別】(retagTargetOf)新增類別之工作,非落點之筆記只在「原類別／新類別」間判:新增 Y 不改變兩個既有類別之相對適合度;
+//   只因含關鍵詞而被重判者若被平移,同型而不含關鍵詞者卻不動——同一語意兩種處置。落點類別之筆記(新類別可能終於有合適者)、
+//   原類別不在清單者、退役與維運排入之重判:清單內任一類別皆可。
+
+import fs from 'fs'
+import path from 'path'
+import isobj from 'wsemi/src/isobj.mjs'
+import isarr from 'wsemi/src/isarr.mjs'
+import isestr from 'wsemi/src/isestr.mjs'
+import { sha1, readJson, writeFileAtomic } from '../core/capturePackage.mjs'
+
+/** 狀態檔格式版本 */
+export const TAXONOMY_STATE_VERSION = 1
+
+/** 狀態檔之檔名(位於 state 目錄;單一來源:重標子階段與維運之狀態預覽／排入重判同讀) */
+export const TAXONOMY_STATE_FILE = 'taxonomy.json'
+
+/**
+ * 機械改名之欄位對照:工作欄位 → { 筆記記錄欄位, frontmatter 鍵, 品質章行首(無則只改 frontmatter), 顯示名, 去向之宣告處(守門訊息用) }
+ */
+export const RENAME_FIELDS = {
+    category: { record: 'category', front: 'category', line: '', label: '類別', decl: 'vocab.categoryRenames 或 categoryRetire' },
+    claimType: { record: 'claimType', front: 'claim_type', line: '內容類型：', label: '內容類型', decl: 'vocab.claimTypeRenames' },
+    evidenceLevel: { record: 'evidenceLevel', front: 'evidence_level', line: '證據等級：', label: '證據等級', decl: 'vocab.evidenceLevelRenames' },
+}
+
+/** 重判工作之原因 → 顯示名 */
+export const REJUDGE_REASON_LABELS = Object.freeze({ add: '新增類別', retire: '退役類別', requeue: '重判類別' })
+
+/**
+ * 重標工作之名稱(單一來源:重標子階段之日誌、維運之狀態預覽同用)——改名「&lt;欄位>改名「舊」→「新」」、重判「&lt;原因>「類別」」
+ *
+ * @param {Object} j 輸入工作 { kind:'rename'|'rejudge', field?, from?, to?, reason?, category? }
+ * @returns {String} 回傳名稱
+ * @example
+ * console.log(retagJobLabelOf({ kind: 'rename', field: 'claimType', from: '甲', to: '乙' }))
+ * // => 內容類型改名「甲」→「乙」
+ */
+export function retagJobLabelOf(j) {
+    return j?.kind === 'rename'
+        ? `${RENAME_FIELDS[j.field]?.label || j?.field}改名「${j.from}」→「${j.to}」`
+        : `${REJUDGE_REASON_LABELS[j?.reason] || j?.reason}「${j?.category}」`
+}
+
+const sortedObj = (o) => Object.fromEntries(Object.entries(isobj(o) ? o : {}).sort(([a], [b]) => a.localeCompare(b)))
+const sortedArr = (a) => [...(isarr(a) ? a : [])].map(String).sort((x, y) => x.localeCompare(y))
+
+/**
+ * 由詞彙表取分類法之正準形(排序;版本雜湊與差異之輸入)
+ *
+ * @param {Object} vocab 輸入詞彙表(resolveSummarizeVocab 之產出)
+ * @returns {Object} 回傳 { categories, claimTypes, evidenceLevels, fallbackCategory, categoryRenames, categoryRetire, categoryHints, claimTypeRenames, evidenceLevelRenames }
+ * @example
+ * let a = taxonomyOf({ categories: ['恆星', '行星', '其他'], fallbackCategory: '其他' })
+ * let b = taxonomyOf({ categories: ['其他', '行星', '恆星'], fallbackCategory: '其他' })
+ * console.log(JSON.stringify(a) === JSON.stringify(b), a.categories.length, a.fallbackCategory)
+ * // => true 3 其他
+ */
+export function taxonomyOf(vocab) {
+    const v = isobj(vocab) ? vocab : {}
+    return {
+        categories: sortedArr(v.categories),
+        claimTypes: sortedArr(v.claimTypes),
+        evidenceLevels: sortedArr(v.evidenceLevels),
+        fallbackCategory: String(v.fallbackCategory || ''),
+        categoryRenames: sortedObj(v.categoryRenames),
+        categoryRetire: sortedArr(v.categoryRetire),
+        categoryHints: Object.fromEntries(Object.entries(sortedObj(v.categoryHints)).map(([k, kws]) => [k, sortedArr(kws)])),
+        claimTypeRenames: sortedObj(v.claimTypeRenames),
+        evidenceLevelRenames: sortedObj(v.evidenceLevelRenames),
+    }
+}
+
+/**
+ * 分類法版本(正準形之雜湊前 12 碼)
+ *
+ * @param {Object} tax 輸入 taxonomyOf 之產出
+ * @returns {String} 回傳版本字串
+ * @example
+ * let v1 = taxonomyVersion(taxonomyOf({ categories: ['恆星', '行星', '其他'], fallbackCategory: '其他' }))
+ * let v2 = taxonomyVersion(taxonomyOf({ categories: ['其他', '行星', '恆星'], fallbackCategory: '其他' }))
+ * let v3 = taxonomyVersion(taxonomyOf({ categories: ['恆星', '行星', '星系', '其他'], fallbackCategory: '其他' }))
+ * console.log(v1.length, v1 === v2, v1 === v3)
+ * // => 12 true false
+ */
+export function taxonomyVersion(tax) {
+    return sha1(JSON.stringify(tax)).slice(0, 12)
+}
+
+/** 工作識別碼(同一事件之工作只排一次) */
+const jobIdOf = (j) => (j.kind === 'rename' ? `rename:${j.field}:${j.from}` : `rejudge:${j.reason}:${j.category}`)
+
+/**
+ * 排入重判工作(就地修改狀態並記沿革;同一 id 已在則不重複)——維運之 requeue(ops/taxonomyOps)與重標待判之重試
+ *   (stages/retagStage;退役類別逾次未成者)共用,工作 id 只由 jobIdOf 產生
+ *
+ * @param {Object} state 輸入分類法狀態(syncTaxonomy 之產物;jobs、history 就地增)
+ * @param {String} reason 輸入重判原因('requeue'|'retire'|'add')
+ * @param {String} category 輸入類別
+ * @param {String} nowIso 輸入現在時刻
+ * @param {String} [event=reason] 輸入沿革事件名
+ * @returns {Object} 回傳 { added:Boolean, id }
+ * @example
+ * let state = { version: 'v1', jobs: [], history: [] }
+ * let nowIso = new Date().toISOString()
+ * console.log(queueRejudge(state, 'requeue', '恆星', nowIso), queueRejudge(state, 'requeue', '恆星', nowIso))
+ * // => { added: true, id: 'rejudge:requeue:恆星' } { added: false, id: 'rejudge:requeue:恆星' }
+ * console.log(state.jobs.length, state.history.map((h) => [h.event, h.job]))
+ * // => 1 [ [ 'requeue', 'rejudge:requeue:恆星' ] ]
+ */
+export function queueRejudge(state, reason, category, nowIso, event = reason) {
+    const job = { kind: 'rejudge', reason, category }
+    const id = jobIdOf(job)
+    if (state.jobs.some((j) => j.id === id)) return { added: false, id }
+    state.jobs.push({ ...job, id, createdAt: nowIso, judged: [], fails: {} })
+    state.history.push({ at: nowIso, version: state.version, event, job: id })
+    return { added: true, id }
+}
+
+/**
+ * 移除之名稱 → 工作或守門(依現行宣告)
+ *
+ * @param {String} field 輸入欄位('category'|'claimType'|'evidenceLevel')
+ * @param {String} name 輸入已自清單移除之名稱
+ * @param {Object} cur 輸入現行分類法(taxonomyOf)
+ * @returns {Object|null} 回傳工作物件；未宣告去向回 null
+ */
+function jobForRemoved(field, name, cur) {
+    const renames = { category: cur.categoryRenames, claimType: cur.claimTypeRenames, evidenceLevel: cur.evidenceLevelRenames }[field]
+    if (Object.hasOwn(renames, name)) return { kind: 'rename', field, from: name, to: renames[name] }
+    if (field === 'category' &amp;&amp; cur.categoryRetire.includes(name)) return { kind: 'rejudge', reason: 'retire', category: name }
+    return null
+}
+
+/**
+ * 已套用清單 vs 現行分類法 → 新工作與未宣告之移除
+ *
+ * @param {Object} applied 輸入已套用之清單 { categories, claimTypes, evidenceLevels }
+ * @param {Object} cur 輸入現行分類法(taxonomyOf)
+ * @returns {Object} 回傳 { jobs:Array, pending:Array&lt;{field,name}> }
+ * @example
+ * let applied = { categories: ['恆星', '彗星', '其他'], claimTypes: [], evidenceLevels: [] }
+ * let cur = taxonomyOf({ categories: ['恆星', '小天體', '星系', '其他'], fallbackCategory: '其他', categoryRenames: { 彗星: '小天體' } })
+ * let d = diffTaxonomy(applied, cur)
+ * console.log(d.jobs.map(retagJobLabelOf), d.pending)
+ * // => [ '類別改名「彗星」→「小天體」', '新增類別「星系」' ] []
+ * console.log(diffTaxonomy(applied, taxonomyOf({ categories: ['恆星', '其他'], fallbackCategory: '其他' })).pending)
+ * // => [ { field: 'category', name: '彗星' } ]
+ */
+export function diffTaxonomy(applied, cur) {
+    const jobs = []
+    const pending = []
+    const lists = { category: 'categories', claimType: 'claimTypes', evidenceLevel: 'evidenceLevels' }
+    for (const [field, key] of Object.entries(lists)) {
+        const was = sortedArr(applied?.[key])
+        for (const name of was.filter((x) => !cur[key].includes(x))) {
+            const j = jobForRemoved(field, name, cur)
+            if (j) jobs.push(j)
+            else pending.push({ field, name })
+        }
+    }
+    // 新增類別:改名之目標(舊名在已套用清單者)不算新增——改名不是新類別,否則會白白觸發落點類別之全量 AI 重判
+    const was = sortedArr(applied?.categories)
+    const renamedInto = new Set(jobs.filter((j) => j.kind === 'rename' &amp;&amp; j.field === 'category').map((j) => resolveJob(j, cur)?.to).filter(Boolean))
+    for (const c of cur.categories.filter((x) => !was.includes(x) &amp;&amp; !renamedInto.has(x))) {
+        jobs.push({ kind: 'rejudge', reason: 'add', category: c })
+    }
+    return { jobs, pending }
+}
+
+/**
+ * 工作依現行分類法重新定界(檔頭【連續改版】)
+ *
+ * @param {Object} job 輸入工作
+ * @param {Object} cur 輸入現行分類法(taxonomyOf)
+ * @returns {Object|null} 回傳現行有效之工作(可能已改寫目標或種類)；作廢回 null
+ * @example
+ * let cur = taxonomyOf({ categories: ['恆星', '其他'], fallbackCategory: '其他' })
+ * let r = resolveJob({ kind: 'rename', field: 'category', from: '彗星', to: '小天體' }, cur)
+ * console.log(r.kind, r.reason, r.category)
+ * // => rejudge retire 彗星
+ * console.log(resolveJob({ kind: 'rejudge', reason: 'add', category: '星系' }, cur))
+ * // => null
+ */
+export function resolveJob(job, cur) {
+    if (job.kind === 'rename') {
+        const lists = { category: cur.categories, claimType: cur.claimTypes, evidenceLevel: cur.evidenceLevels }
+        // 舊名又放回清單:不再搬離(已搬者留在新名,由安裝方決定是否另行改名)
+        if (lists[job.field].includes(job.from)) return null
+        const renames = { category: cur.categoryRenames, claimType: cur.claimTypeRenames, evidenceLevel: cur.evidenceLevelRenames }[job.field]
+        let to = job.to
+        const seen = new Set([job.from])
+        while (!lists[job.field].includes(to) &amp;&amp; Object.hasOwn(renames, to) &amp;&amp; !seen.has(to)) {
+            seen.add(to)
+            to = renames[to]
+        }
+        if (lists[job.field].includes(to)) return to === job.to ? job : { ...job, to }
+        // 目標已不在清單且無對照:類別轉為退役重判(舊類別之筆記依現行清單由 AI 重判);其餘欄位作廢(由守門揭露)
+        return job.field === 'category' ? { ...job, kind: 'rejudge', reason: 'retire', category: job.from } : null
+    }
+    if (job.reason === 'add') return cur.categories.includes(job.category) ? job : null
+    if (job.reason === 'retire') return cur.categories.includes(job.category) ? null : job // 退役類別又放回清單:不必重判
+    return job // requeue:恆有效
+}
+
+/**
+ * 建立分類法狀態檔之讀寫器
+ *
+ * @param {String} file 輸入狀態檔路徑(&lt;state 目錄>/TAXONOMY_STATE_FILE)
+ * @returns {Object} 回傳 { file, load():Object|null, save(state) }
+ * @throws {Error} file 非有效字串時拋出
+ * @example
+ * console.log(createTaxonomyStore('./tmp/none/taxonomy.json').load())
+ * // => null
+ * let store = createTaxonomyStore('./tmp/taxonomy.json')
+ * store.save({ version: 'v1', jobs: [] })
+ * let s = store.load()
+ * console.log(s.version, s.stateVersion, s.pending, s.mdStale)
+ * // => v1 1 [] []
+ */
+export function createTaxonomyStore(file) {
+    if (!isestr(file)) throw new Error('createTaxonomyStore 需要狀態檔路徑')
+    return {
+        file,
+        /**
+         * 讀狀態;檔案不存在回 null(首次);存在而解析失敗或格式版本不符即拋錯(真理檔,見檔頭)
+         * @returns {Object|null} 回傳狀態物件或 null
+         */
+        load: () => {
+            if (!fs.existsSync(file)) return null
+            const s = readJson(file, undefined)
+            if (!isobj(s) || s.stateVersion !== TAXONOMY_STATE_VERSION) {
+                throw new Error(`分類法狀態檔無法解析或格式版本不符（${file}）：請自備份還原或刪除後重新記錄（刪除即以現行分類法為已套用，未完工作作廢）`)
+            }
+            return { jobs: [], pending: [], mdStale: [], history: [], ...s }
+        },
+        /**
+         * 原子寫入狀態
+         * @param {Object} s 輸入狀態物件
+         */
+        save: (s) => {
+            writeFileAtomic(file, JSON.stringify({ ...s, stateVersion: TAXONOMY_STATE_VERSION }, null, 2))
+        },
+    }
+}
+
+/**
+ * 分類法狀態之唯讀快照(巡檢、近況總覽用;不同步、不讀筆記、不拋錯——狀態檔之格式只在本檔解讀)
+ *
+ * @param {String} stateDir 輸入 state 目錄(狀態檔為其下之 TAXONOMY_STATE_FILE)
+ * @returns {Object|null} 回傳 { version, jobs:待處理之重標工作數, guards:未宣告移除之守門數, mdStale:md 待修補數 };狀態檔不存在、
+ *   無法解析或格式版本不符回 null
+ * @example
+ * createTaxonomyStore('./tmp/taxonomy.json').save({ version: 'v1', jobs: [{ id: 'j1' }] })
+ * console.log(taxonomySnapshotOf('./tmp'), taxonomySnapshotOf('./tmp/none'))
+ * // => { version: 'v1', jobs: 1, guards: 0, mdStale: 0 } null
+ */
+export function taxonomySnapshotOf(stateDir) {
+    try {
+        const s = createTaxonomyStore(path.join(String(stateDir || ''), TAXONOMY_STATE_FILE)).load()
+        if (!s) return null
+        return { version: String(s.version || ''), jobs: isarr(s.jobs) ? s.jobs.length : 0, guards: isarr(s.pending) ? s.pending.length : 0, mdStale: isarr(s.mdStale) ? s.mdStale.length : 0 }
+    }
+    catch {
+        return null
+    }
+}
+
+/**
+ * 依現行詞彙表同步狀態:首次只記錄;版本變動即差異轉工作;未宣告之移除逐輪重驗(已宣告轉工作、已恢復撤銷);工作重新定界
+ *
+ * @param {Object|null} state 輸入既有狀態(load 之產出；null＝首次)
+ * @param {Object} vocab 輸入現行詞彙表
+ * @param {String} nowIso 輸入現在時刻
+ * @returns {Object} 回傳 { state, initialized:Boolean, changed:Boolean, added:Array, voided:Array, pending:Array }
+ * @example
+ * let nowIso = new Date().toISOString()
+ * let first = syncTaxonomy(null, { categories: ['恆星', '其他'], fallbackCategory: '其他' }, nowIso)
+ * console.log(first.initialized, first.state.jobs.length)
+ * // => true 0
+ * let next = syncTaxonomy(first.state, { categories: ['恆星', '星系', '其他'], fallbackCategory: '其他' }, nowIso)
+ * console.log(next.initialized, next.changed, next.added.map(retagJobLabelOf))
+ * // => false true [ '新增類別「星系」' ]
+ * console.log(syncTaxonomy(next.state, { categories: ['其他', '星系', '恆星'], fallbackCategory: '其他' }, nowIso).changed)
+ * // => false
+ */
+export function syncTaxonomy(state, vocab, nowIso) {
+    const cur = taxonomyOf(vocab)
+    const version = taxonomyVersion(cur)
+    const applied = { categories: cur.categories, claimTypes: cur.claimTypes, evidenceLevels: cur.evidenceLevels }
+    if (!state) {
+        return {
+            state: { version, applied, jobs: [], pending: [], mdStale: [], history: [{ at: nowIso, version, event: 'init' }] },
+            initialized: true, changed: true, added: [], voided: [], pending: [],
+        }
+    }
+    const s = { ...state, jobs: [...(state.jobs || [])], pending: [...(state.pending || [])], history: [...(state.history || [])] }
+    const added = []
+    const addJob = (j) => {
+        const id = jobIdOf(j)
+        if (s.jobs.some((x) => x.id === id)) return
+        const job = { ...j, id, createdAt: nowIso, judged: [], fails: {} }
+        s.jobs.push(job)
+        added.push(job)
+    }
+    const versionChanged = s.version !== version
+    if (versionChanged) {
+        const d = diffTaxonomy(s.applied, cur)
+        for (const j of d.jobs) addJob(j)
+        for (const p of d.pending) if (!s.pending.some((x) => x.field === p.field &amp;&amp; x.name === p.name)) s.pending.push(p)
+        s.history.push({ at: nowIso, from: s.version, version, event: 'change', jobs: d.jobs.length, pending: d.pending.length })
+        s.version = version
+        s.applied = applied
+    }
+    // 未宣告之移除:已恢復 → 撤銷;已宣告 → 轉工作;其餘留著(每輪守門)
+    const lists = { category: cur.categories, claimType: cur.claimTypes, evidenceLevel: cur.evidenceLevels }
+    s.pending = s.pending.filter((p) => {
+        if (lists[p.field].includes(p.name)) return false
+        const j = jobForRemoved(p.field, p.name, cur)
+        if (j) {
+            addJob(j)
+            return false
+        }
+        return true
+    })
+    // 工作重新定界(連續改版)
+    const voided = []
+    s.jobs = s.jobs.flatMap((j) => {
+        const r = resolveJob(j, cur)
+        if (!r) {
+            voided.push(j)
+            return []
+        }
+        if (r !== j) {
+            const id = jobIdOf(r)
+            if (s.jobs.some((x) => x !== j &amp;&amp; x.id === id)) {
+                voided.push(j)
+                return []
+            }
+            return [{ ...r, id }]
+        }
+        return [j]
+    })
+    return { state: s, initialized: false, changed: versionChanged || added.length > 0 || voided.length > 0, added, voided, pending: s.pending }
+}
+
+/**
+ * 筆記是否落在新增類別之重判範圍:落點類別、或標題／概念／一句話重點含 categoryHints 之關鍵詞
+ *
+ * @param {Object} note 輸入筆記記錄
+ * @param {String} category 輸入新增之類別
+ * @param {Object} cur 輸入現行分類法(taxonomyOf)
+ * @returns {Boolean} 回傳是否在範圍內
+ * @example
+ * let cur = taxonomyOf({ categories: ['恆星', '星系', '其他'], fallbackCategory: '其他', categoryHints: { 星系: ['星系', '銀河'] } })
+ * console.log(inAddScope({ category: '其他', title: '未歸類' }, '星系', cur))
+ * // => true
+ * console.log(inAddScope({ category: '恆星', title: '銀河旋臂' }, '星系', cur), inAddScope({ category: '恆星', title: '主序星' }, '星系', cur))
+ * // => true false
+ */
+export function inAddScope(note, category, cur) {
+    if (!note || note.category === category) return false
+    if (note.category === cur.fallbackCategory) return true
+    const kws = cur.categoryHints[category] || []
+    if (!kws.length) return false
+    const hay = [note.title, ...(isarr(note.concepts) ? note.concepts : []), note.summary].map((x) => String(x || '')).join('\n').toLowerCase()
+    return kws.some((k) => hay.includes(String(k).toLowerCase()))
+}
+
+/**
+ * 工作之待處理範圍(子階段處理與維運預覽同一份):機械＝改名之舊值筆記、新增類別之 categoryRaw 恰為該類別者;AI＝新增類別之落點／關鍵詞相符者、
+ * 退役或維運排入之該類筆記;皆排除本工作已判過者
+ *
+ * @param {Object} job 輸入工作
+ * @param {Array} notes 輸入全部筆記記錄
+ * @param {Object} cur 輸入現行分類法(taxonomyOf)
+ * @returns {Object} 回傳 { mechanical:Array, ai:Array }(筆記記錄陣列)
+ * @example
+ * let cur = taxonomyOf({ categories: ['恆星', '星系', '其他'], fallbackCategory: '其他', categoryHints: { 星系: ['星系', '銀河'] } })
+ * let notes = [{ id: 'n1', category: '其他', title: '未歸類' }, { id: 'n2', category: '恆星', title: '銀河旋臂' }, { id: 'n3', category: '恆星', title: '主序星' }, { id: 'n4', category: '其他', categoryRaw: '星系' }]
+ * let s = jobScope({ kind: 'rejudge', reason: 'add', category: '星系' }, notes, cur)
+ * console.log(s.mechanical.map((n) => n.id), s.ai.map((n) => n.id))
+ * // => [ 'n4' ] [ 'n1', 'n2' ]
+ * let s2 = jobScope({ kind: 'rejudge', reason: 'retire', category: '恆星', judged: ['n2'] }, notes, cur)
+ * console.log(s2.mechanical, s2.ai.map((n) => n.id))
+ * // => [] [ 'n3' ]
+ */
+export function jobScope(job, notes, cur) {
+    const list = isarr(notes) ? notes : []
+    if (job.kind === 'rename') {
+        const field = RENAME_FIELDS[job.field]?.record
+        return { mechanical: list.filter((n) => n?.[field] === job.from), ai: [] }
+    }
+    const judged = new Set(isarr(job.judged) ? job.judged : [])
+    const open = list.filter((n) => n &amp;&amp; !judged.has(n.id))
+    if (job.reason === 'add') {
+        const mechanical = open.filter((n) => n.categoryRaw === job.category &amp;&amp; n.category !== job.category)
+        const mech = new Set(mechanical)
+        return { mechanical, ai: open.filter((n) => !mech.has(n) &amp;&amp; inAddScope(n, job.category, cur)) }
+    }
+    return { mechanical: [], ai: open.filter((n) => n.category === job.category) }
+}
+
+/**
+ * 依新值改寫 md 之單一分類欄位(純函數):frontmatter 該鍵;有品質章行者(內容類型／證據等級)整行之值改寫至「（」或行尾
+ *   ——重標(retagStage)與存量修正(ops/noteStockFix 之 SS11)同一實作
+ *
+ * @param {Object} md 輸入 readMd 之產物 { front, body }
+ * @param {Object} f 輸入 RENAME_FIELDS 之一項
+ * @param {String} value 輸入新值
+ * @returns {Object} 回傳 { front, body }(新物件)
+ * @example
+ * let md = { front: { title: '恆星', claim_type: '理論模型' }, body: '- 內容類型：理論模型（需驗證）\n- 證據等級：中' }
+ * let r = rewriteFieldOf(md, RENAME_FIELDS.claimType, '實證研究')
+ * console.log(r.front.claim_type, r.body.split('\n')[0])
+ * // => 實證研究 - 內容類型：實證研究（需驗證）
+ * console.log(rewriteFieldOf({ front: { category: '舊' }, body: 'x' }, RENAME_FIELDS.category, '新').front.category)
+ * // => 新
+ */
+export function rewriteFieldOf(md, f, value) {
+    const front = { ...(md?.front || {}), [f.front]: value }
+    let body = String(md?.body ?? '')
+    if (f.line) {
+        const re = new RegExp(`^(- ${f.line})[^（\\n]*`, 'm')
+        if (re.test(body)) body = body.replace(re, `$1${value}`)
+    }
+    return { front, body }
+}
+
+/**
+ * 管線外寫入入口(如還原筆記)之分類欄位確定性對應(純函數;檢定標準 SS9):依現行分類法——
+ *   類別:在清單內不動;改名對照(可連續,如 甲→乙→丙)→ 新名;仍在清單外(含已退役、未宣告)→ 後備類別並保留原值於 categoryRaw
+ *   (與摘要新進之 categoryOf 同一落點規則;之後新增類別之重標以 categoryRaw 機械改回);
+ *   內容類型／證據等級:改名對照 → 新名;清單外而無對照者不動(由 SS2 之清單檢查判,非確定性可修)。
+ *   重標子階段只處理分類法變更當下之存量;封存期間錯過重標之筆記,還原時以本函數補上
+ *
+ * @param {Object} record 輸入筆記記錄(取 category、categoryRaw、claimType、evidenceLevel)
+ * @param {Object} cur 輸入現行分類法(taxonomyOf 之產出)
+ * @returns {Object} 回傳 { patch:{ 記錄欄位: 新值 }, fields:[{ field:'category'|'claimType'|'evidenceLevel', from, to, how:'rename'|'fallback' }] }
+ * @example
+ * let cur = taxonomyOf({ categories: ['乙', '其他'], fallbackCategory: '其他', categoryRenames: { 甲: '乙' } })
+ * console.log(taxonomyFixOf({ category: '甲' }, cur).patch, taxonomyFixOf({ category: '丁' }, cur).patch)
+ * // => { category: '乙' } { category: '其他', categoryRaw: '丁' }
+ */
+export function taxonomyFixOf(record, cur) {
+    const patch = {}
+    const fields = []
+    if (!isobj(record) || !isobj(cur)) return { patch, fields }
+    const lists = { category: cur.categories, claimType: cur.claimTypes, evidenceLevel: cur.evidenceLevels }
+    const renamesOf = { category: cur.categoryRenames, claimType: cur.claimTypeRenames, evidenceLevel: cur.evidenceLevelRenames }
+    for (const field of Object.keys(RENAME_FIELDS)) {
+        const key = RENAME_FIELDS[field].record
+        const from = record[key]
+        const list = isarr(lists[field]) ? lists[field] : []
+        if (typeof from !== 'string' || from === '' || list.includes(from)) continue
+        // 改名對照(可連續;防環)
+        const renames = isobj(renamesOf[field]) ? renamesOf[field] : {}
+        let to = from
+        const seen = new Set([to])
+        while (!list.includes(to) &amp;&amp; Object.hasOwn(renames, to) &amp;&amp; !seen.has(renames[to])) {
+            to = renames[to]
+            seen.add(to)
+        }
+        if (list.includes(to)) {
+            patch[key] = to
+            if (field === 'category' &amp;&amp; record.categoryRaw === to) patch.categoryRaw = null
+            fields.push({ field, from, to, how: 'rename' })
+            continue
+        }
+        // 類別仍在清單外:落後備類別、原值存 categoryRaw(同 categoryOf);內容類型／證據等級不動
+        if (field === 'category' &amp;&amp; cur.fallbackCategory &amp;&amp; list.includes(cur.fallbackCategory)) {
+            patch[key] = cur.fallbackCategory
+            patch.categoryRaw = from
+            fields.push({ field, from, to: cur.fallbackCategory, how: 'fallback' })
+        }
+    }
+    return { patch, fields }
+}
+
+/**
+ * 重標回覆之可採類別(見檔頭【可採類別】):新增類別之工作,非落點之筆記(原類別在清單且非落點類別)回覆平移至另一既有類別者 → 維持原類別
+ *
+ * @param {Object} job 輸入工作({ reason, category })
+ * @param {Object} note 輸入筆記記錄(取 category)
+ * @param {String} category 輸入模型回覆之類別(已驗在清單)
+ * @param {Object} cur 輸入現行分類法(taxonomyOf)
+ * @returns {String} 回傳採用之類別(平移者回原類別)
+ * @example
+ * let cur = taxonomyOf({ categories: ['恆星', '星系', '行星', '其他'], fallbackCategory: '其他' })
+ * let job = { reason: 'add', category: '星系' }
+ * console.log(retagTargetOf(job, { category: '恆星' }, '行星', cur), retagTargetOf(job, { category: '恆星' }, '星系', cur), retagTargetOf(job, { category: '其他' }, '行星', cur))
+ * // => 恆星 星系 行星
+ */
+export function retagTargetOf(job, note, category, cur) {
+    if (job?.reason !== 'add' || category === note?.category || category === job.category) return category
+    if (note?.category === cur?.fallbackCategory || !(isarr(cur?.categories) &amp;&amp; cur.categories.includes(note?.category))) return category
+    return note.category
+}
+
+export default { TAXONOMY_STATE_VERSION, TAXONOMY_STATE_FILE, RENAME_FIELDS, REJUDGE_REASON_LABELS, retagJobLabelOf, taxonomySnapshotOf, taxonomyOf, taxonomyVersion, diffTaxonomy, resolveJob, createTaxonomyStore, syncTaxonomy, queueRejudge, inAddScope, jobScope, rewriteFieldOf, taxonomyFixOf, retagTargetOf }
+</code></pre>
+        </article>
+    </section>
+
+
+
+
+    
+    
+</div>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 4.0.5</a> on Sun Nov 01 2026 23:10:48 GMT+0800 (台北標準時間) using the <a href="https://github.com/clenemt/docdash">docdash</a> theme.
+</footer>
+
+<script>prettyPrint();</script>
+<script src="scripts/polyfill.js"></script>
+<script src="scripts/linenumber.js"></script>
+
+
+
+</body>
+</html>
