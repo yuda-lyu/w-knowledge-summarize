@@ -10,9 +10,8 @@
 // 【共用測試件】記憶體集合(memStore)、靜音日誌(nullLogger)、位置無關之共用件(testKit:日誌之替身、暫存根之工廠、子階段 report、集合之開關、
 //   AI 調度層之替身 stubAdapter…)、
 //   原始碼之詞法器(sourceScan)、假 OpenAI 相容伺服器(fakeRest)、提示詞標準檔之比對與重產(promptGolden)、舊名與沿革及面向使用者字樣之判準
-//   (historyMarks)皆在抓取套件之 test/tools(四套件同一份;
-//   test/unit-core-copies 守「只定義於其家」),本套件之測試經本檔取用。
-// 【只轉出測試所需之名】新增前先確認抓取埠沒有、且確為測試所需;每一名須被本套件 test/ 下至少一檔具名取用(專案之 unit-core-copies 守橋接之死轉出)。
+//   (historyMarks)皆在抓取套件之 test/tools(四套件同一份),本套件之測試經本檔取用。
+// 【只轉出測試所需之名】新增前先確認抓取埠沒有、且確為測試所需;每一名須被本套件 test/ 下至少一檔具名取用(尚無自動守門案,以規則帳本 GEN-22 ③ 之人工盤點代之)。
 // 【指定詞】抓取套件為 npm 套件:主入口 'w-knowledge-capture/src/WKnowledgeCapture.mjs'(同抓取埠)、測試件 'w-knowledge-capture/test/tools/<檔>'(隨其 tarball 發布)。
 
 export {

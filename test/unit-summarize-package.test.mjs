@@ -8,7 +8,7 @@
 // ② package.json:名稱與版本、scripts 為 test(mocha 標準指令)與 deploy;dependencies＝src/ 實際 import 之 npm 套件＋抓取套件(經匯入點)、devDependencies＝
 //   測試與編譯工具(g.mjs、toolg/)另 import 者(測試執行器 mocha 經 scripts.test 呼叫、不 import,隨編譯工具套件 w-package-tools 安裝;wsemi 自帶之依賴依自有套件之慣例不列);
 //   抓取套件之版本合於所列範圍;入口可載入;發布面(main 指向 dist 之 UMD、不設 exports 與 files,使下游得以「套件名/src/…」與「套件名/test/tools/…」深層路徑取用;
-//   .npmignore 排除 sgud、CLAUDE*.md、暫存與測試檔而保留 test/tools;LICENSE 為 MIT);範例 g.mjs 離線可執行且 README 含其全文;
+//   不提供 .npmignore〔npm 包＝git 版控內容,依 .gitignore〕,npm pack --dry-run 之清單含 sgud/ 與 test/tools/、不含 CLAUDE*.md 與暫存;LICENSE 為 MIT);範例 g.mjs 離線可執行且 README 含其全文;
 //   發布內容(README、*.csv、非測試 .mjs)不含宿主之痕跡:磁碟機絕對路徑與使用者目錄
 // ③ 預設領域中立:預設設定、詞彙、提示詞、零設定組裝之 info()、README、package.json、g.mjs 與原始碼(含註解、日誌與待判字樣;不含測試與評分題組)
 //   不含特定產業領域之詞彙
@@ -19,7 +19,7 @@
 import assert from 'node:assert/strict'
 import fs from 'node:fs'
 import path from 'node:path'
-import { execFileSync } from 'node:child_process'
+import { execFileSync, execSync } from 'node:child_process'
 import { fileURLToPath } from 'node:url'
 import { isBuiltin } from 'node:module'
 import * as CapturePort from '../src/core/capturePackage.mjs'
@@ -362,19 +362,20 @@ describe('unit-summarize-package', function() {
             assert.deepEqual(Object.keys(mod.default).sort(), Object.keys(mod).filter((k) => k !== 'default').sort())
         })
 
-        it('發布面:不設 exports 與 files(下游以深層路徑取用 src/ 與 test/tools/);.npmignore 排除 sgud、CLAUDE*.md、暫存、測試檔與文件夾而保留 test/tools;套件根範本檔齊備;LICENSE 為 MIT 且署名同作者', () => {
+        it('發布面:不設 exports 與 files(下游以深層路徑取用 src/ 與 test/tools/);不提供 .npmignore(npm 包＝git 版控內容,依 .gitignore;.gitignore 列 CLAUDE*.md、不排除 sgud、src、dist、test/tools);套件根範本檔齊備;LICENSE 為 MIT 且署名同作者', () => {
             // 規則:設 exports 即擋掉「套件名/src/…」「套件名/test/tools/…」之深層路徑(下游套件與專案以之取用);設 files 白名單則套件根新增檔案時易漏
             assert.equal(pkg.exports, undefined, '不設 exports')
-            assert.equal(pkg.files, undefined, '不設 files(發布範圍由 .npmignore 決定)')
+            assert.equal(pkg.files, undefined, '不設 files(發布範圍＝git 版控內容,由 .gitignore 決定)')
             assert.equal(pkg.name, 'w-knowledge-summarize')
             assert.deepEqual([pkg.repository.type, pkg.repository.url], ['git', 'git+https://github.com/yuda-lyu/w-knowledge-summarize.git'])
             assert.ok(Array.isArray(pkg.keywords) && pkg.keywords.length >= 3 && typeof pkg.author === 'string' && pkg.author.length > 0, 'keywords 與 author 須有')
-            // sgud/(agent 之指引要求文件:經驗、處理要點、規則帳本、現況)入版控、不入 npm 包——.npmignore 明列;CLAUDE*.md 兩者皆不入
-            const npmignore = (readText('.npmignore') || '').split(/\r?\n/).map((l) => l.trim()).filter(Boolean)
+            // 發布範圍(使用者 2026-11-01 裁示):預設不提供 .npmignore,npm 包＝git 版控內容(依 .gitignore);只有外部執行檔與單一資料夾 ≥10MB 之非程式碼資料才提供——
+            //   本套件兩者皆無(test/、docs/ 皆 <10MB),故不得有 .npmignore(有則 npm 不再讀 .gitignore);sgud/(經驗、處理要點、規則帳本、現況)、test/(含 test/tools/)、docs/ 皆隨包;
+            //   CLAUDE*.md 由 .gitignore 排除,不入版控亦不入包。實際打包清單見下一案
+            assert.equal(fs.existsSync(`${ROOT}/.npmignore`), false, '不得有 .npmignore(本套件無外部執行檔、無 ≥10MB 之非程式碼資料夾;發布範圍＝git 版控內容)')
             const gitignore = (readText('.gitignore') || '').split(/\r?\n/).map((l) => l.trim())
-            for (const l of ['sgud', 'CLAUDE*.md', 'tmp', 'test/_tmp', 'test/*.test.mjs', 'test/golden', 'docs', '.env']) assert.ok(npmignore.includes(l), `.npmignore 須列 ${l}`)
-            assert.ok(!npmignore.some((l) => /^\/?test\/?(tools\/?)?$/.test(l) || /^\/?test\/tools/.test(l) || /^\/?(src|dist)\/?$/.test(l)), '.npmignore 不得排除 test 夾整體、test/tools、src、dist(下游取用 test/tools)')
             assert.ok(gitignore.includes('CLAUDE*.md') && !gitignore.some((l) => /^!?sgud/.test(l) || l === '!CLAUDE.md'), '.gitignore 須列 CLAUDE*.md、不得排除 sgud、不得加 !CLAUDE.md')
+            assert.ok(!gitignore.some((l) => /^\/?test\/?(tools\/?)?$/.test(l) || /^\/?test\/tools/.test(l) || /^\/?(src|dist)\/?$/.test(l)), '.gitignore 不得排除 test 夾整體、test/tools、src、dist(npm 包＝git 版控內容,下游取用 test/tools)')
             // 自有套件根目錄範本檔(編譯、文件、風格與安全政策)
             for (const f of ['.editorconfig', '.eslintignore', '.eslintrc.js', '.jsdoc', 'babel.config.js', 'SECURITY.md', 'g.mjs', 'README.md', 'LICENSE', 'script.txt', 'toolg/addVersion.mjs', 'toolg/modifyReadme.mjs', 'toolg/cleanFolder.mjs', 'toolg/gDocsExams.mjs', 'toolg/gDistRollup.mjs', 'test/tools/summarizeTestKit.mjs']) {
                 assert.ok(fs.existsSync(`${ROOT}/${f}`), `套件根須有 ${f}`)
@@ -382,6 +383,23 @@ describe('unit-summarize-package', function() {
             const lic = readText('LICENSE') || ''
             assert.equal(pkg.license, 'MIT')
             assert.ok(lic.startsWith('MIT License') && lic.includes(`Copyright (c) 2026 ${pkg.author}`), 'LICENSE 須為 MIT 並署名作者')
+        })
+
+        it('打包清單(npm pack --dry-run):含 sgud/ 四份索引與 test/tools/ 全部檔、src 主入口、README、LICENSE、package.json;不含 CLAUDE*.md、暫存(tmp、test/_tmp)與 node_modules', () => {
+            // 規則:npm 包＝git 版控內容(依 .gitignore);sgud/ 與 test/tools/ 隨包(下游之測試以「套件名/test/tools/…」取用),CLAUDE*.md 不入包
+            const raw = execSync('npm pack --dry-run --json --ignore-scripts', { cwd: ROOT, encoding: 'utf8', stdio: ['ignore', 'pipe', 'pipe'], maxBuffer: 64 * 1024 * 1024, timeout: 120_000 })
+            const parsed = JSON.parse(raw)
+            const info = Array.isArray(parsed) ? parsed[0] : Object.values(parsed)[0]
+            const packed = info.files.map((x) => x.path.replace(/\\/g, '/'))
+            assert.ok(packed.length >= 80, `打包清單過少:${packed.length}`)
+            for (const f of ['sgud/exp/experience.md', 'sgud/proc/process.md', 'sgud/rule/rulebook.md', 'sgud/state/state.md', 'src/WKnowledgeSummarize.mjs', 'README.md', 'LICENSE', 'package.json']) {
+                assert.ok(packed.includes(f), `打包清單須含 ${f}`)
+            }
+            const tools = fs.readdirSync(`${ROOT}/test/tools`, { withFileTypes: true }).filter((e) => e.isFile()).map((e) => `test/tools/${e.name}`)
+            assert.ok(tools.length >= 8, `test/tools 檔數過少:${tools.length}`)
+            for (const f of tools) assert.ok(packed.includes(f), `打包清單須含 ${f}`)
+            assert.deepEqual(packed.filter((f) => /(^|\/)CLAUDE[^/]*\.md$/.test(f)), [], '打包清單不得含 CLAUDE*.md')
+            assert.deepEqual(packed.filter((f) => /^(tmp|test\/_tmp|node_modules)\//.test(f)), [], '打包清單不得含 tmp、test/_tmp、node_modules')
         })
 
         it('範例 g.mjs 離線可直接執行(不連網、不呼叫真 AI、不留工作目錄),輸出與檔末 `// =>` 逐行相符;README 之 Example 含 g.mjs 全文', () => {

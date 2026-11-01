@@ -23,7 +23,7 @@
 //           無逐條移除——被指出之處皆依原文更正或刪除)／unfixed
 //   忠實性  faithful／unfaithful／unsure;不合格之票(理由過短、裁決不在清單、同編號矛盾)為缺票＝無裁決,同正式規則
 //   重標    回覆類別經 retagTargetOf 落點(新增類別之工作,非落點筆記之平移不採、維持原類別)
-// 【題組】內建通用題組 bench/cases/<角色 id>-generic.json(領域中立、合成材料、無外部連結)。預篩、忠實性、重標與 SS5(預篩)、SS14、SS9 之
+// 【題組】內建通用題組 src/bench/cases/<角色 id>-generic.json(領域中立、合成材料、無外部連結)。預篩、忠實性、重標與 SS5(預篩)、SS14、SS9 之
 //   檢定標準題組同形;摘要與 SS5 摘要題組之自帶材料案同形(以樣本檔定位之案須先轉為自帶材料)。
 // 【命令列】runSummarizeBenchCli:--role <角色 id|all>(預設 all:依序五角色)加核心之全部參數;--role 解析、--vocab-pick、全部角色之準備期
 //   (後面角色之錯誤不得在前面角色燒完額度後才拋)與停測帶過(前面角色已停測之模型不再於後續角色受測)皆為抓取套件之多角色命令列
@@ -257,8 +257,8 @@ export const triageBenchRole = defineBenchRole({
         runColumns: [{ name: '理由', key: 'reason' }],
     },
     cli: {
-        command: 'node bench/cli.mjs --role triage',
-        casesHelp: '題組檔(與 SS5 預篩題組同形);未給＝內建通用題組(bench/cases/triage-generic.json)',
+        command: 'node src/bench/cli.mjs --role triage',
+        casesHelp: '題組檔(與 SS5 預篩題組同形);未給＝內建通用題組(src/bench/cases/triage-generic.json)',
         options: [batchOption(S.triage.docsPerCall, 'summarize.triage.docsPerCall 之預設')],
     },
 })
@@ -388,8 +388,8 @@ export const summarizeBenchRole = defineBenchRole({
         runColumns: [{ name: '筆記標題', key: 'noteTitle' }, { name: '閘', key: 'gate' }, { name: '未過閘原因', key: 'reasons' }, { name: '逐條移除', key: 'removed' }, { name: '理由', key: 'reason' }],
     },
     cli: {
-        command: 'node bench/cli.mjs --role summarize',
-        casesHelp: '題組檔(與 SS5 摘要題組之自帶材料案同形;以樣本檔定位之案須先轉檔);未給＝內建通用題組(bench/cases/summarize-generic.json)',
+        command: 'node src/bench/cli.mjs --role summarize',
+        casesHelp: '題組檔(與 SS5 摘要題組之自帶材料案同形;以樣本檔定位之案須先轉檔);未給＝內建通用題組(src/bench/cases/summarize-generic.json)',
         options: [
             { flag: '--docs-per-call', key: 'docsPerCall', arg: '<n>', help: `每頁至多幾篇(預設 ${S.docsPerCall}＝summarize.docsPerCall 之預設)`, parse: benchArgPint },
             { flag: '--chars-per-doc', key: 'charsPerDoc', arg: '<n>', help: `每篇字數單位(預設 ${S.charsPerDoc}＝summarize.charsPerDoc 之預設;每頁字數上限＝篇數×本值)`, parse: benchArgPint },
@@ -489,8 +489,8 @@ export const repairBenchRole = defineBenchRole({
         runColumns: [{ name: '須修補之處', key: 'problems' }, { name: '採用處數', key: 'applied' }, { name: '仍未合格', key: 'left' }],
     },
     cli: {
-        command: 'node bench/cli.mjs --role repair',
-        casesHelp: '題組檔({ input:{ title, material, item }, expect:{ fixed:true } });未給＝內建通用題組(bench/cases/repair-generic.json)',
+        command: 'node src/bench/cli.mjs --role repair',
+        casesHelp: '題組檔({ input:{ title, material, item }, expect:{ fixed:true } });未給＝內建通用題組(src/bench/cases/repair-generic.json)',
     },
 })
 
@@ -584,8 +584,8 @@ export const faithBenchRole = defineBenchRole({
         runColumns: [{ name: '理由', key: 'reason' }],
     },
     cli: {
-        command: 'node bench/cli.mjs --role faith',
-        casesHelp: '題組檔(與 SS14 題組同形);未給＝內建通用題組(bench/cases/faith-generic.json)',
+        command: 'node src/bench/cli.mjs --role faith',
+        casesHelp: '題組檔(與 SS14 題組同形);未給＝內建通用題組(src/bench/cases/faith-generic.json)',
         options: [batchOption(FAITH_PAGE, '檢定標準題組之頁量')],
     },
 })
@@ -711,8 +711,8 @@ export const retagBenchRole = defineBenchRole({
         runColumns: [{ name: '回覆類別', key: 'replied' }],
     },
     cli: {
-        command: 'node bench/cli.mjs --role retag',
-        casesHelp: '題組檔(與 SS9 題組同形;焦點 focus 在案之頂層);未給＝內建通用題組(bench/cases/retag-generic.json)',
+        command: 'node src/bench/cli.mjs --role retag',
+        casesHelp: '題組檔(與 SS9 題組同形;焦點 focus 在案之頂層);未給＝內建通用題組(src/bench/cases/retag-generic.json)',
         options: [batchOption(S.retag.notesPerCall, 'summarize.retag.notesPerCall 之預設')],
     },
 })

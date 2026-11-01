@@ -1,9 +1,9 @@
 {
   "name": "w-knowledge-summarize",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "main": "dist/w-knowledge-summarize.umd.js",
   "dependencies": {
-    "w-knowledge-capture": "^1.0.1",
+    "w-knowledge-capture": "^1.0.2",
     "wsemi": "^1.9.40"
   },
   "devDependencies": {

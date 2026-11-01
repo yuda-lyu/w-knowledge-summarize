@@ -480,8 +480,8 @@ describe('unit-summarize-bench', function() {
             assert.match(msgOf(() => parseSummarizeBenchArgs(['--cases', 'x.json'])), /--role all 不可給 --cases/)
             assert.match(msgOf(() => parseSummarizeBenchArgs(['--role', 'all', '--batch', '5', '--docs-per-call=2'])), /--role all 不可給角色專屬參數 --batch、--docs-per-call/)
             assert.deepEqual(parseSummarizeBenchArgs(['--role', 'nope', '-h']).help, true)
-            for (const r of SUMMARIZE_BENCH_ROLES) assert.ok(SUMMARIZE_BENCH_USAGE.includes(`【${r.name}】`) && SUMMARIZE_BENCH_USAGE.includes(`node bench/cli.mjs --role ${r.id}`), r.id)
-            assert.match(SUMMARIZE_BENCH_USAGE, /^用法：node bench\/cli\.mjs \[--role <triage\|summarize\|repair\|faith\|retag\|all>\]/)
+            for (const r of SUMMARIZE_BENCH_ROLES) assert.ok(SUMMARIZE_BENCH_USAGE.includes(`【${r.name}】`) && SUMMARIZE_BENCH_USAGE.includes(`node src/bench/cli.mjs --role ${r.id}`), r.id)
+            assert.match(SUMMARIZE_BENCH_USAGE, /^用法：node src\/bench\/cli\.mjs \[--role <triage\|summarize\|repair\|faith\|retag\|all>\]/)
             assert.match(SUMMARIZE_BENCH_USAGE, /--batch <n>/)
             assert.match(SUMMARIZE_BENCH_USAGE, /--docs-per-call <n>/)
         })
@@ -607,6 +607,36 @@ describe('unit-summarize-bench', function() {
             // 另起行程只 import(不直接執行):無輸出、離開碼 0——被 import 時不跑命令列
             const r = spawnSync(process.execPath, ['--input-type=module', '-e', `await import(${JSON.stringify(pathToFileURL(path.join(SRC, 'bench', 'cli.mjs')).href)})`], { encoding: 'utf8' })
             assert.deepEqual([r.status, r.stdout, r.stderr], [0, '', ''])
+        })
+
+        it('印出之命令列用法與題組路徑為套件佈局下實際可用之路徑(node src/bench/cli.mjs、src/bench/cases/…):各角色 cli.command 之腳本與 cli.casesHelp 之題組於套件根存在;直接執行 --help 之首行、各角色用法行、題組路徑與失敗時之錯誤訊息皆指向同一佈局', () => {
+            // 規則:套件原始碼在 src/,命令列為 src/bench/cli.mjs、內建題組為 src/bench/cases/<角色 id>-generic.json;用法字串不得仍印佈局改動前之 node bench/cli.mjs 與 bench/cases/(該路徑於套件根不存在)
+            for (const r of SUMMARIZE_BENCH_ROLES) {
+                const m = r.cli.command.match(/^node (\S+\.mjs) --role (\S+)$/)
+                assert.ok(m, `${r.id} 之 command 形狀:${r.cli.command}`)
+                assert.deepEqual([m[1], m[2]], ['src/bench/cli.mjs', r.id])
+                assert.ok(fs.existsSync(path.join(PKG, m[1])), `${r.id} 之 command 所指腳本須存在:${m[1]}`)
+                const c = r.cli.casesHelp.match(/\((src\/bench\/cases\/\S+\.json)\)$/)
+                assert.ok(c, `${r.id} 之 casesHelp 須以(src/bench/cases/…json)結尾:${r.cli.casesHelp}`)
+                assert.equal(c[1], `src/bench/cases/${r.id}-generic.json`)
+                assert.ok(fs.existsSync(path.join(PKG, c[1])), `${r.id} 之 casesHelp 所指題組須存在:${c[1]}`)
+            }
+            const cwd = path.join(TMP, 'cli-spawn')
+            fs.mkdirSync(cwd, { recursive: true })
+            const run = (args) => spawnSync(process.execPath, [path.join(SRC, 'bench', 'cli.mjs'), ...args], { cwd, encoding: 'utf8', timeout: 60_000 })
+            const help = run(['--help'])
+            assert.equal(help.status, 0)
+            assert.ok(help.stdout.startsWith('用法：node src/bench/cli.mjs [--role <triage|summarize|repair|faith|retag|all>]'), `--help 首行須為 node src/bench/cli.mjs:${help.stdout.split('\n')[0]}`)
+            for (const r of SUMMARIZE_BENCH_ROLES) {
+                assert.ok(help.stdout.includes(`node src/bench/cli.mjs --role ${r.id}`), `--help 須印 ${r.id} 之用法`)
+                assert.ok(help.stdout.includes(`(src/bench/cases/${r.id}-generic.json)`), `--help 須印 ${r.id} 之內建題組路徑`)
+            }
+            assert.ok(!/node bench\/cli\.mjs/.test(help.stdout), '--help 之首行與各角色用法不得仍印 node bench/cli.mjs')
+            assert.ok(!/[(\s]bench\/cases\//.test(help.stdout), '--help 之題組路徑不得仍印 bench/cases/(缺 src/)')
+            const bad = run(['--role', 'nope'])
+            assert.equal(bad.status, 1)
+            assert.ok(bad.stderr.includes('摘要 AI 能力評分失敗：不認得之評分角色：nope'), bad.stderr)
+            assert.ok(bad.stderr.includes('（用法：node src/bench/cli.mjs --help）'), bad.stderr)
         })
     })
 
