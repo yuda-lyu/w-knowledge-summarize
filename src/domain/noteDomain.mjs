@@ -14,8 +14,7 @@
 
 import isarr from 'wsemi/src/isarr.mjs'
 import isobj from 'wsemi/src/isobj.mjs'
-import ispint from 'wsemi/src/ispint.mjs'
-import cint from 'wsemi/src/cint.mjs'
+import iseint from 'wsemi/src/iseint.mjs'
 import strTruncate from 'wsemi/src/strTruncate.mjs'
 import { section } from '../core/md/md.mjs'
 import { resolveSummarizeVocab, kbLabelOf } from '../core/vocab/summarizeVocab.mjs'
@@ -26,6 +25,9 @@ import { NOTE_PLACEHOLDERS, cleanStrList } from '../standards/noteNormalize.mjs'
 import { CONCEPT_COUNT } from '../standards/noteStandards.mjs'
 import { NOTE_SECTION_TITLES, NOTE_SOURCE_LABELS, NOTE_QUALITY_LABELS } from '../core/md/noteContent.mjs'
 import { noteContractOf } from '../stores/noteBuild.mjs'
+
+/** 字數類 opt 之判定範圍(wsemi iseint:1～4294967295 之整數或其十進位數字字串;Infinity、'0x10'、包裝物件等為非預期,改用預設) */
+const COUNT_MIN1 = Object.freeze({ use: 'count', min: 1 })
 
 
 /**
@@ -61,7 +63,7 @@ export const NOTE_PROMPT_SIGS = Object.freeze({
  * @param {Object} [opt={}] 輸入設定物件
  * @param {Object} [opt.vocab=null] 輸入詞彙表覆寫物件(見 resolveSummarizeVocab;亦可為其產物)，含 domain(主題範圍)、kbLabel、categories、
  *   evidenceLevels、guide.summarize／guide.faith(領域句)等，預設null代表全用內建
- * @param {Integer} [opt.summarizeCharsPerDoc=6000] 輸入每篇送入提示詞之內文字數上限正整數，預設6000(＝summarize.charsPerDoc 之預設,取自 SUMMARIZE_DEFAULT)
+ * @param {Integer} [opt.summarizeCharsPerDoc=6000] 輸入每篇送入提示詞之內文字數上限正整數(1～4294967295 之整數或其十進位數字字串；Infinity、'0x10'、包裝物件、逾上限者等非預期值視為未給,改用預設)，預設6000(＝summarize.charsPerDoc 之預設,取自 SUMMARIZE_DEFAULT)
  * @param {Object} [opt.prompts] 輸入提示詞覆寫 { summarize?, faith?, repair? }：各為函數,收原參數＋末參數
  *   ctx { kbLabel, domain, vocab, defaultPrompt(內建提示詞函數,參數同原方法) }，須回傳非空字串;未給者用內建
  *   (summarize:(docs, conceptVocab, o, ctx)、faith:(input, ctx)、repair:(input, ctx))
@@ -100,10 +102,12 @@ export function createSummarizeDomain(opt = {}) {
 
     //charsPerDoc
     let charsPerDoc = opt.summarizeCharsPerDoc
-    if (!ispint(charsPerDoc)) {
+    if (!iseint(charsPerDoc, COUNT_MIN1)) {
         charsPerDoc = SUMMARIZE_DEFAULT.charsPerDoc
     }
-    charsPerDoc = cint(charsPerDoc)
+    charsPerDoc = Number(charsPerDoc)
+    /** 逐篇字數上限:有效(同 summarizeCharsPerDoc 之取值範圍)依其值,否則用 charsPerDoc */
+    const charsOf = (b) => (iseint(b, COUNT_MIN1) ? Number(b) : charsPerDoc)
 
     const kb = kbLabelOf(vocab)
     const g = vocab.guide.summarize // 領域句(安裝方可經 vocab.guide.summarize 逐欄覆寫;輸出欄位與格式留在本檔)
@@ -123,8 +127,8 @@ export function createSummarizeDomain(opt = {}) {
      * @param {Array} docs 輸入本批文件陣列，各項需含 title、sourceName、url、text
      * @param {Array} [conceptVocab=[]] 輸入既有概念標籤陣列(名稱，依使用篇數降冪；conceptVocabulary 之預設產出)，令模型沿用既有寫法
      * @param {Object} [o={}] 輸入選項
-     * @param {Array} [o.budgets] 輸入逐篇內文字數上限(與 docs 同序;正整數者取代 summarizeCharsPerDoc——摘要段依字數打包,
-     *        長文獨佔一批時其預算為整批之字數)，未給或該項非正整數即用 summarizeCharsPerDoc
+     * @param {Array} [o.budgets] 輸入逐篇內文字數上限(與 docs 同序;有效者〔1～4294967295 之整數或其十進位數字字串〕取代 summarizeCharsPerDoc——摘要段依字數打包,
+     *        長文獨佔一批時其預算為整批之字數)，未給或該項非預期(非正整數、Infinity、'0x10'、包裝物件、逾上限者等)即用 summarizeCharsPerDoc
      * @returns {String} 回傳提示詞字串
      */
     function builtinPrompt(docs, conceptVocab = [], o = {}) {
@@ -139,7 +143,7 @@ export function createSummarizeDomain(opt = {}) {
             // 上次之輸出未達檢定標準者附回饋(只在該篇帶 stdFeedback 時出現;其餘篇之提示詞逐字不變——評分題目識別不受影響)
             ...(d.stdFeedback ? [`（上次之輸出未達標準：${String(d.stdFeedback).slice(0, 200)}——本次請依原文更正）`] : []),
             `內文：`,
-            strTruncate(d.text, ispint(budgets[i]) ? cint(budgets[i]) : charsPerDoc),
+            strTruncate(d.text, charsOf(budgets[i])),
         ].join('\n')).join('\n\n')
 
         return `你是${kb}的萃取器。請閱讀以下 ${docs.length} 篇資料，逐篇萃取${g.target}。

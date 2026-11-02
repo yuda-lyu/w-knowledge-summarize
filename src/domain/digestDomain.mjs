@@ -10,7 +10,7 @@
 import isarr from 'wsemi/src/isarr.mjs'
 import isobj from 'wsemi/src/isobj.mjs'
 import ispint from 'wsemi/src/ispint.mjs'
-import cint from 'wsemi/src/cint.mjs'
+import iseint from 'wsemi/src/iseint.mjs'
 import strTruncate from 'wsemi/src/strTruncate.mjs'
 import { resolveSummarizeVocab, kbLabelOf } from '../core/vocab/summarizeVocab.mjs'
 import { SUMMARIZE_DEFAULT } from '../core/summarizeSettings.mjs'
@@ -31,6 +31,9 @@ export const DIGEST_PROMPT_SIGS = Object.freeze({ digest: Object.freeze({ params
  */
 export const DIGEST_DEFAULT = Object.freeze({ shortMax: 60, longMax: 200, tolerance: 1.5, standards: Object.freeze(['SS3', 'SS4']) })
 
+/** 字數類 opt 之判定範圍(wsemi iseint:1～4294967295 之整數或其十進位數字字串;Infinity、'0x10'、包裝物件等為非預期,改用預設) */
+const COUNT_MIN1 = Object.freeze({ use: 'count', min: 1 })
+
 /** createDigestDomain 之可用鍵 */
 const OPT_KEYS = Object.freeze(['vocab', 'shortMax', 'longMax', 'tolerance', 'standards', 'prompts', 'summarizeCharsPerDoc', 'locale'])
 
@@ -44,7 +47,7 @@ const OPT_KEYS = Object.freeze(['vocab', 'shortMax', 'longMax', 'tolerance', 'st
  * @param {Number} [opt.tolerance=1.5] 輸入納入閘之容差(≥1;上限×容差為不納入之門檻,模型略逾提示詞之上限不整篇重摘)
  * @param {Array} [opt.standards=['SS3','SS4']] 輸入落地前以筆記標準判之子集(無 md:只能列可於 text 判者——SS3、SS4)
  * @param {Object} [opt.prompts] 輸入提示詞覆寫 { digest? }(函數形式見 DIGEST_PROMPT_SIGS)
- * @param {Integer} [opt.summarizeCharsPerDoc=6000] 輸入每篇送入提示詞之內文字數上限(未給 budgets 時;預設取 SUMMARIZE_DEFAULT.charsPerDoc)
+ * @param {Integer} [opt.summarizeCharsPerDoc=6000] 輸入每篇送入提示詞之內文字數上限(未給 budgets 時;1～4294967295 之整數或其十進位數字字串；Infinity、'0x10'、包裝物件、逾上限者等非預期值視為未給,改用預設;預設取 SUMMARIZE_DEFAULT.charsPerDoc)
  * @param {String|Object} [opt.locale='zh-TW'] 輸入語言設定(語言代碼或抓取套件 resolveLocale 之產物;書寫語言句取其稱呼)
  * @returns {Object} 回傳 domain 物件 { vocab, locale, buildPrompt(docs, conceptVocab, { budgets }), isValidItem(it, count), skipReasonOf(it), contract }
  * @throws {Error} opt 含不認得之鍵、vocab／prompts／locale 不合規格、shortMax／longMax 非正整數、tolerance 非 ≥1 之數、standards 不合時拋出
@@ -71,8 +74,10 @@ export function createDigestDomain(opt = {}) {
     const standards = opt.standards === undefined ? DIGEST_DEFAULT.standards : opt.standards
     if (!isarr(standards) || !standards.every((id) => NOTE_CONTRACT_STANDARDS.includes(id))) throw new Error(`createDigestDomain 之 standards 須為標準 id 之陣列（可用：${NOTE_CONTRACT_STANDARDS.join('、')}）`)
     let charsPerDoc = opt.summarizeCharsPerDoc
-    if (!ispint(charsPerDoc)) charsPerDoc = SUMMARIZE_DEFAULT.charsPerDoc
-    charsPerDoc = cint(charsPerDoc)
+    if (!iseint(charsPerDoc, COUNT_MIN1)) charsPerDoc = SUMMARIZE_DEFAULT.charsPerDoc
+    charsPerDoc = Number(charsPerDoc)
+    /** 逐篇字數上限:有效(同 summarizeCharsPerDoc 之取值範圍)依其值,否則用 charsPerDoc */
+    const charsOf = (b) => (iseint(b, COUNT_MIN1) ? Number(b) : charsPerDoc)
 
     const kb = kbLabelOf(vocab)
     const locale = resolveLocale(opt.locale, 'createDigestDomain 之 opt.locale')
@@ -83,7 +88,7 @@ export function createDigestDomain(opt = {}) {
      * 內建之單批速報提示詞
      *
      * @param {Array} docs 輸入本批文件陣列(title、sourceName、url、text)
-     * @param {Object} [o={}] 輸入 { budgets }(逐篇內文字數上限,與 docs 同序)
+     * @param {Object} [o={}] 輸入 { budgets }(逐篇內文字數上限,與 docs 同序;有效者〔1～4294967295 之整數或其十進位數字字串〕取代 summarizeCharsPerDoc,未給或該項非預期即用之)
      * @returns {String} 回傳提示詞字串
      */
     function builtinPrompt(docs, o = {}) {
@@ -96,7 +101,7 @@ export function createDigestDomain(opt = {}) {
             `網址：${d.url}`,
             ...(d.stdFeedback ? [`（上次之輸出未達標準：${String(d.stdFeedback).slice(0, 200)}——本次請依原文更正）`] : []),
             '內文：',
-            strTruncate(d.text, ispint(budgets[i]) ? cint(budgets[i]) : charsPerDoc),
+            strTruncate(d.text, charsOf(budgets[i])),
         ].join('\n')).join('\n\n')
         return `你是${kb}的速報撰寫員。請閱讀以下 ${docs.length} 篇資料，逐篇寫出摘要。
 

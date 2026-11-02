@@ -39,6 +39,15 @@
 18. **升抓取套件後，被釘住其輸出字串之測試會紅，屬預期**：抓取套件 1.0.2 改了 `--help` 首行與 `casesHelp` 之路徑，本套件 `unit-summarize-bench` 釘舊首行之案即紅（651 ✓／1 ✗，僅此一案）；先確認「只有被釘住那條」再改測試。變異模擬舊版：暫改 `node_modules/w-knowledge-capture` 內單行，先 `cp` 備份、驗完 `cp` 還原並以 `git hash-object` 與 `npm ls` 回驗版本（不 `npm i` 重裝）。
 19. **字串裡的路徑要驗檔案存在**：`casesHelp` 印的題組路徑（`bench/cases/…` 缺 `src/`）佈局改動後無人察覺；用法案由字串解析出路徑並 `existsSync`，不只比對字面。
 
+## 傳給 wsemi 之值先判定再取值所得之心得（2026-11-02，排程第 271 項第 3 輪，下游先行）
+
+20. **`ispint`→`cint` 不是清洗，是把壞值變成可用之錯值**：`ispint(Infinity)`、`ispint('0x10')`、`ispint(new Number(n))` 皆 true，`cint(Infinity)` 為 `Number.MAX_VALUE`、`cint('0x10')` 為 16；交給 `strTruncate` 後在 wsemi 第 3 輪即拋錯。計算類參數一律 `iseint(v, { use: 'count', min: 1 })` 判定、通過再 `Number(v)`。`ispint` 之「正」與 `iseint` 之下限 `min: 1` 對應，`use: 'count'` 另帶上限 4294967295（超過者曾「實際不截斷」，改後用預設）。
+21. **前瞻驗證不必等 wsemi 改版**：依第 3 輪契約自寫嚴格版替身（`test/tools/strictWsemi.mjs`），子行程以 `node --import test/tools/strictWsemiHook.mjs` 經 `module.registerHooks` 的 resolve 掛鉤把 `wsemi/src/strTruncate.mjs` 換成它（比對解析後網址，才連 wsemi 內部之相對引用都換到；替身自己載入真函數時依 `parentURL` 放行，否則自我取代而無窮遞迴）。同行程註冊無效（已載入之模組不重新解析），故測試以 `spawnSync` 起子行程；探針自檢 `hookLive`（嚴格版對 `Infinity`、未給須拋、對 2 不拋），替身沒生效時結果不可信。
+22. **提示詞字數之觀察法**：正文全用罕見標記字元（``）、數提示詞內出現個數；非預期值之應然＝「與未給相同」，不寫死預設值。每個選項觀察兩種正文長度（3000、9000）才分辨得出差異——`Infinity` 對 `longDocChars` 只有 9000 看得出（預設 6000 對「從不另附中段」），`'0x10'` 只有 3000 看得出（16 對預設）。
+23. **修前紅與變異都用複本，不動工作樹**：修前碼以 `git archive HEAD src` 解到 `tmp/`，探針腳本接「原始碼根」參數即可對同一案例組跑修前碼（嚴格版下 35 案拋錯）；變異於 `tmp/` 複本（src＋測試＋工具）套單行改動後單檔跑 mocha。`Number()` 取值移除為等價變異（任何收數字字串之 count 契約下皆無觀察差異）——保留 `Number()` 是依 wsemi 規格「判定後一律用轉換值」，不是為了讓某測試轉紅。
+24. **設定層與 domain 之上限不一致要明列**：抓取套件的 `pint`（`Number.isInteger(v) && v > 0`）已擋 `Infinity`、字串、包裝物件，但收逾 4294967295 之有限整數；該值經 domain 改用預設而非啟動期拋錯。本套件不改抓取套件之型別表，列為待辦（見 state）。
+25. **全套測試之守門不必預先調整**：新增 4 個 `test/tools` 檔與 1 個測試檔後，`unit-summarize-package`（打包清單、領域字樣、內網位址）全綠——新檔不含領域詞，守門只靠規則而非檔案數。
+
 ## 通用之坑
 
 - 絕不自使用端專案根以 mocha 直跑套件測試檔（GEN-09）。

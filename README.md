@@ -300,6 +300,8 @@ createKnowledgeSummarize({
 | | `parallel` | 3 | 同時併發之 AI 呼叫數(預篩、摘要、重標各批共用) |
 | `capture` | 抓取套件之設定 | 同抓取套件 | 交抓取套件驗;本套件只用素材退回抓取之欄位與 raw 進料上界 |
 
+**字數類之取值**(`summarize.charsPerDoc`、`summarize.triage.charsPerDoc`,及直接使用內建 domain 工廠時之 `createSummarizeDomain`／`createDigestDomain` 的 `summarizeCharsPerDoc`、`createTriageDomain` 的 `triageCharsPerDoc`／`longDocChars`、`buildPrompt` 的 `budgets[i]`):有效值為 1～4294967295 之整數(domain 工廠之 opt 與 `budgets[i]` 亦收其十進位數字字串,如 `'400'`)。`cfg.summarize` 之設定給了非正整數(含 `Infinity`、字串)啟動期拋錯;domain 工廠之 opt 與 `budgets[i]` 給了非預期值(`Infinity`、`'0x10'`、`new Number(n)` 等包裝物件、逾 4294967295 者、`0`、負數、非整數、非數字)視為未給、改用預設(`budgets[i]` 無效則用該 domain 之 `summarizeCharsPerDoc`)。**`Infinity` 不再等於「不截斷」**(舊版經 `Number.MAX_VALUE` 實際不截斷);需「幾乎不截斷」者請給足夠大之有限值,如 `4294967295`。
+
 **容量自洽(啟動期警告)**:抓取(raw 進料上界,取抓取套件之 `captureCapacityOf`)→ 預篩 → 摘要,每關每輪容量須 ≥ 該關之進料上界;只警告「進料 > 容量」。已開啟之判定小組其兩席首選同家且無不同家之第三席者,亦於啟動期警告(兩票恆為同一供應者,永遠判不成)。推導值在 `settings.capacity`(`summarizeCapacityOf`)。
 
 **席位之形狀**:`{ use, fallback?, timeoutMs?, minAttemptMs?, budgetMs? }`——`use` 為條目 id、`fallback` 為條目 id 之陣列、數值鍵為正數(毫秒),其他鍵拋錯(規則取自抓取套件之 `seatProblem`)。可為 null 者只有 `triage.ai`、`retag.ai`(null＝沿用 `summarize.ai`)與判定小組各席;`summarize.ai` 不得為 null。

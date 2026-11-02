@@ -15,12 +15,14 @@
 
 import isarr from 'wsemi/src/isarr.mjs'
 import isobj from 'wsemi/src/isobj.mjs'
-import ispint from 'wsemi/src/ispint.mjs'
-import cint from 'wsemi/src/cint.mjs'
+import iseint from 'wsemi/src/iseint.mjs'
 import strTruncate from 'wsemi/src/strTruncate.mjs'
 import { resolveSummarizeVocab, kbLabelOf } from '../core/vocab/summarizeVocab.mjs'
 import { SUMMARIZE_DEFAULT } from '../core/summarizeSettings.mjs'
 import { promptOverridesOf, promptCtxOf, overridablePrompt, resolveLocale } from '../core/capturePackage.mjs'
+
+/** 字數類 opt 之判定範圍(wsemi iseint:1～4294967295 之整數或其十進位數字字串;Infinity、'0x10'、包裝物件等為非預期,改用預設) */
+const COUNT_MIN1 = Object.freeze({ use: 'count', min: 1 })
 
 /**
  * 預篩 domain 可覆寫之提示詞與覆寫函數之形式(唯一一份;抓取套件之提示詞覆寫之 SIGS 形狀——cfg 層、執行期件與本工廠同讀,摘要執行期件之
@@ -39,8 +41,8 @@ export const TRIAGE_PROMPT_SIGS = Object.freeze({ triage: Object.freeze({ params
  * @param {Object} [opt={}] 輸入設定物件
  * @param {Object} [opt.vocab=null] 輸入詞彙表覆寫物件(見 resolveSummarizeVocab;亦可為其產物)，含 domain(主題範圍)、kbLabel、categories、
  *   guide.triage(領域句)等，預設null代表全用內建
- * @param {Integer} [opt.triageCharsPerDoc=400] 輸入每篇給模型之開頭片段字數正整數，預設400(＝summarize.triage.charsPerDoc 之預設,取自 SUMMARIZE_DEFAULT)
- * @param {Integer} [opt.longDocChars=6000] 輸入長文門檻正整數：正文(壓平空白後)逾此字數者另附中段 triageCharsPerDoc 字，預設6000(＝summarize.charsPerDoc 之預設,取自 SUMMARIZE_DEFAULT)
+ * @param {Integer} [opt.triageCharsPerDoc=400] 輸入每篇給模型之開頭片段字數正整數(1～4294967295 之整數或其十進位數字字串；Infinity、'0x10'、包裝物件、逾上限者等非預期值視為未給,改用預設)，預設400(＝summarize.triage.charsPerDoc 之預設,取自 SUMMARIZE_DEFAULT)
+ * @param {Integer} [opt.longDocChars=6000] 輸入長文門檻正整數(取值範圍與非預期之處置同 triageCharsPerDoc)：正文(壓平空白後)逾此字數者另附中段 triageCharsPerDoc 字，預設6000(＝summarize.charsPerDoc 之預設,取自 SUMMARIZE_DEFAULT)
  * @param {Object} [opt.prompts] 輸入提示詞覆寫 { triage? }：函數 (docs, ctx) => String，ctx 為 { kbLabel, domain, vocab,
  *   defaultPrompt:(docs) => 內建提示詞 }，須回傳非空字串;未給用內建
  * @param {String|Object} [opt.locale='zh-TW'] 輸入語言設定(語言代碼或抓取套件 resolveLocale 之產物;理由之語言句取其稱呼)
@@ -65,17 +67,17 @@ export function createTriageDomain(opt = {}) {
 
     //chars
     let chars = opt.triageCharsPerDoc
-    if (!ispint(chars)) {
+    if (!iseint(chars, COUNT_MIN1)) {
         chars = SUMMARIZE_DEFAULT.triage.charsPerDoc
     }
-    chars = cint(chars)
+    chars = Number(chars)
 
     //longChars
     let longChars = opt.longDocChars
-    if (!ispint(longChars)) {
+    if (!iseint(longChars, COUNT_MIN1)) {
         longChars = SUMMARIZE_DEFAULT.charsPerDoc
     }
-    longChars = cint(longChars)
+    longChars = Number(longChars)
 
     const kb = kbLabelOf(vocab)
     const g = vocab.guide.triage // 領域句(安裝方可經 vocab.guide.triage 逐欄覆寫;輸出格式與驗證留在本檔)
