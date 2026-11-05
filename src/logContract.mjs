@@ -87,17 +87,19 @@ export const SUMMARIZE_REPORT_KEYS = Object.freeze({
     stats: Object.freeze(['in', 'out', 'skip', 'fail', 'aiCalls']),
     detail: Object.freeze({
         // 預篩:disabled(停用時,另只有 processed／relevant／irrelevant);池空時另只有 pool 與 confirmClosed;confirmClosed(確認席關閉而依預篩席
-        //   攔下待確認者,有才附);rejectPending～confirmCalls(第二席確認開啟時)
+        //   攔下待確認者,有才附);rejectPending～confirmCalls(第二席確認開啟時);deferred(因扣保留給後段之時間後不足一次呼叫而未開工、提前結束或
+        //   未確認完,文件留池待下輪;保留生效且確有延後才附——與容量不足〔stopped 而無 deferred〕可分)
         triage: Object.freeze([
             'disabled', 'processed', 'relevant', 'irrelevant', 'pool', 'confirmClosed',
             'rejectPending', 'confirmed', 'overturned', 'confirmUndetermined', 'confirmRetry', 'confirmCalls',
-            'materialRefetch', 'aborted', 'stopped', 'failedBatches', 'missed', 'chainFailed', 'aiAttempts',
+            'materialRefetch', 'aborted', 'stopped', 'deferred', 'failedBatches', 'missed', 'chainFailed', 'aiAttempts',
         ]),
         // 摘要:faith*(忠實性覆核開啟時)、stdRepaired／stdRepairFailed(欄位定向修補開啟時)、stdHeld／stdHoldsResolved／stdHoldsEscalated
-        //   (待判有異動時)
+        //   (待判有異動時);deferred(因扣保留給後段之時間後不足一次呼叫而未開工、提前結束或修補／覆核之本批不套用,文件留 raw 池待下輪;
+        //   保留生效且確有延後才附)
         summarize: Object.freeze([
             'processed', 'notes', 'notesExisting', 'skipped', 'materialRefetch', 'truncated', 'categoryOffList', 'stdFixed', 'stdRejected',
-            'explore', 'tagSuspect', 'aborted', 'stopped', 'failedBatches', 'missed', 'chainFailed', 'aiAttempts', 'pool', 'poolOldestDays', 'ready',
+            'explore', 'tagSuspect', 'aborted', 'stopped', 'deferred', 'failedBatches', 'missed', 'chainFailed', 'aiAttempts', 'pool', 'poolOldestDays', 'ready',
             'faithChecked', 'faithRejected', 'faithHeld', 'faithRetry', 'faithCalls', 'faithResolved', 'faithWaived',
             'stdRepaired', 'stdRepairFailed',
             'stdHeld', 'stdHoldsResolved', 'stdHoldsEscalated',

@@ -248,7 +248,7 @@ console.log(report.ok, report.summaryFile) //筆記寫入 d:/my-kb/knowledge/not
 | 資料 | `data.vocab`(見 §6) | 中立之預設詞彙 |
 | 提示詞 | `prompts.{triage,summarize,faith,repair,retag}`(見 §7) | 內建通用提示詞 |
 | domain | `domains.{triage,summarize,retag}`(整組置換;見 §7);摘要 domain 之 `contract`(產物契約:欄位、組裝、適用之標準;見 §9) | 內建三工廠(摘要為筆記契約;另有速報 `createDigestDomain`) |
-| 子階段 | `stageOpts.<鍵>`(各子階段之 opt,含動作鏈 `tap`;`retag.reserveMs`;契約欄位 `enabled:false` 停用、`when(ctx)` 條件執行,每個子階段皆收——停用者 report 為 `{ detail:{ disabled:true } }`)或 `stages`(整組自訂,與 `stageOpts` 擇一) | 四個內建子階段 |
+| 子階段 | `stageOpts.<鍵>`(各子階段之 opt,含動作鏈 `tap`;`triage`／`summarize`／`retag` 之 `reserveMs`;契約欄位 `enabled:false` 停用、`when(ctx)` 條件執行,每個子階段皆收——停用者 report 為 `{ detail:{ disabled:true } }`)或 `stages`(整組自訂,與 `stageOpts` 擇一) | 四個內建子階段 |
 | AI | `aiAdapter`(整組置換)、`aiOptions`(內建調度層之建構選項:`providerPick`、`exes`、`persistStore`、`usageCounter`;抓取套件之 `AI_OPTIONS_KEYS`)、`envFile`、`aiWorkspace` | 內建調度層(抓取套件之 `createAiAdapter`) |
 | 儲存 | `lmdb`:`WOrm`、`path`、`db`、`cls`(集合名);`cores`;`dedup` | w-orm-lmdb、`<workDir>/db`、`'knowledge'` |
 | 時間與鎖 | `scheduleLimitMin`、`deadlineMs`、`lockStaleMs`、`lock` | 預算 50 分、鎖 `<workDir>/tmp/run.lock` |
@@ -378,7 +378,7 @@ createKnowledgeSummarize({
 | 換掉整條管線 | `cfg.stages` 給 `[{ name, run(ctx) }]`(與 `stageOpts` 擇一);可用匯出之子階段工廠自組,依賴一律走 `ctx.deps` |
 | 他總組裝共用摘要件 | `createSummarizeRuntime(cfg, settings, { vocab, prompts, domains })`:資料、詞彙、折疊、素材樣式、domain 與其檢核、去重身分、網路判斷——與本套件之總組裝同一份;集合鍵 `SUMMARIZE_STORE_KEYS`、目錄 `SUMMARIZE_DIRS` |
 | 他工作以判定小組判定 AI 標準 | `runPanelPage({ local, buildPrompt, shufflePrefix, call, seats, votesOf, stages?, same?, secondOf?, ballotOf?, decideOf?, needThirdOf?, thirdStop? })`(`core/standards/panelRun.mjs`):提示詞先組後叫、第一、二席並行(第二席項序依前綴與鍵之雜湊打亂、編號不變)、前兩席任一中止即整頁中止、未成立而可成立者只送第三席、逐項 `decidePanel`;回 `{ decisions, byIndex, calls, stopped, undecided }`。opt-in(皆未給即預設骨架):`secondOf(local)` 第二席所見之子集(回空即不叫)、`ballotOf(x, a, b)` 該項之前兩票、`decideOf(x, votes)`／`needThirdOf(x, votes)` 以項為參數之裁定與是否叫第三席、`thirdStop`(`PANEL_THIRD_STOP.PAGE` 預設:第三席中止整頁丟棄;`ITEMS`:只使送第三席之項不判、其餘照回,`undecided` 列其編號)。呼叫結果之正規化(`{ ok, data, providerId, stop }`)、分頁、跨頁合成與裁定後之衍生欄位由呼叫端;本套件之忠實性覆核 `runFaithCheck` 即以之執行;下游以 opt-in 給自己的票組與裁定 |
-| 保留時間給後段 | `cfg.stageOpts.retag.reserveMs`(毫秒數或 `(ctx) => 毫秒數`):重標扣掉保留後剩不到 5 分即不開工。他總組裝亦可於每輪依賴給 `deps.reserveMs`(同形;`opt.reserveMs` 未給時取之),自組之管線與預設管線一體適用 |
+| 保留時間給後段 | `cfg.stageOpts.<triage｜summarize｜retag>.reserveMs`(毫秒數或 `(ctx) => 毫秒數`)。預篩(含第二席確認)、摘要(含修補、忠實性覆核)、重標三段皆扣保留:保留 > 0 時開工前與每輪(wave)開工前須「扣保留後剩餘 ≥ 該席位一次呼叫之估計」(鏈首家之單次逾時:席位 `timeoutMs` → `ai.providerTimeouts[use]` → `ai.extraProviders` 該條目自帶 `timeoutMs` → `ai.timeoutMs` → 300000),不足則少做幾輪(不縮 `rounds`／`docsPerCall`)、文件原樣留池待下輪,report `detail.deferred:true`,日誌寫明;每次 AI 呼叫以「剩餘−保留」封頂;修補與覆核不足時本批不套用、不記次。重標之開工門檻仍為 5 分。他總組裝亦可於每輪依賴給 `deps.reserveMs`(同形;`opt.reserveMs` 未給時三段同取),自組之管線與預設管線一體適用;保留未給則預篩與摘要行為不變 |
 | 換儲存 | `cfg.lmdb.WOrm` 給相容之 ORM 建構函數 |
 | 收尾通知／巡檢 | `cfg.afterRun({ report, summaryFile, log, deps })`(管線之外、摘要之後;失敗只記 WARN) |
 
@@ -482,6 +482,7 @@ node <mocha 路徑>/bin/mocha.js --timeout 180000 test/<檔名>      # 單檔
 |---|---|---|
 | 核心與設定 | `unit-core`、`unit-settings`、`unit-vocab`、`unit-evidence`、`unit-ai-batch` | 本套件之核心件、設定與詞彙之逐鍵檢核、證據規則、批次 AI 機制 |
 | 模組 | `unit-summarize-{standards,domain,stores,holds,faith,repair,stages,retag,sync,ops}` | 筆記標準與納入閘、提示詞與 domain、筆記組裝與分類法、待判、忠實性覆核、修補、各子階段、維運 |
+| 時間(保留) | `unit-summarize-{reserve,reserve-gate}` | 預篩、第二席確認、摘要、修補、忠實性覆核扣保留給後段之時間(開工前與每輪開工前守門、呼叫以「剩餘−保留」封頂、不足時文件留池、保留未給行為不變;以注入之虛擬時鐘同步)；取值器、一次呼叫之估計與守門閘 |
 | 檢定標準 | `unit-summarize-{registry,audit,stockfix}` | 標準之登記(執行處之檔與函數存在、版本單一來源)、存量掃描(與新進閘同一判定、豁免、AI 標準只計待判、真 LMDB)、存量處置(預演／套用／回驗／回退、處置帳) |
 | 物件與組裝 | `unit-summarize-object`、`unit-summarize-assembly`、`unit-summarize-entry`、`unit-summarize-package` | 物件之子階段序列與固定格式摘要;總組裝之逐鍵檢核、domain 與提示詞、核心集合、網路判斷、去重身分、席位與調度層事件、保留時間;入口匯出;**套件邊界、依賴、發布面(不設 `exports` 與 `files`、`.npmignore`、`LICENSE`)、範例 `g.mjs` 離線可執行且 README 含其全文、發布內容不帶宿主之痕跡、預設領域中立、舊名、沿革與面向使用者之字樣**(判準取抓取套件之 `test/tools/historyMarks`,四套件同一份;不以名指下游之工作) |
 | 契約與流程 | `unit-summarize-log-contract`、`unit-flow-summarize`、`unit-summarize-contract`、`unit-summarize-material` | 日誌字樣、正則與 report 鍵對實際產出;真 LMDB 上兩輪之完整流程;筆記標準於各寫入入口之處置一致與還原閘之對外契約;素材退回抓取之往返 |
@@ -521,7 +522,7 @@ createKnowledgeSummarize({
 
 - **設定**:專案之 `summarize` 段原樣給 `cfg.summarize`(鍵與型別見 §5);`ai` 段只挑本套件認得之鍵(`SUMMARIZE_AI_SCHEMA`)——供應商池等他工作之鍵會被拒收;`capture` 段原樣給 `cfg.capture`。
 - **詞彙**:專案之詞彙表含他段之鍵時,以 `pickSummarizeVocab` 取子集;要逐字重現既有之提示詞,把既有之領域措辭填回 `guide`(含 `faith` 段),最高證據等級之要件填回 `evidenceRule`。
-- **時間**:同一輪後段另有耗時之工作者,以 `cfg.stageOpts.retag.reserveMs`(或其函數形式)保留其時間;他總組裝以自己之每輪依賴驅動本套件之物件者,於依賴給 `reserveMs` 一次即可(重標之 `opt.reserveMs` 未給時取之)——本套件不讀他工作之設定。
+- **時間**:同一輪後段另有耗時之工作者,以 `cfg.stageOpts.<triage｜summarize｜retag>.reserveMs`(或其函數形式)保留其時間;他總組裝以自己之每輪依賴驅動本套件之物件者,於依賴給 `reserveMs` 一次即可(預篩、摘要、重標之 `opt.reserveMs` 未給時皆取之)——本套件不讀他工作之設定。時間不足是「少做幾輪」不是「縮容量」,巡檢以 `detail.deferred` 分辨時間不足與容量不足。
 - **AI 調度**:多工作共用冷卻、健康與用量者,建一個調度實例以 `cfg.aiAdapter` 注入各工作(截斷放行為逐次給,共用不互相影響)。
 - **共用一庫**:`lmdb.db`／`lmdb.cls` 對齊既有之庫名與集合名;既有庫有核心集合者給 `cores: true`。
 

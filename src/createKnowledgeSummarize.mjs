@@ -18,8 +18,10 @@
 //   與事件日誌、集合之開關、每輪之序列與 info() 之共同欄,與抓取之總組裝同一份(經 core/capturePackage);本檔只放摘要專屬者(摘要之鍵集、
 //   summarizeRuntime、摘要物件、每輪依賴)與檢核之順序。
 // 【時間預算單一來源】整輪軟性截止 deadlineMs、執行鎖陳舊期限 lockStaleMs 與各路徑由抓取套件之 resolveRuntime 一次解析(排程上限
-//   cfg.scheduleLimitMin;cfg 明給者優先);管線與 info() 同取此份。各段經 budgetOf(ctx) 消費同一份預算;重標另扣保留給後段之時間
-//   (cfg.stageOpts.retag.reserveMs,本套件不讀他工作之設定)。
+//   cfg.scheduleLimitMin;cfg 明給者優先);管線與 info() 同取此份。各段經 budgetOf(ctx) 消費同一份預算;預篩、摘要、重標三段皆另扣保留給後段之時間
+//   (cfg.stageOpts.<triage|summarize|retag>.reserveMs,或組裝者於每輪依賴給一次之 deps.reserveMs〔opt 未給時三段同取〕;本套件不讀他工作之設定):
+//   保留 > 0 時各段於開工前與每輪(wave)開工前判「扣保留後剩餘 ≥ 一次呼叫之估計」,不足則少做幾輪、文件留池待下輪(detail.deferred),每次呼叫以「剩餘−保留」封頂;
+//   保留未給則行為不變。
 // 【開工標記】每輪開工先寫 log/<day>/<stamp>-run.start.json(本輪上限之宣告):被砍的輪次沒有 run.json,外部巡檢逐輪判界靠它。
 // 【啟動期檢核】設定(各段 schema)、cfg 各鍵之形狀、資料、提示詞、domain、子階段、啟用之功能所需之 domain 成員與判定小組席位、AI 席位
 //   (use／fallback 全部可解析)皆於建構期驗——打錯之鍵、缺金鑰或 id 打錯要在啟動期爆,不是靜默沿用預設或跑到第一次呼叫才被子階段當單次
@@ -118,7 +120,8 @@ const AI_ADAPTER_OPT = Object.freeze({ preview: true, capability: true })
  * @param {Object} [cfg.aiOptions] 輸入內建調度層之建構選項(安裝端之資產 { providerPick?, exes?, persistStore?, usageCounter? };鍵見抓取套件之 AI_OPTIONS_KEYS),
  *   注入 aiAdapter 時不用
  * @param {Array} [cfg.stages] 輸入整組自訂之子階段陣列({ name, run(ctx) })，給了即取代內建子階段(與 stageOpts 擇一)
- * @param {Object} [cfg.stageOpts] 輸入各內建子階段之 opt { triage, summarize, retag, sync }(含 tap;retag.reserveMs 為保留給後段之時間)
+ * @param {Object} [cfg.stageOpts] 輸入各內建子階段之 opt { triage, summarize, retag, sync }(含 tap;triage／summarize／retag 之 reserveMs 為保留給後段之時間,
+ *   未給取每輪依賴之 deps.reserveMs)
  * @param {Object} [cfg.dedup] 輸入去重身分設定(w-data-pipeline createIdentity;與抓取同一身分)，預設抓取套件之 DEFAULT_DEDUP
  * @param {Object} [cfg.lmdb] 輸入 { WOrm?, path?(預設 dirs.db), db?(預設 'knowledge'), cls?(集合名覆寫) }
  * @param {Boolean|String} [cfg.cores=false] 輸入核心集合:true 或集合名 → 唯讀加開 cores(既有概念另含核心之概念)

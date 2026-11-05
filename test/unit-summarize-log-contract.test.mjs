@@ -145,6 +145,11 @@ describe('unit-summarize-log-contract', function() {
             },
             docs: [rawDoc('m1', { title: '知識文件' }), rawDoc('m2', { title: '無關文件' }), rawDoc('m3', { title: '殘缺文件' })],
         })
+        // 預篩與摘要扣保留給後段之時間而延後(整輪預算 10 分、各段保留近全部 → 扣保留後剩餘 < 一次呼叫:不開工,文件留池;detail.deferred)
+        await scenario('reserveDefer', {
+            cfg: { deadlineMs: 600_000, stageOpts: { triage: { reserveMs: 599_990 }, summarize: { reserveMs: 599_990 } } },
+            docs: [rawDoc('q1'), rawDoc('q2', { triage: 'relevant' })],
+        })
         // 確認席關閉而依預篩攔下之待確認件(池中無待預篩者)
         await scenario('confirmClosed', { docs: [rawDoc('n', { triage: 'reject-pending', triagedAt: '2026-10-01T00:00:00+08:00', triageRejectBy: 'stub', triageRejectReason: '與知識庫無關之例行公告' })] })
         // 批次例外之落帳失敗(寫入層故障;子階段直接執行:組提示詞拋錯、其落帳又因寫入失敗而拋)
@@ -316,6 +321,18 @@ describe('unit-summarize-log-contract', function() {
                 assert.deepEqual([...seen[sub]].filter((k) => !declared.includes(k)).sort(), [], `${sub} 之實際 report 有未列之鍵`)
                 assert.deepEqual(declared.filter((k) => !seen[sub].has(k)), [], `${sub} 列了而未在實際 report 出現之鍵(情境未涵蓋或鍵已改)`)
             }
+        })
+
+        it('④deferred:預篩與摘要因扣保留時間後不足一次呼叫而延後時附 deferred:true(AI 0 次、文件留池);未保留之情境(含一般逾時截止 budget)不附——巡檢據以分辨時間不足與容量不足', () => {
+            const d = runs.reserveDefer.reps[0].stages[0].result.detail
+            assert.deepEqual([d.triage.detail.deferred, d.triage.detail.stopped, d.triage.stats.aiCalls], [true, true, 0])
+            assert.deepEqual([d.summarize.detail.deferred, d.summarize.detail.stopped, d.summarize.stats.aiCalls], [true, true, 0])
+            for (const [name, run] of Object.entries(runs)) {
+                if (name === 'reserveDefer') continue
+                for (const rep of run.reps) for (const st of rep.stages || []) for (const sub of ['triage', 'summarize']) assert.ok(!('deferred' in (st.result?.detail?.[sub]?.detail || {})), `${name}.${sub} 不應附 deferred`)
+            }
+            assert.ok(runs.reserveDefer.lines.some((l) => /預篩：扣保留時間後剩餘.*不足一次呼叫/.test(l)) && runs.reserveDefer.lines.some((l) => /摘要：扣保留時間後剩餘.*不足一次呼叫/.test(l)), '日誌寫明')
+            assert.ok(!runs.reserveDefer.lines.some((l) => l.startsWith('WARN ')), '延後為常態訊息(INFO),不洗版 WARN')
         })
 
         it('④巡檢所讀之鍵於子階段實際執行時皆在:摘要之 processed／notes／skipped／pool／poolOldestDays／stopped、預篩之 processed／irrelevant、重標之 changed／jobsPending／deferred／guards／version、同步之 changed／mdMissing', () => {

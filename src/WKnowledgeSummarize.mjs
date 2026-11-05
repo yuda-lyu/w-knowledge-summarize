@@ -25,6 +25,7 @@ import * as panelNs from './core/standards/panel.mjs'
 import * as panelConfigNs from './core/standards/panelConfig.mjs'
 import * as panelRunNs from './core/standards/panelRun.mjs'
 import * as aiBatchStageNs from './core/stages/aiBatchStage.mjs'
+import * as stageReserveNs from './core/stages/stageReserve.mjs'
 import * as mdNs from './core/md/md.mjs'
 import * as noteContentNs from './core/md/noteContent.mjs'
 // ── 子階段工廠與 mw 積木 ──
@@ -81,6 +82,7 @@ export * from './core/standards/panel.mjs'
 export * from './core/standards/panelConfig.mjs'
 export * from './core/standards/panelRun.mjs'
 export * from './core/stages/aiBatchStage.mjs'
+export * from './core/stages/stageReserve.mjs'
 export * from './core/md/md.mjs'
 export * from './core/md/noteContent.mjs'
 export * from './stages/triageStage.mjs'
@@ -124,7 +126,7 @@ export * from './bench/cli.mjs'
  */
 const NAMESPACES = [
     createKnowledgeSummarizeNs, summarizeObjectNs, summarizeRuntimeNs, logContractNs,
-    summarizeSettingsNs, summarizeVocabNs, conceptGroupsNs, evidenceRulesNs, numbersNs, panelNs, panelConfigNs, panelRunNs, aiBatchStageNs, mdNs, noteContentNs,
+    summarizeSettingsNs, summarizeVocabNs, conceptGroupsNs, evidenceRulesNs, numbersNs, panelNs, panelConfigNs, panelRunNs, aiBatchStageNs, stageReserveNs, mdNs, noteContentNs,
     triageStageNs, noteStageNs, retagStageNs, syncStageNs,
     triageDomainNs, noteDomainNs, digestDomainNs, retagDomainNs,
     noteBuildNs, noteSyncNs, knownConceptsNs, packByCharsNs, noteHoldsNs, taxonomyNs, materialPolicyNs, docStatusNs, notePatchNs,

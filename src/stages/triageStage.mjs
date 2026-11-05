@@ -19,13 +19,18 @@
 //   計 confirmClosed)——否則永遠擱淺:預篩池只取無 triage 者、確認只在開啟時跑、摘要只取 relevant。開啟而缺確認席 first → 拋錯(功能表
 //   SUMMARIZE_FEATURES 之單一判定,與忠實性覆核同):不可當成關閉——那會把待確認者依單席之判定攔下。
 // 【退路之 domain】未給 opt.domain 且 deps.domains.triage 缺者,以已解析之 deps.vocab(無則取 deps.data.vocab 中本套件所讀之鍵)現建。
+// 【時間:扣保留給後段之時間(core/stages/stageReserve)】opt.reserveMs 明給者優先、未給取每輪依賴 ctx.deps.reserveMs、皆未給為 0(由組裝者注入,本段不讀他工作
+//   之設定)。保留 > 0 時:開工前、批次調度每輪(wave)開工前、第二席確認之每批開工前,皆判「扣保留後剩餘 ≥ 該席位一次呼叫之估計(鏈首家之單次逾時)」,
+//   不成立 → 不開工(未預篩／待確認者原樣留池待下輪、不記次;日誌寫明,detail.deferred:true);每次 AI 呼叫以「剩餘−保留」封頂。容量(rounds、docsPerCall、
+//   parallel)不縮——時間不足是少做幾輪。保留為 0 時行為與未有此機制時完全相同。
 
 import isobj from 'wsemi/src/isobj.mjs'
 import { decidePanel, needThird, PANEL_WHY, PANEL_WHY_LABELS } from '../core/standards/panel.mjs'
-import { defineMw, applyTaps, makeMsg, count, runChainOverMsgs, stdReport, stageFields, budgetOf, byRetryTierFifo, oneline } from '../core/capturePackage.mjs'
+import { defineMw, applyTaps, makeMsg, count, runChainOverMsgs, stdReport, stageFields, byRetryTierFifo, oneline } from '../core/capturePackage.mjs'
 import { SUMMARIZE_DEFAULT, triageEnabledOf, summarizeFeatureProblems, summarizeSeatOf } from '../core/summarizeSettings.mjs'
 import { pickSummarizeVocab } from '../core/vocab/summarizeVocab.mjs'
 import { runAiBatchStage } from '../core/stages/aiBatchStage.mjs'
+import { summarizeCallMsOf, reserveFnOf, reserveGateOf } from '../core/stages/stageReserve.mjs'
 import { createTriageDomain } from '../domain/triageDomain.mjs'
 import { createMaterialPolicy } from '../stores/materialPolicy.mjs'
 import { SUMMARIZE_DOC_STATUS, SUMMARIZE_SKIP_KIND, TRIAGE_STATE, TRIAGE_SKIP_PREFIX } from '../stores/docStatus.mjs'
@@ -101,7 +106,11 @@ export const mwSettleTriage = () => defineMw({
  * @param {Object} [opt.material] 輸入素材問題判定器(createMaterialPolicy 之產物)，未給則依 settings.summarize.refetch 建立
  * @param {Function} [opt.rank] 輸入宿主排序 async (docs, { ctx }) => 要留之文件陣列(docs＝本段末全部已放行待摘要之文件;未入選者攔下、
  *   skipReason「預篩：未入選」——零件庫用法之「取前 N」;內建排名提示詞為後續版本)
+ * @param {Number|Function} [opt.reserveMs] 輸入保留給後段之毫秒數(非負)，或 (ctx) => 毫秒數(每輪求值):> 0 時開工前、每輪(wave)開工前、第二席確認之每批開工前須
+ *   扣保留後剩餘 ≥ 該席位一次呼叫之估計(鏈首家之單次逾時),否則不開工(文件留池待下輪、detail.deferred:true),每次 AI 呼叫以「剩餘−保留」封頂;
+ *   由組裝者注入(如後段工作之最低時間),本段不讀他工作之設定。未給(或 null)則取每輪依賴之 ctx.deps.reserveMs,皆未給為 0(行為不變);明給 0 優先於依賴
  * @returns {Object} 回傳 stage 物件 { name, run }(階段契約欄位 enabled／when 等見抓取套件之 stageFields)
+ * @throws {Error} opt.reserveMs 非非負毫秒數亦非函數時拋出(deps.reserveMs 不合、函數回傳不合者於該輪執行期拋出)
  * @example
  * let rows = new Map([['a', { id: 'a', status: 'raw', title: '星系旋轉曲線', text: '外圍恆星的轉速趨於定值', collectedAt: 'c1' }]])
  * let docs = {
@@ -128,6 +137,8 @@ export function stageTriage(opt = {}) {
     }
 
     const chain = opt.chain || applyTaps([mwSettleTriage(opt)], opt.tap, { chainName: 'summarize.triage' })
+    // 保留時間:opt 明給者優先(建構即檢核);未給者每輪取 ctx.deps.reserveMs(組裝者之依賴);取值規則同重標(core/stages/stageReserve)
+    const reserveFn = reserveFnOf(opt, 'stageTriage')
 
     return {
         ...stageFields(opt, { name: 'triage' }),
@@ -138,12 +149,18 @@ export function stageTriage(opt = {}) {
             const enabled = opt.enabled ?? triageEnabledOf(settings.summarize)
             if (!enabled) return stdReport({ detail: { disabled: true, processed: 0, relevant: 0, irrelevant: 0 } })
             const domain = opt.domain || ctx.deps.domains?.triage || createTriageDomain({ vocab: ctx.deps.vocab || pickSummarizeVocab(ctx.deps.data?.vocab), triageCharsPerDoc: settings.summarize.triage.charsPerDoc, longDocChars: settings.summarize.charsPerDoc })
-            // 時間預算(抓取套件之 budgetOf):與摘要同一份守門;覆寫 callAI 者亦收第三參數
-            const budget = budgetOf(ctx)
-            const shouldStop = budget.shouldStop
+            // 時間預算(抓取套件之 budgetOf／reserveOf,經 core/stages/stageReserve):扣掉保留給後段之時間(檔頭【時間】;保留為 0 時等同整輪預算)；
+            //   開工與每輪(wave)開工前判「扣保留後剩餘 ≥ 一次呼叫之估計」,每次呼叫以「剩餘−保留」封頂;覆寫 callAI 者亦收第三參數
+            const gate = reserveGateOf(ctx, reserveFn(ctx))
+            const secs = (ms) => Math.round(ms / 1000)
+            /** 該席位一次呼叫之估計(鏈首家之單次逾時);保留為 0 時恆 0(不加開工門檻) */
+            const callMsOf = (seat) => (gate.keep > 0 ? summarizeCallMsOf(settings, seat) : 0)
+            const triageMs = callMsOf(summarizeSeatOf(settings.summarize, 'triage'))
+            const shouldStop = () => gate.shouldStop(triageMs)
+            let deferred = false // 因扣保留後時間不足而未開工、提前結束或未做完(文件留池待下輪)
             // 席位:summarize.triage.ai 未給即沿用摘要席位 summarize.ai(summarizeSeatOf;取值延後到真的要呼叫時:覆寫 callAI 之測試環境可無席位設定)
             const baseCall = (p, c, o) => ai.callJson(p, c, { spec: summarizeSeatOf(settings.summarize, 'triage'), ...o })
-            const callAI = (p, c) => (opt.callAI || baseCall)(p, c, { shouldStop, budgetMs: budget.remainingMs(), acceptTruncated: true })
+            const callAI = (p, c) => (opt.callAI || baseCall)(p, c, { shouldStop, budgetMs: gate.remainingMs(), acceptTruncated: true })
             const st = { pending: SUMMARIZE_DOC_STATUS.pending, ...(opt.statuses || {}) }
             const triesField = 'triageTries'
             const maxTries = opt.maxTries ?? settings.summarize.triage.maxTries ?? SUMMARIZE_DEFAULT.triage.maxTries
@@ -194,7 +211,13 @@ export function stageTriage(opt = {}) {
             const pendingConfirm = async () => (confirmOn ? (await stores.docs.select({ status: st.pending })).filter((d) => d.triage === TRIAGE_STATE.rejectPending) : [])
             if (pool.length === 0 && !(await pendingConfirm()).length) return stdReport({ stats: { skip: confirmClosed }, detail: { processed: 0, relevant: 0, irrelevant: 0, pool: 0, ...closedDetail } })
 
-            const r = pool.length === 0 ? { applied: {}, failedBatches: 0, missed: 0, chainFailed: 0, aiCalls: 0, aiAttempts: 0, aborted: false, stopped: false } : await runAiBatchStage({
+            // 開工前(保留 > 0 才判;整輪已逾期者留給批次調度之既有守門):扣保留後剩餘不足一次呼叫 → 本輪不預篩,未預篩者原樣留池
+            const poolDeferred = pool.length > 0 && gate.keep > 0 && !gate.expired() && gate.shouldStop(triageMs)
+            if (poolDeferred) {
+                deferred = true
+                log.info(`預篩：扣保留時間後剩餘 ${secs(gate.remainingMs())}s 不足一次呼叫（${secs(triageMs)}s），本輪不預篩（待預篩 ${pool.length} 篇留下輪）`)
+            }
+            const r = pool.length === 0 || poolDeferred ? { applied: {}, failedBatches: 0, missed: 0, chainFailed: 0, aiCalls: 0, aiAttempts: 0, aborted: false, stopped: poolDeferred, rounds: 0 } : await runAiBatchStage({
                 log,
                 batchSize,
                 parallel,
@@ -222,15 +245,43 @@ export function stageTriage(opt = {}) {
                 },
             })
 
+            // 提前結束(保留 > 0 且整輪未逾期、此刻扣保留後剩餘仍不足一次呼叫):批次調度不再開輪(stopped),或呼叫中途用盡預算而被略過(aborted)——
+            //   未取件者與未落帳者留池待下輪(皆不記 tries)
+            if (!poolDeferred && (r.stopped || r.aborted) && gate.keep > 0 && !gate.expired() && gate.shouldStop(triageMs)) {
+                const left = (await pickUntriaged()).length
+                if (left > 0) {
+                    deferred = true
+                    log.info(r.stopped
+                        ? `預篩：因時間提前結束於第 ${r.rounds + 1}/${rounds} 輪（扣保留時間後剩餘 ${secs(gate.remainingMs())}s，一次呼叫需 ${secs(triageMs)}s；未預篩者 ${left} 篇留下輪）`
+                        : `預篩：第 ${r.rounds}/${rounds} 輪之呼叫因扣保留時間後之預算用盡而中止（剩餘 ${secs(gate.remainingMs())}s，一次呼叫需 ${secs(triageMs)}s；未預篩者 ${left} 篇留下輪、不記次）`)
+                }
+            }
+
             // ── SS5:攔下之第二席確認(本輪新判與前輪留待者;容量同預篩)──
+            //   各席各用自己之估計(確認席 first、第三席 third);保留 > 0 時每批開工前與每次送出前同判,不成立 → 其後未確認者留待下輪(不記次)
             const cf = { confirmed: 0, overturned: 0, confirmUndetermined: 0, confirmRetry: 0, confirmCalls: 0 }
-            if (confirmOn && !budget.shouldStop()) {
+            const confirmFirstMs = callMsOf(confirmSeats.first)
+            let confirmCut = false // 確認段曾因扣保留後時間不足而拒絕送出／開批
+            if (confirmOn && !gate.shouldStop(confirmFirstMs)) {
                 const queue = (await pendingConfirm()).sort((a, b) => String(a.triagedAt || '').localeCompare(String(b.triagedAt || ''))).slice(0, rounds * parallel * batchSize)
                 // 回覆驗證與預篩同一判定(至少一項過 domain.isValidItem):調度層取回覆中最後一段過驗證之 JSON,只驗「是陣列」會被尾隨說明之小片段騙過
                 const callSeat = (spec, p, n) => {
+                    const ms = callMsOf(spec)
+                    // 兩次送出之間時間已過:送出前再判(與調度層之略過同形——skipped 不計次,呼叫端據以中止／留待下輪)
+                    if (gate.keep > 0 && gate.shouldStop(ms)) {
+                        if (!gate.expired()) confirmCut = true
+                        return { ok: false, data: null, error: '扣保留時間後剩餘不足一次呼叫', providerId: '', attempts: 0, skipped: true, errors: [] }
+                    }
                     cf.confirmCalls++
                     const check = (d) => Array.isArray(d) && d.some((it) => domain.isValidItem(it, n))
-                    return (opt.callAI ? opt.callAI(p, check, { spec, segment: 'triageConfirm', shouldStop, budgetMs: budget.remainingMs(), acceptTruncated: true }) : ai.callJson(p, check, { spec, shouldStop, budgetMs: budget.remainingMs(), acceptTruncated: true }))
+                    const stopNow = () => gate.shouldStop(ms)
+                    const res = opt.callAI ? opt.callAI(p, check, { spec, segment: 'triageConfirm', shouldStop: stopNow, budgetMs: gate.remainingMs(), acceptTruncated: true }) : ai.callJson(p, check, { spec, shouldStop: stopNow, budgetMs: gate.remainingMs(), acceptTruncated: true })
+                    if (gate.keep <= 0) return res
+                    // 呼叫中途預算用盡而被調度層略過者亦記為因保留而延後(此刻仍不成立才算;額度用盡等他因不算)
+                    return Promise.resolve(res).then((x) => {
+                        if (x?.skipped && gate.shouldStop(ms) && !gate.expired()) confirmCut = true
+                        return x
+                    })
                 }
                 const votesOf = (res, n) => {
                     const m = new Map()
@@ -243,7 +294,10 @@ export function stageTriage(opt = {}) {
                     return m
                 }
                 for (let i = 0; i < queue.length; i += batchSize) {
-                    if (budget.shouldStop()) break
+                    if (gate.shouldStop(confirmFirstMs)) {
+                        if (!gate.expired()) confirmCut = true
+                        break
+                    }
                     const batch = queue.slice(i, i + batchSize)
                     const rb = await callSeat(confirmSeats.first, domain.buildPrompt(batch), batch.length)
                     if (rb?.skipped) break
@@ -290,7 +344,17 @@ export function stageTriage(opt = {}) {
                     if (thirdSkipped) break
                 }
                 if (cf.confirmed + cf.overturned + cf.confirmUndetermined) log.info(`預篩第二席確認：確認攔下 ${cf.confirmed}、推翻放行 ${cf.overturned}、不一致放行 ${cf.confirmUndetermined}、留待下輪 ${cf.confirmRetry}`)
+                if (confirmCut) log.info(`預篩第二席確認：因時間提前結束（扣保留時間後剩餘 ${secs(gate.remainingMs())}s；未確認者留待下輪、不記次）`)
             }
+            else if (confirmOn && gate.keep > 0 && !gate.expired()) {
+                // 開工前不成立:待確認者原樣留待下輪(不記次);整輪已逾期者維持既有之靜默略過
+                const waiting = (await pendingConfirm()).length
+                if (waiting) {
+                    confirmCut = true
+                    log.info(`預篩第二席確認：扣保留時間後剩餘 ${secs(gate.remainingMs())}s 不足一次呼叫（${secs(confirmFirstMs)}s），本輪不確認（待確認 ${waiting} 篇留下輪）`)
+                }
+            }
+            if (confirmCut) deferred = true
 
             // ── 宿主排序取前 N(opt.rank;零件庫用法):已放行待摘要者交宿主,回要留者;未入選者攔下(skip,「預篩：未入選」)、不進摘要 ──
             const rk = { ranked: 0, rankSkipped: 0 }
@@ -324,6 +388,8 @@ export function stageTriage(opt = {}) {
                     materialRefetch: r.applied.materialRefetch || 0,
                     aborted: r.aborted,
                     stopped: r.stopped,
+                    // 因扣保留後時間不足而未開工、提前結束或未確認完(文件留池待下輪;保留生效且確有延後才附)
+                    ...(deferred ? { deferred: true } : {}),
                     failedBatches: r.failedBatches,
                     missed: r.missed,
                     chainFailed: r.chainFailed,

@@ -114,8 +114,8 @@ export function summarizeSummaryOf(reports) {
  * @param {Object} [opt={}] 輸入設定物件，非物件時視為{}；摘要子階段之 opts 亦可直接平鋪於 opt(見檔頭)
  * @param {Array} [opt.stages] 輸入整組重排之子階段陣列，給了即取代 triage／summarize／retag／sync 四個內建子階段
  * @param {Object} [opt.triage] 輸入透傳給 stageTriage 之 opt(與平鋪之 SUMMARIZE_SHARED_KEYS 合併，triage 優先)；enabled:false 時摘要自動
- *   requireTriage:false(摘要明給 requireTriage 者從其給)
- * @param {Object} [opt.summarize] 輸入透傳給 stageSummarize 之 opt(與平鋪 opts 合併，opt.summarize 優先；tap 則與平鋪之 tap 合併)
+ *   requireTriage:false(摘要明給 requireTriage 者從其給)；reserveMs 為保留給後段之時間(扣保留後剩餘不足一次呼叫即不開工),未給取每輪依賴之 deps.reserveMs
+ * @param {Object} [opt.summarize] 輸入透傳給 stageSummarize 之 opt(與平鋪 opts 合併，opt.summarize 優先；tap 則與平鋪之 tap 合併)；reserveMs 同預篩
  * @param {Object} [opt.retag] 輸入透傳給 stageRetag 之 opt(enabled:false 即停用重標;reserveMs 為保留給後段之時間,未給取每輪依賴之 deps.reserveMs)
  * @param {Object} [opt.sync] 輸入透傳給 stageSync 之 opt(enabled:false 即停用內容變更偵測)
  * @param {String} [opt.name='摘要'] 輸入階段名稱

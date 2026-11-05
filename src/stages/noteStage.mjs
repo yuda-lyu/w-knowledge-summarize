@@ -36,15 +36,21 @@
 //   使用者之重試要求以抓取套件之 retryRequestedOf 判定(要求晚於登錄之最後更新,以時刻比較)。
 //   未開 holds 集合 → 每輪 WARN 一次、略過登錄。
 // 【擠標籤之拆分條件(SS6)】各段皆為既有概念才拆:本輪開工前以 stores/knownConcepts 讀一次(或 opt.knownConcept 注入)。
+// 【時間:扣保留給後段之時間(core/stages/stageReserve)】opt.reserveMs 明給者優先、未給取每輪依賴 ctx.deps.reserveMs、皆未給為 0(由組裝者注入,本段不讀他工作
+//   之設定)。保留 > 0 時:開工前與批次調度每輪(wave)開工前判「扣保留後剩餘 ≥ 摘要席一次呼叫之估計(鏈首家之單次逾時)」,不成立 → 不開工／不再開輪
+//   (未取件者原樣留 raw 池待下輪;日誌寫明,detail.deferred:true);每次 AI 呼叫以「剩餘−保留」封頂。修補與忠實性覆核之每次送出前同判(各席各用自己之估計):
+//   不成立 → 同「額度／時間用盡」——本批不套用、不記 tries、文件留 raw(未核對之結果不落地、不當成已核對)。容量(rounds、docsPerCall、parallel)不縮——
+//   時間不足是少做幾輪。保留為 0 時行為與未有此機制時完全相同。
 
 import isobj from 'wsemi/src/isobj.mjs'
 import {
-    defineMw, applyTaps, makeMsg, count, runChainOverMsgs, stdReport, stageFields, budgetOf, saveClues, byRetryTierFifo, oneline, queueAge,
+    defineMw, applyTaps, makeMsg, count, runChainOverMsgs, stdReport, stageFields, saveClues, byRetryTierFifo, oneline, queueAge,
     listHolds, putHold, resolveHold, holdKey, retryRequestedOf,
 } from '../core/capturePackage.mjs'
 import { PANEL_WHY, PANEL_WHY_LABELS } from '../core/standards/panel.mjs'
 import { conceptVocabulary, tagSuspects } from '../core/vocab/conceptGroups.mjs'
 import { runAiBatchStage } from '../core/stages/aiBatchStage.mjs'
+import { summarizeCallMsOf, reserveFnOf, reserveGateOf } from '../core/stages/stageReserve.mjs'
 import { writeMd } from '../core/md/md.mjs'
 import { SS14_OBJECT, runFaithCheck, checkFaithChecks } from '../standards/faithCheck.mjs'
 import { gateNoteItem } from '../standards/noteGate.mjs'
@@ -374,7 +380,11 @@ export const mwMarkDoc = () => defineMw({
  * @param {Boolean} [opt.faithCheck] 輸入是否開啟忠實性覆核(檔頭)，未給則用 settings.summarize.standards.faithCheck.enabled===true；開啟而缺席位 first／second 或 domain 缺 buildFaithCheckPrompt 即拋錯
  * @param {Function} [opt.knownConcept] 輸入既有概念判定 (標籤) => Boolean(擠標籤之拆分條件)，未給則本輪開工前以 knownConceptOf(stores) 讀
  * @param {Function} [opt.sink] 輸入宿主落地 async ({ record, md, doc, ctx }) => { ok?, id? }(取代寫 md 與入庫;見 mwPersistNote)
+ * @param {Number|Function} [opt.reserveMs] 輸入保留給後段之毫秒數(非負)，或 (ctx) => 毫秒數(每輪求值):> 0 時開工前、每輪(wave)開工前、修補與忠實性覆核之每次送出前須
+ *   扣保留後剩餘 ≥ 該席位一次呼叫之估計(鏈首家之單次逾時),否則不開工／不再開輪(文件留 raw 池待下輪、detail.deferred:true;修補與覆核不成立 → 本批不套用、不記 tries),
+ *   每次 AI 呼叫以「剩餘−保留」封頂;由組裝者注入(如後段工作之最低時間),本段不讀他工作之設定。未給(或 null)則取每輪依賴之 ctx.deps.reserveMs,皆未給為 0(行為不變);明給 0 優先於依賴
  * @returns {Object} 回傳 stage 物件 { name, run }(階段契約欄位 enabled／when 等見抓取套件之 stageFields)
+ * @throws {Error} opt.reserveMs 非非負毫秒數亦非函數時拋出(deps.reserveMs 不合、函數回傳不合者於該輪執行期拋出)
  * @example
  * import fs from 'fs'
  * import os from 'os'
@@ -413,6 +423,8 @@ export function stageSummarize(opt = {}) {
         [mwSaveClues(opt), mwSkipGate(opt), mwRenderNote(opt), mwGateNote(opt), mwPersistNote(opt), mwMarkDoc(opt)],
         opt.tap, { chainName: 'summarize.summarize' },
     )
+    // 保留時間:opt 明給者優先(建構即檢核);未給者每輪取 ctx.deps.reserveMs(組裝者之依賴);取值規則同重標(core/stages/stageReserve)
+    const reserveFn = reserveFnOf(opt, 'stageSummarize')
 
     return {
         ...stageFields(opt, { name: 'summarize' }),
@@ -420,10 +432,19 @@ export function stageSummarize(opt = {}) {
             const { stores, settings, ai, clock } = ctx.deps
             const log = ctx.log
             const domain = opt.domain || ctx.deps.domains.summarize
-            // 時間預算(抓取套件之 budgetOf,單一擁有者):每次呼叫以剩餘時間封頂、嘗試之間可中止;每輪開工前由 harness 守門。
-            // 覆寫 callAI 者亦收到第三參數(shouldStop/budgetMs),不因覆寫而失去時間預算
-            const budget = budgetOf(ctx)
-            const shouldStop = budget.shouldStop
+            // 時間預算(抓取套件之 budgetOf／reserveOf,經 core/stages/stageReserve;預算單一擁有者):扣掉保留給後段之時間(檔頭【時間】;保留為 0 時等同整輪預算);
+            //   每次呼叫以「剩餘−保留」封頂、嘗試之間可中止;開工前與每輪(wave)開工前由 harness 以「扣保留後剩餘 ≥ 一次呼叫之估計」守門。
+            //   覆寫 callAI 者亦收到第三參數(shouldStop/budgetMs),不因覆寫而失去時間預算
+            const gate = reserveGateOf(ctx, reserveFn(ctx))
+            const secs = (ms) => Math.round(ms / 1000)
+            /** 該席位一次呼叫之估計(鏈首家之單次逾時);保留為 0 時恆 0(不加開工門檻) */
+            const callMsOf = (seat) => (gate.keep > 0 ? summarizeCallMsOf(settings, seat) : 0)
+            const mainMs = callMsOf(settings.summarize?.ai)
+            // 無待摘要者(池空、或只取已預篩放行而皆未放行)時不加一次呼叫之門檻:只看整輪是否逾期(不因保留而讓空轉的批次調度回報 stopped、WARN)
+            let idle = false
+            const shouldStop = () => gate.shouldStop(idle ? 0 : mainMs)
+            let deferred = false // 因扣保留後時間不足而未開工、提前結束或本批不套用(文件留 raw 池待下輪)
+            let reviewCut = false // 修補或忠實性覆核曾因扣保留後時間不足而拒絕送出(本批不套用、不記 tries)
             const st = { pending: SUMMARIZE_DOC_STATUS.pending, failed: SUMMARIZE_DOC_STATUS.failed, ...(opt.statuses || {}) }
             const triesField = opt.triesField || 'summarizeTries'
             const maxTries = opt.maxTries ?? 3
@@ -442,7 +463,7 @@ export function stageSummarize(opt = {}) {
                 }
                 const avoid = avoidOf(o2?.batch)
                 // 陣列輸出:逐次截斷放行(檔頭)
-                return (opt.callAI || baseCall)(p, c, { shouldStop, budgetMs: budget.remainingMs(), acceptTruncated: true, ...(avoid.length ? { avoid } : {}) })
+                return (opt.callAI || baseCall)(p, c, { shouldStop, budgetMs: gate.remainingMs(), acceptTruncated: true, ...(avoid.length ? { avoid } : {}) })
             }
 
             // 待判(檔頭【待判】):登錄、改判結案、終態轉使用者;未開 holds 集合 → 每輪 WARN 一次、略過登錄
@@ -552,13 +573,21 @@ export function stageSummarize(opt = {}) {
             if (requireTriage && rawAll.length > 0 && !rawAll.some((d) => d.triage)) {
                 log.warn(`摘要：raw 池 ${rawAll.length} 篇皆無預篩結果而本段只取已放行者——預篩段停用或未執行？請關閉 summarize.triage.enabled 或給 requireTriage:false`)
             }
+            // 開工前(保留 > 0 才判;整輪已逾期者留給批次調度之既有守門):扣保留後剩餘不足一次呼叫 → 本輪不摘要,待摘要者原樣留 raw 池
+            const todoCount = rawAll.filter(ready).filter((d) => !d.faithHold).length
+            idle = todoCount === 0
+            const startDeferred = todoCount > 0 && gate.keep > 0 && !gate.expired() && gate.shouldStop(mainMs)
+            if (startDeferred) {
+                deferred = true
+                log.info(`摘要：扣保留時間後剩餘 ${secs(gate.remainingMs())}s 不足一次呼叫（${secs(mainMs)}s），本輪不摘要（raw 池 ${todoCount} 篇留下輪）`)
+            }
 
             // 納入閘(檔頭【納入閘】):材料＝原文標題＋本篇送出之內文(與 noteStandards.noteMaterialOf 同一定義);
             //   驗證時記下各篇不合格之原因,未涵蓋落帳時寫入 lastError 與下次提示詞之回饋
             const sourceOf = (doc) => `${doc.title || ''}\n${String(doc.text || doc.feedText || '').slice(0, budgetById.has(doc.id) ? budgetById.get(doc.id) : charsPerDoc)}`
             let stdInvalid = 0 // 驗證即不合格(未進逐項鏈)而落帳之篇數
             // 擠標籤之拆分條件(SS6;檔頭):本輪有待摘要者才讀既有概念(全表讀筆記與核心一次)
-            const knownConcept = typeof opt.knownConcept === 'function' ? opt.knownConcept : (readyCount > 0 ? await knownConceptOf(stores) : () => false)
+            const knownConcept = typeof opt.knownConcept === 'function' ? opt.knownConcept : (readyCount > 0 && !startDeferred ? await knownConceptOf(stores) : () => false)
             // 產物契約(stores/noteBuild 檔頭):納入閘之欄位判定、組裝與落地前之標準皆依之;形狀不合即於開工前拋
             const contract = contractOf(domain)
             // 語言設定(每輪依賴 deps.locale;抓取套件之 core/locale):納入閘之轉正體與修補之正規化依之
@@ -597,8 +626,21 @@ export function stageSummarize(opt = {}) {
             // 欄位定向修補呼叫(檢定標準 SS2／SS4;檔頭):席位＝摘要席(同一供應者鏈);物件輸出,不給截斷放行
             const rc = { stdRepaired: 0, stdRepairFailed: 0 }
             const callRepair = (prompt) => (opt.callAI
-                ? opt.callAI(prompt, checkRepairReply, { spec: settings.summarize?.ai, segment: 'summarizeRepair', shouldStop, budgetMs: budget.remainingMs() })
-                : ai.callJson(prompt, checkRepairReply, { spec: settings.summarize.ai, shouldStop, budgetMs: budget.remainingMs() }))
+                ? opt.callAI(prompt, checkRepairReply, { spec: settings.summarize?.ai, segment: 'summarizeRepair', shouldStop, budgetMs: gate.remainingMs() })
+                : ai.callJson(prompt, checkRepairReply, { spec: settings.summarize.ai, shouldStop, budgetMs: gate.remainingMs() }))
+            /**
+             * 修補或忠實性覆核因扣保留後時間不足而拒絕送出:記旗標並寫日誌(同一種每輪至多一行);呼叫端據以中止(本批不套用、不記 tries、文件留 raw——
+             *   未核對之結果不落地)。整輪已逾期者不算(屬一般截止,維持既有之中止語意)
+             * @param {String} what 輸入步驟稱呼('摘要修補呼叫'｜'摘要忠實性覆核')
+             * @param {Number} ms 輸入該席位一次呼叫之估計(毫秒)
+             */
+            const refusedLogged = new Set()
+            const reviewRefused = (what, ms) => {
+                reviewCut = true
+                if (refusedLogged.has(what)) return
+                refusedLogged.add(what)
+                log.info(`${what}：扣保留時間後剩餘 ${secs(gate.remainingMs())}s 不足一次呼叫（${secs(ms)}s），本批不套用、不記次（文件留 raw 池下輪重摘）`)
+            }
             /**
              * 套用前之逐項修補(一輪為限):須修補之處 → 修補呼叫 → 只取被指出者套回 → 同一閘;結果記於 repairedByDoc 供覆核與套用
              * @param {Array} entries 輸入 [{ item, target, index }]
@@ -617,9 +659,15 @@ export function stageSummarize(opt = {}) {
                         if (!g0.ok) rejected.set(e.index, { kind: 'std', reasons: g0.reasons, std: g0.std })
                         continue
                     }
-                    if (shouldStop()) return { stopped: true }
+                    if (shouldStop()) {
+                        if (gate.keep > 0 && !gate.expired()) reviewRefused('摘要修補呼叫', mainMs)
+                        return { stopped: true }
+                    }
                     const res = await callRepair(domain.buildRepairPrompt({ material, item: n0.item, problems }))
-                    if (res?.skipped) return { stopped: true }
+                    if (res?.skipped) {
+                        if (gate.keep > 0 && gate.shouldStop(mainMs) && !gate.expired()) reviewRefused('摘要修補呼叫', mainMs)
+                        return { stopped: true }
+                    }
                     let g
                     if (res?.ok) {
                         const a = applyRepairs(n0.item, problems, res.data)
@@ -650,9 +698,31 @@ export function stageSummarize(opt = {}) {
                 ? async (entries) => {
                     const todo = entries.filter((e) => !e.target.faithWaived)
                     if (!todo.length) return {}
+                    // 第一、二席並行送出:保留生效時先以兩席估計之較大者判一次——兩席同進退(否則一席送出、另一席被拒,送出者白耗而整頁丟棄)
+                    if (gate.keep > 0) {
+                        const need = Math.max(callMsOf(faithSeats.first), callMsOf(faithSeats.second))
+                        if (gate.shouldStop(need)) {
+                            if (!gate.expired()) reviewRefused('摘要忠實性覆核', need)
+                            return { stopped: true }
+                        }
+                    }
+                    // 不包成 async:同步拋出者原樣拋出(執行器據以不呼叫第二席;保留為 0 時回傳值即原呼叫之回傳值)
                     const call = (seatKey, seat, prompt) => {
+                        // 各席用自己之估計;送出前判(兩次送出之間時間已過):不成立 → 同調度層之略過(skipped),覆核中止、本批不套用、不記 tries
+                        const ms = callMsOf(seat)
+                        if (gate.keep > 0 && gate.shouldStop(ms)) {
+                            if (!gate.expired()) reviewRefused('摘要忠實性覆核', ms)
+                            return { ok: false, data: null, error: '扣保留時間後剩餘不足一次呼叫', providerId: '', attempts: 0, skipped: true, errors: [] }
+                        }
                         fc.faithCalls++
-                        return opt.callAI ? opt.callAI(prompt, checkFaithChecks, { spec: seat, segment: 'summarizeFaith', shouldStop, budgetMs: budget.remainingMs() }) : ai.callJson(prompt, checkFaithChecks, { spec: seat, shouldStop, budgetMs: budget.remainingMs() })
+                        const stopNow = () => gate.shouldStop(ms)
+                        const res = opt.callAI ? opt.callAI(prompt, checkFaithChecks, { spec: seat, segment: 'summarizeFaith', shouldStop: stopNow, budgetMs: gate.remainingMs() }) : ai.callJson(prompt, checkFaithChecks, { spec: seat, shouldStop: stopNow, budgetMs: gate.remainingMs() })
+                        if (gate.keep <= 0) return res
+                        // 呼叫中時間用盡而被調度層略過者亦記為因保留而延後(此刻仍不成立才算;額度用盡等他因不算)
+                        return Promise.resolve(res).then((x) => {
+                            if (x?.skipped && gate.shouldStop(ms) && !gate.expired()) reviewRefused('摘要忠實性覆核', ms)
+                            return x
+                        })
                     }
                     const items = todo.map((e) => ({ key: String(e.index), title: e.target.title, material: sourceOf(e.target), note: gatedOf(e.item, e.target).item }))
                     const r = await runFaithCheck({ items, buildPrompt: domain.buildFaithCheckPrompt, call, seats: { first: faithSeats.first, second: faithSeats.second, third: isobj(faithSeats.third) ? faithSeats.third : null } })
@@ -757,7 +827,7 @@ export function stageSummarize(opt = {}) {
                 return true
             }
 
-            const r = await runAiBatchStage({
+            const r = startDeferred ? { applied: {}, failedBatches: 0, missed: 0, chainFailed: 0, aiCalls: 0, aiAttempts: 0, aborted: false, stopped: true, rounds: 0 } : await runAiBatchStage({
                 log,
                 batchSize,
                 parallel,
@@ -822,6 +892,19 @@ export function stageSummarize(opt = {}) {
                 ...(reviewItems ? { reviewItems, onReviewRejected } : {}),
             })
 
+            // 提前結束(保留 > 0 且整輪未逾期、此刻扣保留後剩餘仍不足一次呼叫):批次調度不再開輪(stopped),或呼叫中途用盡預算而被略過(aborted;
+            //   修補／覆核之拒絕已另記 reviewCut)——未取件者與未落帳者原樣留 raw 池待下輪(皆不記 tries)
+            if (!startDeferred && !reviewCut && (r.stopped || r.aborted) && gate.keep > 0 && !gate.expired() && gate.shouldStop(mainMs)) {
+                const left = (await stores.docs.select({ status: st.pending })).filter(ready).filter((d) => !d.faithHold).length
+                if (left > 0) {
+                    deferred = true
+                    log.info(r.stopped
+                        ? `摘要：因時間提前結束於第 ${r.rounds + 1}/${rounds} 輪（扣保留時間後剩餘 ${secs(gate.remainingMs())}s，一次呼叫需 ${secs(mainMs)}s；raw 池 ${left} 篇留下輪）`
+                        : `摘要：第 ${r.rounds}/${rounds} 輪之呼叫因扣保留時間後之預算用盡而中止（剩餘 ${secs(gate.remainingMs())}s，一次呼叫需 ${secs(mainMs)}s；raw 池 ${left} 篇留下輪、不記次）`)
+                }
+            }
+            if (reviewCut) deferred = true
+
             // fail＝失敗批次＋未涵蓋項＋逐項鏈異常(不含預算／額度中止)
             return stdReport({
                 stats: { in: r.applied.processed || 0, out: r.applied.notes || 0, skip: r.applied.skipped || 0, fail: r.failedBatches + r.missed + r.chainFailed, aiCalls: r.aiCalls },
@@ -839,6 +922,8 @@ export function stageSummarize(opt = {}) {
                     tagSuspect: r.applied.tagSuspect || 0,
                     aborted: r.aborted,
                     stopped: r.stopped,
+                    // 因扣保留後時間不足而未開工、提前結束或本批不套用(文件留 raw 池待下輪;保留生效且確有延後才附)
+                    ...(deferred ? { deferred: true } : {}),
                     failedBatches: r.failedBatches,
                     missed: r.missed,
                     chainFailed: r.chainFailed,
