@@ -48,6 +48,7 @@ import * as taxonomyNs from './stores/taxonomy.mjs'
 import * as materialPolicyNs from './stores/materialPolicy.mjs'
 import * as docStatusNs from './stores/docStatus.mjs'
 import * as notePatchNs from './stores/notePatch.mjs'
+import * as noteProducedNs from './stores/noteProduced.mjs'
 // ── 檢定標準(筆記標準、納入閘、正規化、修補、忠實性覆核)──
 import * as noteStandardsNs from './standards/noteStandards.mjs'
 import * as noteNormalizeNs from './standards/noteNormalize.mjs'
@@ -65,6 +66,7 @@ import * as noteRestoreGateNs from './ops/noteRestoreGate.mjs'
 import * as noteStockFixNs from './ops/noteStockFix.mjs'
 import * as reviveFailedNs from './ops/reviveFailed.mjs'
 import * as ingestNotesNs from './ops/ingestNotes.mjs'
+import * as notesByProvenanceNs from './ops/notesByProvenance.mjs'
 // ── AI 能力評分(五角色;核心為抓取套件之 benchKit;命令列 bench/cli.mjs 被 import 時不執行,只轉出同一實體)──
 import * as summarizeBenchNs from './bench/summarizeBench.mjs'
 import * as benchCliNs from './bench/cli.mjs'
@@ -102,6 +104,7 @@ export * from './stores/taxonomy.mjs'
 export * from './stores/materialPolicy.mjs'
 export * from './stores/docStatus.mjs'
 export * from './stores/notePatch.mjs'
+export * from './stores/noteProduced.mjs'
 export * from './standards/noteStandards.mjs'
 export * from './standards/noteNormalize.mjs'
 export * from './standards/noteGate.mjs'
@@ -116,6 +119,7 @@ export * from './ops/noteRestoreGate.mjs'
 export * from './ops/noteStockFix.mjs'
 export * from './ops/reviveFailed.mjs'
 export * from './ops/ingestNotes.mjs'
+export * from './ops/notesByProvenance.mjs'
 export * from './bench/summarizeBench.mjs'
 export * from './bench/cli.mjs'
 
@@ -129,10 +133,10 @@ const NAMESPACES = [
     summarizeSettingsNs, summarizeVocabNs, conceptGroupsNs, evidenceRulesNs, numbersNs, panelNs, panelConfigNs, panelRunNs, aiBatchStageNs, stageReserveNs, mdNs, noteContentNs,
     triageStageNs, noteStageNs, retagStageNs, syncStageNs,
     triageDomainNs, noteDomainNs, digestDomainNs, retagDomainNs,
-    noteBuildNs, noteSyncNs, knownConceptsNs, packByCharsNs, noteHoldsNs, taxonomyNs, materialPolicyNs, docStatusNs, notePatchNs,
+    noteBuildNs, noteSyncNs, knownConceptsNs, packByCharsNs, noteHoldsNs, taxonomyNs, materialPolicyNs, docStatusNs, notePatchNs, noteProducedNs,
     noteStandardsNs, noteNormalizeNs, noteGateNs, noteRepairNs, faithCheckNs,
     registryNs, auditNs, stockFixNs,
-    taxonomyOpsNs, syncNotesNs, noteRestoreGateNs, noteStockFixNs, reviveFailedNs, ingestNotesNs,
+    taxonomyOpsNs, syncNotesNs, noteRestoreGateNs, noteStockFixNs, reviveFailedNs, ingestNotesNs, notesByProvenanceNs,
     summarizeBenchNs, benchCliNs,
 ]
 

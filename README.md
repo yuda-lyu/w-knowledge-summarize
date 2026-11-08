@@ -395,6 +395,17 @@ createKnowledgeSummarize({
 | `<state>/taxonomy.json` | 分類法狀態(已套用之版本、重標工作、守門、md 待修補) |
 | `<state>/note-sync.json` | 筆記同步之掃描水位 |
 
+**筆記之產出鏈(`produced`)**:每次本套件落筆記(新建與改寫)即於記錄追加一筆產出紀錄,供「出問題時依輪次、席位、實際成交條目、提示詞版本定位、成批重處理或移除」:
+
+| 位置 | 內容 |
+|---|---|
+| 記錄 `produced` | 最後一筆:`{ v:1, stamp, stage, seat, provider, promptFp?, pkg, at }`——`stamp` 為該輪 `run.json` 之 `stamp`(輪次外之維運呼叫為 `null`);`stage` 為 `summarize`(摘要新建)、`ingest`(人工匯入)、`retag`(分類法重標之 AI 重判)、`standards-fix`(重標之機械改名與 categoryRaw 採納、同步修正、存量處置);`seat` 為設定路徑(`summarize.ai`;重標席未設即沿用);`provider` 為**該次呼叫實際成交之條目**(遞補時為遞補者,非席位之主席);不呼叫 AI 之寫入(機械改名、確定性修正、人工匯入)`seat`／`provider` 同時為 `null`;`promptFp` 為該角色之提示詞指紋(與評分之 `promptFp` 同一算法,算不出者省略);`pkg` 為 `名稱@版本`;`at` 為寫入時刻 |
+| 記錄 `producedHistory`／`producedHistoryDropped` | 每次寫入追加一筆(含最後一筆),至多 50 筆,超出捨最舊並累計捨去數 |
+| md front matter | 只加純量鍵 `produced_stamp`、`produced_stage`、`produced_provider`(值為 `null` 者省略;物件不入 front matter);僅供人與檔案搜尋,查詢以記錄為準 |
+| 文件記錄 `triageVotes` | 預篩確認小組(`summarize.standards.triageConfirm`)做成決定者:`[{ seat, provider, verdict }]` |
+
+成交條目未知者(覆寫之 `callAI` 未回 `providerId`)不寫產出鏈,筆記照寫;舊記錄不回填。依之選件見〈維運 API〉之 `notesByProvenance`。
+
 段之摘要為固定格式(對外契約;`summarizeSummaryOf`):`處理 N、新知識 N、略過 N、線索 N（AI N 次）`,其後依序附(>0 才附)預篩、素材退回、長文截斷、重標、內容變更、標準修正、忠實性覆核、修補、入待判、同步標準修正、確認席關閉、預篩確認(SS5 開啟時:`預篩確認 N 篇（兩席攔下 N、推翻放行 N、不一致放行 N、留待下輪 N）`;預篩段之「放行」只計預篩席放行者)等段;有子階段失敗時改為通用摘要並列出失敗者。
 
 ---
@@ -408,8 +419,9 @@ createKnowledgeSummarize({
 | `listHolds(holds, { status, object, std, owner })`、`overdueHolds(rows, nowIso)`(抓取套件) | 否 | 待判登錄(鍵 `<物件>:<id>:<標準>`)之列表與逾期者——待判登錄為四工作同一機制,其件屬抓取套件(經其主入口取用);本套件之筆記待判之期限為 `noteHoldDeadlineOf`(`NOTE_HOLD_DEADLINE_DAYS` 天) |
 | `requestRetry(holds, id, { at })`、`waiveHold(holds, id, { by, ruling, at })`(抓取套件) | 是 | 使用者處置待判:要求重試(由負責之子階段下輪執行)／豁免(須記裁示者與內容) |
 | `reviveFailedDocs(stores, { match, nowIso, apply })` | apply 時 | `summarize-failed` 之文件重開回待摘要(原文自另存回填、tries 歸零;預設預演) |
-| `ingestNotes({ stores, dirs, clock, domain, identity }, items)` | 是 | 人工／代理撰寫之筆記入庫(與管線同一組裝與納入閘;`domain`、`identity` 取 `info()`) |
-| `syncNotes({ stores, dirs, clock, log, vocab }, { all, ids })` | 是 | 筆記內容變更之掃描(同步子階段之同一實作) |
+| `ingestNotes({ stores, dirs, clock, domain, identity }, items)` | 是 | 人工／代理撰寫之筆記入庫(與管線同一組裝與納入閘;`domain`、`identity` 取 `info()`);記產出鏈(`seat`／`provider` 為 `null`) |
+| `syncNotes({ stores, dirs, clock, log, vocab }, { all, ids, stamp })` | 是 | 筆記內容變更之掃描(同步子階段之同一實作);確定性修正有寫回者記產出鏈(`stamp` 輪次外不給＝`null`) |
+| `notesByProvenance({ stores }, { stamp, stage, provider, seat, since, until, history })` | 否 | 依產出鏈選件:回 `[{ slug, produced }]`(依 slug 升冪)。條件皆選填、為「且」;`stamp`／`seat`／`provider` 給 `null` 選該欄為 `null` 者;`since`／`until` 以時刻比對 `produced.at`(含邊界);預設只比對最後一筆,`history: true` 比對 `producedHistory` 任一筆(回傳符合之最近一筆);無產出鏈之舊記錄不出現;條件不合即拋。選出後之重處理走既有路徑(重摘要、稽核撤出) |
 | `taxonomyStatus({ stores, dirs, vocab, settings }, { nowIso })` | 否 | 分類法狀態預覽(若現在跑會排哪些工作) |
 | `requeueCategory({ dirs, vocab }, category, { nowIso })`、`categoryProposals(stores)` | 是／否 | 排入某類別之重判／清單外類別之提案彙整 |
 | `createNoteRestoreGate({ stores, vocab, clock })` | 否(hold 登錄待判) | 還原筆記之標準閘(§1 介面) |

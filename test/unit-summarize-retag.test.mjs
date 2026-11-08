@@ -50,10 +50,11 @@ function seedRetagNotes(dir, vocab, specs) {
     return memStore(rows)
 }
 /** 執行一輪重標(ctx 帶 bag;holds 給了才開待判集合,now 為本輪時刻;deps 為另加之每輪依賴) */
-async function runRetag({ notes, vocab, dir, callAI, remainingMs = () => Infinity, opt = {}, holds = null, now = NOW, deps = {} }) {
+async function runRetag({ notes, vocab, dir, callAI, remainingMs = () => Infinity, opt = {}, holds = null, now = NOW, deps = {}, stamp }) {
     const bag = new Map()
     const logger = recLog()
     const ctx = {
+        ...(stamp !== undefined ? { stamp } : {}), // 輪次 stamp(段內之 ctx.stamp;未給＝輪次外)
         deps: { stores: { notes, ...(holds ? { holds } : {}) }, settings: SETTINGS, dirs: { state: `${dir}/state` }, clock: now === NOW ? clock : { iso8: () => now }, ai: {}, domains: { retag: createRetagDomain({ vocab }) }, vocab: resolveSummarizeVocab(vocab), ...deps },
         log: logger,
         get: (k, f) => (bag.has(k) ? bag.get(k) : f),
@@ -339,6 +340,96 @@ describe('unit-summarize-retag', function() {
             const rows = [{ categoryRaw: '乙', title: '1' }, { categoryRaw: '甲', title: '2' }, { categoryRaw: '甲', title: '3' }, { categoryRaw: ' ', title: '4' }]
             assert.deepEqual(proposalsOf(rows, { top: 1, samples: 1 }), [{ raw: '甲', count: 2, samples: ['2'] }])
             assert.deepEqual(proposalsOf('x'), [])
+        })
+    })
+
+    // ══════════════════════════ 產出鏈(stores/noteProduced;跨套件之產出鏈規格 §3、§4;使用端需求見 Gitea #107)══════════════════════════
+    // 重標之 stage 依有無呼叫 AI 分兩值:機械改名與 categoryRaw 採納(不呼叫 AI)為 standards-fix、seat／provider 皆 null;AI 重判為 retag,帶席位(未設重標席即沿用摘要席 summarize.ai)、實際成交條目與 promptFp;
+    //   成交條目未知(覆寫之 callAI 未回 providerId)不寫產出鏈;記錄與 md front matter 之純量鍵同時更新;md 修補(依記錄現值)亦同步純量鍵
+    describe('產出鏈', () => {
+        const STAMP = '20261108200009'
+        const V2 = { categories: ['方法論', '風險', '其他'], claimTypes: ['實證研究', '觀點評論'], evidenceLevels: BASE.evidenceLevels, categoryRenames: { 方法: '方法論' } }
+        const ADD = { ...BASE, categories: [...BASE.categories, '風控'], categoryHints: { 風控: ['回撤'] } }
+        const frontProduced = (file) => Object.fromEntries(Object.entries(readMd(file).front).filter(([k]) => k.startsWith('produced')))
+
+        it('機械改名:produced 之 seat／provider 為 null、stage standards-fix、stamp＝ctx.stamp、無 promptFp、歷史 +1(舊 produced 在前);md 之 produced_provider 移除', async () => {
+            const dir = `${TMP}/prov-mech`
+            const notes = seedRetagNotes(dir, BASE, [{ title: '甲', category: '方法' }])
+            const old = { v: 1, stamp: '20261107100000', stage: 'summarize', seat: 'summarize.ai', provider: 'x:one', promptFp: '5118f8f40bf0dc40', pkg: 'w-knowledge-summarize@1.0.0', at: '2026-11-07T10:00:00+08:00' }
+            const [n0] = await notes.select()
+            await notes.patch(n0.id, { produced: old, producedHistory: [old], producedHistoryDropped: 0 })
+            writeMd(n0.file, { ...readMd(n0.file).front, produced_stamp: old.stamp, produced_stage: 'summarize', produced_provider: 'x:one' }, readMd(n0.file).body)
+            await runRetag({ notes, vocab: BASE, dir })
+            const r = await runRetag({ notes, vocab: V2, dir, stamp: STAMP, callAI: async () => assert.fail('改名不呼叫 AI') })
+            assert.equal(r.r.detail.mechChanged, 1)
+            const [n] = await notes.select()
+            assert.deepEqual(n.produced, { v: 1, stamp: STAMP, stage: 'standards-fix', seat: null, provider: null, pkg: n.produced.pkg, at: NOW })
+            assert.match(n.produced.pkg, /^w-knowledge-summarize@\d+\.\d+\.\d+/)
+            assert.deepEqual(n.producedHistory, [old, n.produced])
+            assert.deepEqual(frontProduced(n.file), { produced_stamp: STAMP, produced_stage: 'standards-fix' }, '同輪 md 更新、舊 produced_provider 移除')
+            assert.equal(readMd(n.file).front.category, '方法論')
+        })
+
+        it('輪次外(ctx 無 stamp):stamp 為 null、md 省略 produced_stamp;無產出鏈之舊筆記亦從頭起算(歷史 1 筆、不回填前史)', async () => {
+            const dir = `${TMP}/prov-nostamp`
+            const notes = seedRetagNotes(dir, BASE, [{ title: '甲', category: '方法' }])
+            await runRetag({ notes, vocab: BASE, dir })
+            await runRetag({ notes, vocab: V2, dir })
+            const [n] = await notes.select()
+            assert.deepEqual([n.produced.stamp, n.producedHistory.length, n.producedHistoryDropped], [null, 1, 0])
+            assert.deepEqual(frontProduced(n.file), { produced_stage: 'standards-fix' })
+        })
+
+        it('AI 重判:seat 為 summarize.ai(重標席未設即沿用摘要席)、provider＝該批呼叫之成交條目(遞補時為遞補者)、promptFp 為 16 碼、stamp＝ctx.stamp;維持原類別者不寫(無改寫即無產出)', async () => {
+            const dir = `${TMP}/prov-ai`
+            const notes = seedRetagNotes(dir, BASE, [{ title: '回撤控制乙', category: '方法' }, { title: '落點甲', category: '其他' }])
+            await runRetag({ notes, vocab: BASE, dir })
+            const calls = []
+            const callAI = async (p) => {
+                calls.push(p)
+                return { ok: true, providerId: 'fb:fallback-one', data: [...p.matchAll(/^\d+\. 【(.+?)】/gm)].map((m, i) => ({ index: i + 1, category: m[1] === '回撤控制乙' ? '風控' : '其他' })) }
+            }
+            const r = await runRetag({ notes, vocab: ADD, dir, stamp: STAMP, callAI })
+            assert.deepEqual([r.r.detail.aiChanged, r.r.detail.aiKept, calls.length], [1, 1, 1], JSON.stringify(r.r.detail))
+            const by = Object.fromEntries((await notes.select()).map((n) => [n.title, n]))
+            const yi = by['回撤控制乙']
+            assert.deepEqual([yi.category, yi.produced.stage, yi.produced.seat, yi.produced.provider, yi.produced.stamp], ['風控', 'retag', 'summarize.ai', 'fb:fallback-one', STAMP])
+            // 本案之詞彙為未經解析之 plain 物件 → 重標角色之提示詞指紋算不出:省略 promptFp 並記一行 INFO(指紋是附記,不拖垮寫入);指紋有值之案見 unit-flow-summarize-provenance
+            assert.equal('promptFp' in yi.produced, false)
+            assert.equal(r.logger.lines.filter((l) => /^INFO 分類法：提示詞指紋算不出（retag：/.test(l)).length, 1, r.logger.lines.join('\n'))
+            assert.deepEqual(frontProduced(yi.file), { produced_stamp: STAMP, produced_stage: 'retag', produced_provider: 'fb:fallback-one' }, 'md 之 produced_stage 同記錄')
+            const jia = by['落點甲']
+            assert.deepEqual([jia.produced, jia.producedHistory, Object.keys(frontProduced(jia.file))], [undefined, undefined, []], '維持原類別者不改寫、不寫產出鏈')
+        })
+
+        it('AI 重判之成交條目未知(覆寫之 callAI 未回 providerId):類別照改、tagChangedAt 照寫,但不寫產出鏈(寧缺勿假);md 之 front 不動產出鏈鍵', async () => {
+            const dir = `${TMP}/prov-ai-unknown`
+            const notes = seedRetagNotes(dir, BASE, [{ title: '回撤控制乙', category: '方法' }])
+            await runRetag({ notes, vocab: BASE, dir })
+            const callAI = async (p) => ({ ok: true, data: [...p.matchAll(/^\d+\. 【(.+?)】/gm)].map((m, i) => ({ index: i + 1, category: '風控' })) })
+            await runRetag({ notes, vocab: ADD, dir, stamp: STAMP, callAI })
+            const [n] = await notes.select()
+            assert.deepEqual([n.category, n.tagChangedAt, 'produced' in n, 'producedHistory' in n], ['風控', NOW, false, false])
+            assert.deepEqual(frontProduced(n.file), {})
+            assert.equal(readMd(n.file).front.category, '風控')
+        })
+
+        it('md 改寫失敗(記錄已改)→ 下輪依記錄現值修補時,front 之 produced_* 純量鍵一併同步(md 為記錄之投影)', async () => {
+            const dir = `${TMP}/prov-repair`
+            const notes = seedRetagNotes(dir, BASE, [{ title: '甲', category: '方法' }])
+            const [n0] = await notes.select()
+            await runRetag({ notes, vocab: BASE, dir })
+            fs.renameSync(n0.file, `${n0.file}.bak`) // md 暫時不在 → 改寫失敗
+            const r1 = await runRetag({ notes, vocab: V2, dir, stamp: STAMP })
+            assert.equal(r1.r.detail.mdFailed, 1)
+            assert.equal((await notes.get(n0.id)).produced.stage, 'standards-fix', '記錄已寫產出鏈')
+            fs.renameSync(`${n0.file}.bak`, n0.file)
+            const r2 = await runRetag({ notes, vocab: V2, dir, stamp: '20261108210000' })
+            assert.equal(r2.r.detail.mdRepaired, 1)
+            const n = await notes.get(n0.id)
+            assert.equal(n.producedHistory.length, 1, '修補 md 不追加歷史(只依記錄現值投影)')
+            assert.deepEqual(frontProduced(n.file), { produced_stamp: STAMP, produced_stage: 'standards-fix' }, '同步為記錄現值(第一輪之 stamp,非修補輪之 stamp)')
+            assert.equal(readMd(n.file).front.category, '方法論')
         })
     })
 })

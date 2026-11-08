@@ -45,7 +45,7 @@
 import isobj from 'wsemi/src/isobj.mjs'
 import {
     defineMw, applyTaps, makeMsg, count, runChainOverMsgs, stdReport, stageFields, saveClues, byRetryTierFifo, oneline, queueAge,
-    listHolds, putHold, resolveHold, holdKey, retryRequestedOf,
+    listHolds, putHold, resolveHold, holdKey, retryRequestedOf, createPromptFpCache,
 } from '../core/capturePackage.mjs'
 import { PANEL_WHY, PANEL_WHY_LABELS } from '../core/standards/panel.mjs'
 import { conceptVocabulary, tagSuspects } from '../core/vocab/conceptGroups.mjs'
@@ -60,6 +60,8 @@ import { checkNote, noteFeedbackOf } from '../standards/noteStandards.mjs'
 import { createMaterialPolicy } from '../stores/materialPolicy.mjs'
 import { packDocsByChars } from '../stores/packByChars.mjs'
 import { contractOf } from '../stores/noteBuild.mjs'
+import { NOTE_WRITE_STAGE, noteProducedOf, withProducedFront } from '../stores/noteProduced.mjs'
+import { summarizeBenchRole } from '../bench/summarizeBench.mjs'
 import { knownConceptOf } from '../stores/knownConcepts.mjs'
 import { putDocHold, escalateDocHolds, resolveDocHolds, noteHoldDeadlineOf } from '../stores/noteHolds.mjs'
 import { SUMMARIZE_DOC_STATUS, SUMMARIZE_SKIP_KIND, triageReadyOf } from '../stores/docStatus.mjs'
@@ -264,7 +266,9 @@ export const mwGateNote = () => defineMw({
 /**
  * 錨點:persistNote(落地:寫 md(契約有 md 者)＋記錄入庫;同文件已有筆記者不覆寫——改用既有 slug 回鏈,不計新知識;opt.sink 給了即由宿主落地)
  *
- * 讀 msg.data._note({ file, front, body, md, record });寫 msg.data._note.slug(既有筆記時改為其 id;宿主落地回 id 時為之)、_note.existing;
+ * 讀 msg.data._note({ file, front, body, md, record })、_provenance(選;階段給之 { stamp, seat, provider, promptFp?}——有且 provider 非空時,新建之記錄加 produced／
+ * producedHistory／producedHistoryDropped、md front matter 加 produced_stamp／produced_stage／produced_provider 純量鍵;見 stores/noteProduced);
+ * 寫 msg.data._note.slug(既有筆記時改為其 id;宿主落地回 id 時為之)、_note.existing、(有產出鏈時)_note.record／_note.md;
  * 落地為 md 檔(有 md 時)與 stores.notes,或交 opt.sink;不短路(恆呼叫 next)
  *
  * @param {Object} [opt={}] 輸入子階段 opts,非物件則回退為 {}
@@ -314,6 +318,14 @@ export const mwPersistNote = (opt = {}) => {
                 count(msg, 'notesExisting')
                 ctx.log.info(`摘要：文件已有筆記 ${exist.id}，保留既有（不覆寫關聯與衝突章），只回鏈文件`)
                 return next(msg)
+            }
+            // 產出鏈(stores/noteProduced):階段於逐項鏈前給 msg.data._provenance(輪次 stamp、該次摘要呼叫之席位與實際成交條目、提示詞指紋);
+            //   未給(自組鏈、單獨使用本 mw)或成交條目未知者不寫產出鏈,輸出與無此機制時相同。記錄與 md front matter(純量鍵)同時帶,宿主落地(sink)亦收到
+            const pv = msg.data._provenance
+            const prod = isobj(pv) ? noteProducedOf({}, { stage: NOTE_WRITE_STAGE.summarize, stamp: pv.stamp, ai: { seat: pv.seat, provider: pv.provider, promptFp: pv.promptFp }, nowIso: n.nowIso }) : null
+            if (prod) {
+                n.record = { ...n.record, ...prod.patch }
+                if (n.md) n.md = { ...n.md, front: withProducedFront(n.md.front, prod.produced) }
             }
             if (typeof opt.sink === 'function') {
                 const r = await opt.sink({ record: n.record, md: n.md, doc, ctx })
@@ -562,6 +574,23 @@ export function stageSummarize(opt = {}) {
                 const full = Number(doc.fullLength) > 0 ? Number(doc.fullLength) - (Number(doc.dedupedChars) || 0) : textLen
                 const cap = budgetById.has(doc.id) ? budgetById.get(doc.id) : charsPerDoc
                 return { sourceChars: Math.max(textLen, full), processedChars: Math.min(textLen, cap) }
+            }
+            // 產出鏈之提示詞指紋(stores/noteProduced;抓取套件之 createPromptFpCache,一個實例＝本輪本段;評比機制之同一算法:摘要角色之內建題組以現行詞彙與批量組出之
+            //   提示詞,每輪只算一次,首次寫筆記時才算);算不出(題組檔讀不到等)或無題組者省略該欄,不拖垮寫入
+            const fpCache = createPromptFpCache({ onFail: (id, e) => log.info(`摘要：提示詞指紋算不出（${id}：${oneline(e?.message, 80)}），產出鏈省略 promptFp`) })
+            let fpMemo = null
+            const promptFpOnce = () => {
+                if (!fpMemo) {
+                    let v = null
+                    try {
+                        v = fpCache.promptFpOf(summarizeBenchRole, { vocab: domain.vocab, roleOpt: { docsPerCall: batchSize, charsPerDoc } })
+                    }
+                    catch (e) {
+                        log.info(`摘要：提示詞指紋算不出（${oneline(e?.message, 80)}），產出鏈省略 promptFp`)
+                    }
+                    fpMemo = { v }
+                }
+                return fpMemo.v
             }
             // 積壓可見性:raw 池與最舊者天數每輪進日誌;容量＝rounds×parallel×batchSize(巡檢據此判容量不足;不丟)
             const rawAll = await stores.docs.select({ status: st.pending })
@@ -852,7 +881,10 @@ export function stageSummarize(opt = {}) {
                     const chars = charsOf(doc)
                     const g = gatedOf(item, doc) // 與驗證同一判定(確定性;有套用前修補者取修補後之結果):取正規化後之項目與修正紀錄
                     repairedByDoc.delete(doc.id)
-                    const msg = makeMsg('doc', { doc, _aiItem: g.item, _fixes: g.fixes, _source: sourceOf(doc), _domain: domain, _material: material, _chars: chars }, { stage: 'summarize' })
+                    // 產出鏈(stores/noteProduced):本次摘要呼叫之實際成交條目(遞補時為遞補者;未知＝空字串者不寫產出鏈)、席位為設定路徑
+                    const providerId = String(meta.providerId || '')
+                    const provenance = { stamp: ctx.stamp ?? null, seat: 'summarize.ai', provider: providerId, ...(providerId ? { promptFp: promptFpOnce() } : {}) }
+                    const msg = makeMsg('doc', { doc, _aiItem: g.item, _fixes: g.fixes, _source: sourceOf(doc), _domain: domain, _material: material, _chars: chars, _provenance: provenance }, { stage: 'summarize' })
                     const r = await runChainOverMsgs({ chain, ctx, msgs: [msg], chainName: 'summarize.summarize' })
                     if (r.fails) {
                         await bumpChainTries(doc, `逐項鏈異常：${oneline(r.errors.join('；'), 150)}`)

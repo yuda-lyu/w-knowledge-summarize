@@ -20,6 +20,7 @@ import isarr from 'wsemi/src/isarr.mjs'
 import { externalDocOf, oneline } from '../core/capturePackage.mjs'
 import { writeMd } from '../core/md/md.mjs'
 import { buildNote } from '../stores/noteBuild.mjs'
+import { NOTE_WRITE_STAGE, noteProducedOf, withProducedFront } from '../stores/noteProduced.mjs'
 import { knownConceptOf } from '../stores/knownConcepts.mjs'
 import { SUMMARIZE_DOC_STATUS } from '../stores/docStatus.mjs'
 import { gateNoteItem } from '../standards/noteGate.mjs'
@@ -38,6 +39,7 @@ import { checkNote, noteFeedbackOf } from '../standards/noteStandards.mjs'
  * @param {Object} deps.clock 輸入時鐘物件(wsemi 之 genClockTZ 產物)
  * @param {Object} deps.domain 輸入領域物件(createSummarizeDomain 產物)，取 normalizeQuality／renderNoteBody／vocab
  * @param {Object} deps.identity 輸入去重身分(總組裝之 info().identity;文件 id 與管線同一身分,檔頭)
+ * @param {String} [deps.stamp] 輸入產出鏈所記之輪次 stamp(14 碼;匯入屬輪次外之維運,未給＝null)
  * @param {Array} items 輸入入庫項目陣列，各項形狀為 { url, sourceId?, sourceName?, publishedAt?, textFrom?, note:{ title, key_points, concepts, ...同摘要輸出欄位 } }
  * @returns {Promise} 回傳 Promise，resolve 回傳 { added:Integer, dup:Integer, bad:Integer, messages:Array }
  * @throws {Error} deps 非物件或缺 stores／dirs／clock／domain／identity 任一者時拋出；items 非陣列時拋出
@@ -113,8 +115,12 @@ export async function ingestNotes(deps, items) {
         }
         if (n.categoryRaw) messages.push(`! 類別「${oneline(n.categoryRaw, 20)}」不在分類清單，落「${n.category}」（原值存 categoryRaw）：${oneline(k.title, 50)}`)
 
+        // 產出鏈(stores/noteProduced):人工／代理匯入不呼叫 AI → seat／provider 皆 null;輪次外 stamp 為 null(deps.stamp 給了者記之);stage 為 ingest
+        const prod = noteProducedOf({}, { stage: NOTE_WRITE_STAGE.ingest, stamp: deps.stamp ?? null, nowIso })
+        if (prod) n.record = { ...n.record, ...prod.patch }
+
         // 寫入順序:筆記先、文件後(檔頭)
-        writeMd(n.file, n.front, n.body)
+        writeMd(n.file, prod ? withProducedFront(n.front, prod.produced) : n.front, n.body)
         await stores.notes.insertNew([n.record])
         if (exists) await stores.docs.patch(docId, { status: SUMMARIZE_DOC_STATUS.noted, noteSlug: n.slug, notedAt: nowIso })
         else await stores.docs.insertNew([{ ...base, status: SUMMARIZE_DOC_STATUS.noted, noteSlug: n.slug, notedAt: nowIso }])

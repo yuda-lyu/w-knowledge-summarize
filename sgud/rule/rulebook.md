@@ -10,7 +10,7 @@
 | 檔 | 內容 |
 |---|---|
 | `rulebook_general.md` | GEN-01 英文名唯一、02 領域中立、03 設定分段與驗證、04 只放新格式、06 模組邊界、07 hook 錨點全集、09 測試以檔案位置定根、10 抓取之知識取自抓取套件、11 只依賴抓取套件且領域中立、15 評比總表在套件根、16 評分命令列與角色小件各一份、18 自有套件匯入指定詞（含測試件發布面、模組私有標記之單例）、19 共用件之歸屬、20 泛用開源套件與語言設定、21 跨套件收斂之共用件、22 測試件之共用與守門、24 抓取依賴為 npm 套件、25 傳給 wsemi 計算類函數之字數值先判定再取值 |
-| `rulebook_summarize.md` | SUM-01～14（預篩、摘要納入閘、長文、分類法重標、內容同步、素材退回、失敗重開、預篩與摘要扣保留給後段之時間） |
+| `rulebook_summarize.md` | SUM-01～15（預篩、摘要納入閘、長文、分類法重標、內容同步、素材退回、失敗重開、預篩與摘要扣保留給後段之時間、筆記之產出鏈 produced 與依之選件） |
 | `rulebook_standards.md` | STD-00、01、02、03、04、05、07、10、13、14、16、17、22、25、26、28、29（標準框架、數字紮根、納入閘、待判登錄、判定小組與題組、預篩第二席確認 SS5、忠實性覆核 SS14、存量處置與回退、持久檔語意） |
 
 ## 已移出
@@ -42,6 +42,7 @@
 10. **編譯清單與 JSDoc**：`toolg/gDistRollup.mjs` 之 external／globals 自 `src/WKnowledgeSummarize.mjs` 之 import 圖（含經抓取套件再引用之自有套件原始碼）盤點，`opencc-js/dict/*` 須打包；`src/` 每個匯出函數皆有說明、`@param`、`@returns`、`@example`（範例之 `// =>` 為實跑輸出）。盤點指令見下表。
 11. **傳給 wsemi 計算類函數之值先判定、再取值**（GEN-25，2026-11-02）：字數類 opt（`summarizeCharsPerDoc`、`triageCharsPerDoc`、`longDocChars`）與逐篇 `budgets[i]` 以 `iseint(v, { use: 'count', min: 1 })` 判定、再 `Number(v)` 取值，非預期（含 `Infinity`、`'0x10'`、包裝物件、逾 4294967295 者）改用預設，不再 `ispint`→`cint`（`cint(Infinity)` 為 `Number.MAX_VALUE`）；對使用端之行為變化僅限非預期值。守門：`unit-summarize-charcount`（含 wsemi 第 3 輪嚴格版 `strTruncate` 替身下不拋錯、站點全集）。
 12. **預篩、摘要、重標三段皆扣保留給後段之時間**（SUM-14，2026-11-05）：`opt.reserveMs` 明給者優先、未給取 `ctx.deps.reserveMs`、皆未給為 0（取值規則取抓取套件之 `reserveMsOf`，本套件不讀他工作之設定）；保留 > 0 時各段開工前與每輪開工前判「扣保留後剩餘 ≥ 該席位一次呼叫之估計」（`summarizeCallMsOf`），每次呼叫以「剩餘−保留」封頂；時間不足是少做幾輪、不縮容量鍵，文件留池，`detail.deferred`；保留為 0 時行為與現版完全相同。守門：`unit-summarize-reserve`、`unit-summarize-reserve-gate`、`unit-summarize-log-contract`。
+13. **筆記之產出鏈**（SUM-15，2026-11-08；規格為跨套件之「知識套件之產出鏈」）：落筆記之站點（摘要新建、人工匯入、分類法重標、同步入口與存量處置之確定性修正）一律經 `stores/noteProduced.noteProducedOf` 組出，記錄加 `produced`／`producedHistory`（上限 50）／`producedHistoryDropped`，md front matter 只加純量鍵 `produced_stamp`／`produced_stage`／`produced_provider`；`provider` 取該次呼叫之 `providerId`（遞補者），成交條目未知者不寫；不呼叫 AI 者 seat／provider 皆 null；寫入記錄經 `patchNoteRecord`（深合併殘留之先清後寫）；依之選件 `ops/notesByProvenance`（純讀）。新增落筆記之站點須經 `noteProducedOf` 並登記於 SUM-15 站點表。守門：`unit-summarize-provenance`、`unit-flow-summarize-provenance`、`unit-summarize-retag`／`-sync`／`-stockfix` 之〈產出鏈〉組。
 
 ## 盤點指令與判準
 
@@ -55,10 +56,11 @@
 | 文件 | `node node_modules/jsdoc/jsdoc.js -c .jsdoc`、`node toolg/gDocsExams.mjs` | 皆 exit 0；JSDoc 覆蓋 100%（匯出函數之說明、`@param`、`@returns`、`@example`） |
 | 整輪預算之站點（SUM-14） | `git grep -nE "budgetOf\(\|budget\.(remainingMs\|shouldStop)" -- src`、`git grep -nE "reserveGateOf\|reserveFnOf" -- src/stages` | 前者只見 `core/stages/stageReserve.mjs`（閘之底層）與 `createKnowledgeSummarize.mjs` 註解，各段不得直接用整輪預算；後者見 `triageStage`、`noteStage` 各自建閘（重標用抓取套件之 `reserveOf`，既有） |
 | wsemi 計算類函數之傳入值 | `git grep -nE "strTruncate\(\|interp1\(\|arrGroupByMaxmin\(\|arrLookupByMaxmin\(" -- src`、`git grep -nE "\bcint\(\|import cint" -- src/domain` | 前者只 `domain/{triage,retag,note,digest}Domain.mjs` 之 9 處（`maxLen` 為字面值或 `iseint` 判定後之變數）、`interp1` 等 0 處；後者 0 命中（GEN-25；`unit-summarize-charcount` ③） |
+| 落筆記之站點（SUM-15） | `git grep -nE "writeMd\(\|notes\.(patch\|insertNew)\(\|patchNoteRecord\(" -- src`、`git grep -nE "noteProducedOf\(" -- src` | 前者之站點（`noteStage`、`ingestNotes`、`retagStage`、`syncNotes`、`stockFix`、`notePatch` 本體、`noteBuild`／`noteRestoreGate` 只組或回傳）皆見於 SUM-15 站點表；後者五處各一（`noteStage`、`ingestNotes`、`retagStage`、`syncNotes`、`stockFix`）＋定義 |
 | 下游回歸 | 下游套件全套＋使用端全套 | 0 失敗 |
 
 ## 測試清單（`test/`）
 
 - 核心與結構：`unit-core`、`unit-settings`、`unit-vocab`、`unit-evidence`、`unit-summarize-entry`、`unit-summarize-package`、`unit-summarize-contract`、`unit-summarize-registry`、`unit-summarize-log-contract`、`unit-summarize-locale`、`unit-summarize-assembly`、`unit-summarize-object`
-- 子階段與判定：`unit-summarize-stages`、`unit-flow-summarize`、`unit-ai-batch`、`unit-summarize-domain`、`unit-summarize-material`、`unit-summarize-digest`、`unit-summarize-faith`、`unit-summarize-retag`、`unit-summarize-sync`、`unit-summarize-repair`、`unit-summarize-standards`、`unit-summarize-audit`、`unit-summarize-stockfix`、`unit-summarize-holds`、`unit-summarize-stores`、`unit-summarize-ops`、`unit-summarize-charcount`（GEN-25：字數類 opt／逐篇 budgets 之判定、wsemi 第 3 輪嚴格版 `strTruncate` 替身〔`test/tools/strictWsemi*.mjs`、`strictProbe.mjs`、`charCountKit.mjs`〕、站點全集）、`unit-summarize-reserve`、`unit-summarize-reserve-gate`（SUM-14：預篩與摘要扣保留給後段之時間）
+- 子階段與判定：`unit-summarize-stages`、`unit-flow-summarize`、`unit-ai-batch`、`unit-summarize-domain`、`unit-summarize-material`、`unit-summarize-digest`、`unit-summarize-faith`、`unit-summarize-retag`、`unit-summarize-sync`、`unit-summarize-repair`、`unit-summarize-standards`、`unit-summarize-audit`、`unit-summarize-stockfix`、`unit-summarize-holds`、`unit-summarize-stores`、`unit-summarize-ops`、`unit-summarize-charcount`（GEN-25：字數類 opt／逐篇 budgets 之判定、wsemi 第 3 輪嚴格版 `strTruncate` 替身〔`test/tools/strictWsemi*.mjs`、`strictProbe.mjs`、`charCountKit.mjs`〕、站點全集）、`unit-summarize-reserve`、`unit-summarize-reserve-gate`（SUM-14：預篩與摘要扣保留給後段之時間）、`unit-summarize-provenance`、`unit-flow-summarize-provenance`（SUM-15：筆記之產出鏈、深合併、選件、預篩確認之票）
 - 評分：`unit-summarize-bench`；真 AI：`api-summarize-bench-ai`

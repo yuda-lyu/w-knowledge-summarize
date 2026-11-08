@@ -21,8 +21,11 @@
 
 import path from 'path'
 import isobj from 'wsemi/src/isobj.mjs'
-import { stdReport, stageFields, rejectChainOpts, reserveOf, reserveMsOf, oneline } from '../core/capturePackage.mjs'
+import { stdReport, stageFields, rejectChainOpts, reserveOf, reserveMsOf, oneline, createPromptFpCache } from '../core/capturePackage.mjs'
 import { runAiBatchStage } from '../core/stages/aiBatchStage.mjs'
+import { NOTE_WRITE_STAGE, noteProducedOf, withProducedFront } from '../stores/noteProduced.mjs'
+import { patchNoteRecord } from '../stores/notePatch.mjs'
+import { retagBenchRole } from '../bench/summarizeBench.mjs'
 import { SUMMARIZE_CTX_FLAGS } from '../logContract.mjs'
 import { readMd, writeMd, sectionOf } from '../core/md/md.mjs'
 import { NOTE_SECTION_TITLES } from '../core/md/noteContent.mjs'
@@ -50,14 +53,15 @@ const describe = (j) => `${retagJobLabelOf(j)}${j.kind === 'rename' ? '（機械
  * @param {String} file 輸入 md 路徑
  * @param {Object} f 輸入 RENAME_FIELDS 之一項
  * @param {String} value 輸入新值
+ * @param {Object} [produced] 輸入記錄現值之 produced(給了即同時以其純量鍵更新 front matter 之 produced_*;md 為記錄之投影,修補時依記錄現值)
  * @throws {Error} 檔案不存在、讀寫失敗或回驗不符時拋出
  */
-function rewriteMdField(file, f, value) {
+function rewriteMdField(file, f, value, produced) {
     const md = readMd(file)
     if (!md) throw new Error('md 不存在或無法讀取')
     // 品質章之行:「- 內容類型：X」「- 證據等級：X（說明）」——整行之值改寫至「（」或行尾(taxonomy.rewriteFieldOf;存量修正同一實作)
     const { front, body } = rewriteFieldOf(md, f, value)
-    writeMd(file, front, body)
+    writeMd(file, produced ? withProducedFront(front, produced) : front, body)
     if (readMd(file)?.front?.[f.front] !== value) throw new Error('md 回驗不符')
 }
 
@@ -189,16 +193,20 @@ export function stageRetag(opt = {}) {
              * @param {String} field 輸入欄位('category'|'claimType'|'evidenceLevel')
              * @param {String} to 輸入新值
              */
-            const applyChange = async (note, field, to) => {
+            const applyChange = async (note, field, to, ai = null) => {
                 const f = RENAME_FIELDS[field]
                 const patch = { [f.record]: to, tagChangedAt: nowIso }
                 if (field === 'category' && note.categoryRaw === to) patch.categoryRaw = null // 提案已被採納
-                await stores.notes.patch(note.id, patch)
+                // 產出鏈(stores/noteProduced):機械改寫(ai 未給;stage standards-fix)seat／provider 為 null;AI 重判(stage retag)帶席位與實際成交條目
+                //   (成交條目未知者不寫產出鏈);記錄與 md front matter(純量鍵)同時更新
+                const prod = noteProducedOf(note, { stage: ai ? NOTE_WRITE_STAGE.retag : NOTE_WRITE_STAGE.retagMech, stamp: ctx.stamp ?? null, ai, nowIso })
+                if (prod) Object.assign(patch, prod.patch)
+                await patchNoteRecord(stores.notes, note, patch, { verify: [], label: '重標' })
                 const back = await stores.notes.get(note.id)
                 if (back?.[f.record] !== to) throw new Error(`筆記 ${note.id} 之 ${f.record} 寫入後回驗不符`)
                 changed++
                 try {
-                    rewriteMdField(note.file, f, to)
+                    rewriteMdField(note.file, f, to, prod?.produced)
                 }
                 catch (e) {
                     det.mdFailed++
@@ -214,7 +222,7 @@ export function stageRetag(opt = {}) {
                     const note = await stores.notes.get(s.id)
                     if (!note) continue
                     try {
-                        rewriteMdField(note.file, RENAME_FIELDS[s.field], note[RENAME_FIELDS[s.field].record])
+                        rewriteMdField(note.file, RENAME_FIELDS[s.field], note[RENAME_FIELDS[s.field].record], note.produced)
                         det.mdRepaired++
                     }
                     catch {
@@ -244,6 +252,24 @@ export function stageRetag(opt = {}) {
             let aiLeft = aiCap
             let aiCalls = 0
             const baseCall = (p, c, o) => ai.callJson(p, c, { spec: summarizeSeatOf(settings.summarize, 'retag'), ...o })
+            // 產出鏈之席位(設定路徑;未設重標席位即沿用摘要席位)與提示詞指紋(重標角色之內建題組以現行詞彙與批量組出之提示詞;每輪只算一次,首次 AI 改寫時才算;
+            //   算不出者省略)
+            const seatLabel = settings.summarize?.retag?.ai ? 'summarize.retag.ai' : 'summarize.ai'
+            const fpCache = createPromptFpCache({ onFail: (id, e) => log.info(`分類法：提示詞指紋算不出（${id}：${oneline(e?.message, 80)}），產出鏈省略 promptFp`) })
+            let fpMemo = null
+            const promptFpOnce = () => {
+                if (!fpMemo) {
+                    let v = null
+                    try {
+                        v = fpCache.promptFpOf(retagBenchRole, { vocab, roleOpt: { batch: batchSize } })
+                    }
+                    catch (e) {
+                        log.info(`分類法：提示詞指紋算不出（${oneline(e?.message, 80)}），產出鏈省略 promptFp`)
+                    }
+                    fpMemo = { v }
+                }
+                return fpMemo.v
+            }
             // 陣列輸出:逐次截斷放行(檔頭)
             const callAI = (p, c) => (opt.callAI || baseCall)(p, c, { shouldStop: () => !timeOk(), budgetMs: sub.remainingMs(), acceptTruncated: true })
             const done = []
@@ -317,14 +343,16 @@ export function stageRetag(opt = {}) {
                     isValidItem: (it, batch) => domain.isValidItem(it, batch.length),
                     indexOf: (it) => it.index,
                     callAI,
-                    applyItem: async (item, n) => {
+                    applyItem: async (item, n, meta = {}) => {
                         aiLeft--
                         det.aiJudged++
                         // 新增類別之工作:非落點筆記之平移不採(taxonomy.retagTargetOf;維持原類別)
                         const to = retagTargetOf(job, n, item.category, cur)
                         if (to !== item.category) det.aiLateral++
                         if (to !== n.category) {
-                            await applyChange(n, 'category', to)
+                            // 產出鏈:本批 AI 呼叫之實際成交條目(遞補時為遞補者)
+                            const providerId = String(meta.providerId || '')
+                            await applyChange(n, 'category', to, { seat: seatLabel, provider: providerId, ...(providerId ? { promptFp: promptFpOnce() } : {}) })
                             det.aiChanged++
                         }
                         else det.aiKept++

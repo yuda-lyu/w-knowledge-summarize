@@ -28,6 +28,7 @@ import { syncFieldsOf, syncHashOf, recordPatchOf, diffLabelOf } from '../stores/
 import { knownConceptOf } from '../stores/knownConcepts.mjs'
 import { syncNoteHolds, resolveNoteHolds } from '../stores/noteHolds.mjs'
 import { patchNoteRecord } from '../stores/notePatch.mjs'
+import { NOTE_WRITE_STAGE, noteProducedOf, withProducedFront } from '../stores/noteProduced.mjs'
 import { noteFixOf, NOTE_FIX_STDS } from './noteStockFix.mjs'
 import { checkNote, noteMaterialOf, standardsVocabOf, NOTE_STANDARDS } from '../standards/noteStandards.mjs'
 
@@ -80,7 +81,8 @@ function syncVocabOf(deps) {
  *
  * @param {Object} deps 輸入 { stores:{ notes, docs?, docTexts?, cores?, holds? }, dirs:{state}, clock, log, vocab?(或 domains.summarize.vocab;
  *   給了須為 resolveSummarizeVocab 之產物), locale?(語言設定;每輪依賴之 deps.locale——SS3 之判定與修正依之,未給＝臺灣正體) }
- * @param {Object} [opt={}] 輸入 { all:Boolean(忽略水位全量讀), nowMs:Number(測試注入), ids:Array(只掃這些筆記) }
+ * @param {Object} [opt={}] 輸入 { all:Boolean(忽略水位全量讀), nowMs:Number(測試注入), ids:Array(只掃這些筆記),
+ *   stamp:String(確定性修正寫入之產出鏈所記輪次 stamp——stageSync 給 ctx.stamp;輪次外之維運呼叫不給＝null) }
  * @returns {Promise} 回傳 Promise，resolve 回傳 { scanned, read, backfilled, changed, mdMissing, touchExtracted, stdFixed, stdHeld, stdResolved,
  *   changedIds, missingSample }(touchExtracted＝變更之筆記中已有下游處理時刻 extractedAt 者)
  * @throws {Error} 詞彙表給了而非本套件解析後之詞彙表、或寫入後回驗不符時拋出
@@ -199,8 +201,10 @@ export async function syncNotes(deps, opt = {}) {
         // ①確定性修正(與存量處置同一函數;只動內容章、連結網址不轉)。既有概念取本次已讀之筆記記錄＋核心(不再全表讀一次筆記)
         if (!knownConcept) knownConcept = await knownConceptOf({ notes: { select: async () => notes }, cores: stores.cores })
         const fix = noteFixOf(md, n, { stds: NOTE_FIX_STDS, vocab, knownConcept, locale: deps.locale })
+        // 產出鏈(stores/noteProduced):只有確定性修正真的改寫了內容才記(stage standards-fix、不呼叫 AI);使用者之編修照實同步回記錄,不算本套件之產出
+        const prod = fix.changes.length ? noteProducedOf(n, { stage: NOTE_WRITE_STAGE.syncFix, stamp: opt.stamp ?? null, nowIso }) : null
         if (fix.changes.length) {
-            writeMd(n.file, fix.front, fix.body)
+            writeMd(n.file, prod ? withProducedFront(fix.front, prod.produced) : fix.front, fix.body)
             const back = readMd(n.file)
             if (!back || back.front?.title !== fix.front.title) throw new Error(`筆記 ${n.id} 之同步修正寫入 md 後回驗不符`)
             md = back
@@ -215,6 +219,7 @@ export async function syncNotes(deps, opt = {}) {
             syncHash: h,
             knowledgeChangedAt: nowIso,
             ...(fix.changes.length ? { stdFixes: [...(isarr(n.stdFixes) ? n.stdFixes : []), ...fix.changes.map((c) => `同步 ${c.std}：${c.what}`.slice(0, 120))].slice(-20) } : {}),
+            ...(prod ? prod.patch : {}),
         }
         // ②③判定與待判(不擋同步;判定以將寫入之記錄值為準)
         await judge({ ...n, ...patch }, md)

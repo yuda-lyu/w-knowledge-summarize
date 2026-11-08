@@ -65,7 +65,8 @@ export function stageSync(opt = {}) {
             const { stores, dirs, clock } = ctx.deps
             const log = ctx.log
             // 語言設定(每輪依賴 deps.locale;與納入閘同一來源):同步路徑之 SS3 判定與確定性修正依之,非繁體中文不轉字形
-            const det = await syncNotes({ stores, dirs, clock, log, vocab: ctx.deps.domains?.summarize?.vocab || ctx.deps.vocab, locale: ctx.deps.locale })
+            //   輪次 stamp(ctx.stamp)交 syncNotes:確定性修正寫入之產出鏈(stores/noteProduced)記之;輪次外為 null
+            const det = await syncNotes({ stores, dirs, clock, log, vocab: ctx.deps.domains?.summarize?.vocab || ctx.deps.vocab, locale: ctx.deps.locale }, { stamp: ctx.stamp ?? null })
             if (det.mdMissing > 0) log.warn(`筆記同步：${det.mdMissing} 篇筆記之 md 讀不到（記錄仍在；例 ${det.missingSample.join('、')}）——不自動視為刪除，請還原 md，或確認不要後明示刪除其記錄`)
             if (det.backfilled > 0) log.info(`筆記同步：回填同步雜湊 ${det.backfilled} 篇（首見，不視為變更）`)
             if (det.stdFixed + det.stdHeld + det.stdResolved > 0) log.info(`筆記同步之檢定標準：確定性修正 ${det.stdFixed} 篇、登錄待判 ${det.stdHeld} 項、待判結案 ${det.stdResolved} 項`)

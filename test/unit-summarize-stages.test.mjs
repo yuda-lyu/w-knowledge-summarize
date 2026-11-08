@@ -574,14 +574,21 @@ describe('unit-summarize-stages', function() {
             const [a] = await notes1.select()
             const [b] = await notes2.select()
             // 唯一差異:摘要路徑記 AI 讀取之處理範圍(sourceChars／processedChars),人工匯入無此資訊而標 sourceKind:'manual'(不檢數字紮根,檢定標準 SS4)
-            const strip = ({ sourceChars, processedChars, sourceKind, ...x }) => ({ ...x, file: path.basename(x.file) })
+            //   產出鏈(stores/noteProduced;跨套件規格之 produced):人工匯入寫 produced(不呼叫 AI:seat／provider 皆 null;stage 為 ingest),
+            //   而本案之摘要路徑以覆寫之 callAI 作答、未回 providerId(成交條目未知)→ 不寫產出鏈(寧缺勿假)。兩者除產出鏈之欄外仍同一份
+            const strip = ({ sourceChars, processedChars, sourceKind, produced, producedHistory, producedHistoryDropped, ...x }) => ({ ...x, file: path.basename(x.file) })
             assert.deepEqual([a.sourceChars, a.processedChars, 'sourceChars' in b, b.sourceKind, 'sourceKind' in a], [1, 1, false, 'manual', false])
+            assert.deepEqual([a.produced, a.producedHistory], [undefined, undefined], '成交條目未知之摘要路徑不寫產出鏈')
+            assert.deepEqual([b.produced.stage, b.produced.seat, b.produced.provider, b.produced.stamp, b.producedHistory.length, b.producedHistoryDropped], ['ingest', null, null, null, 1, 0], '人工匯入:不呼叫 AI → seat／provider 皆 null,輪次外 stamp 為 null')
             assert.deepEqual(strip(b), strip(a))
             assert.deepEqual(a.concepts, ['概念甲', '2'], '只收字串／數字、trim、濾空(物件不成 [object Object])')
             assert.equal(a.category, '方法', '類別去頭尾空白')
             const ma = readMd(a.file)
             const mb = readMd(b.file)
-            assert.deepEqual(mb.front, ma.front)
+            // md front matter 只多產出鏈之純量鍵(值為 null 者省略):人工匯入之 stamp、provider 皆 null → 只有 produced_stage
+            const { produced_stage: ps, ...frontB } = mb.front
+            assert.equal(ps, 'ingest')
+            assert.deepEqual(frontB, ma.front)
             assert.equal(mb.body, ma.body)
         })
 

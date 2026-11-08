@@ -18,6 +18,8 @@
 //   (不是攔下)。確認席關閉(開過再關)時,既有待確認者依關閉後之語意(預篩席單席判無關即攔下)轉攔下(skipReason 註明「確認席已關閉」;
 //   計 confirmClosed)——否則永遠擱淺:預篩池只取無 triage 者、確認只在開啟時跑、摘要只取 relevant。開啟而缺確認席 first → 拋錯(功能表
 //   SUMMARIZE_FEATURES 之單一判定,與忠實性覆核同):不可當成關閉——那會把待確認者依單席之判定攔下。
+//   【稽核列】確認小組做成決定者(兩席攔下、被推翻放行、不一致放行)於文件記錄寫 triageVotes:[{ seat, provider, verdict }](產出鏈規格 §3 之 votes 同形;
+//   seat 為 triage／confirm／third,provider 為該席實際成交之條目);預篩席單獨之判定(未走確認)仍只記 triageRejectBy(攔下待確認時)。
 // 【退路之 domain】未給 opt.domain 且 deps.domains.triage 缺者,以已解析之 deps.vocab(無則取 deps.data.vocab 中本套件所讀之鍵)現建。
 // 【時間:扣保留給後段之時間(core/stages/stageReserve)】opt.reserveMs 明給者優先、未給取每輪依賴 ctx.deps.reserveMs、皆未給為 0(由組裝者注入,本段不讀他工作
 //   之設定)。保留 > 0 時:開工前、批次調度每輪(wave)開工前、第二席確認之每批開工前,皆判「扣保留後剩餘 ≥ 該席位一次呼叫之估計(鏈首家之單次逾時)」,
@@ -319,8 +321,15 @@ export function stageTriage(opt = {}) {
                         if (waitThird.has(k)) continue
                         const dec = decidePanel(votes[k])
                         const now = clock.iso8()
+                        // 判定小組之稽核列落文件記錄(產出鏈規格 §3 之 votes[{ seat, provider, verdict }] 同形;各票之 provider 為該席實際成交之條目):
+                        //   做成決定者(攔下／推翻／不一致放行)才記,供事後依成交條目追溯預篩攔下之判定
+                        const triageVotes = votes[k].map((v) => ({ seat: v.seat, provider: v.provider, verdict: v.verdict }))
+                        // 集合 patch 為深合併(陣列依索引):文件已有舊票(被外部重置 triage 後再度做成決定)而新票較少時,舊索引會殘留 → 先清為 null 再寫
+                        if ((dec.status === 'decided' || dec.why === PANEL_WHY.DISAGREE || dec.why === PANEL_WHY.UNSURE) && Array.isArray(d.triageVotes) && d.triageVotes.length) {
+                            await stores.docs.patch(d.id, { triageVotes: null })
+                        }
                         if (dec.status === 'decided' && dec.verdict === 'irrelevant') {
-                            await stores.docs.patch(d.id, { triage: TRIAGE_STATE.irrelevant, status: SUMMARIZE_DOC_STATUS.skip, skipKind: material.problemOf(d.triageRejectReason || '') ? SUMMARIZE_SKIP_KIND.material : SUMMARIZE_SKIP_KIND.triage, skipReason: `${TRIAGE_SKIP_PREFIX}${d.triageRejectReason || domain.reasonOf({})}（兩席確認）`, notedAt: now, triageConfirmedAt: now })
+                            await stores.docs.patch(d.id, { triage: TRIAGE_STATE.irrelevant, status: SUMMARIZE_DOC_STATUS.skip, skipKind: material.problemOf(d.triageRejectReason || '') ? SUMMARIZE_SKIP_KIND.material : SUMMARIZE_SKIP_KIND.triage, skipReason: `${TRIAGE_SKIP_PREFIX}${d.triageRejectReason || domain.reasonOf({})}（兩席確認）`, notedAt: now, triageConfirmedAt: now, triageVotes })
                             cf.confirmed++
                             log.info(`預篩：攔下[${oneline(d.title, 40)}]（${d.triageRejectReason || ''}；兩席確認）`)
                         }
@@ -328,7 +337,7 @@ export function stageTriage(opt = {}) {
                             // 成立相關、或判不了 → 放行交摘要(摘要以全文再判相關性;不誤殺)
                             // 未成立原因之字樣取判定小組之字樣表(PANEL_WHY_LABELS;不確定與不一致各自照實寫)
                             const why = PANEL_WHY_LABELS[dec.why] || dec.why
-                            await stores.docs.patch(d.id, { triage: TRIAGE_STATE.relevant, triagedAt: now, lastError: dec.status === 'decided' ? `預篩攔下被第二席推翻（${d.triageRejectReason || ''}）` : `預篩攔下之第二席確認判不了（${why}），放行交摘要（${d.triageRejectReason || ''}）` })
+                            await stores.docs.patch(d.id, { triage: TRIAGE_STATE.relevant, triagedAt: now, lastError: dec.status === 'decided' ? `預篩攔下被第二席推翻（${d.triageRejectReason || ''}）` : `預篩攔下之第二席確認判不了（${why}），放行交摘要（${d.triageRejectReason || ''}）`, triageVotes })
                             if (dec.status === 'decided') cf.overturned++
                             else cf.confirmUndetermined++
                             log.info(`預篩：放行[${oneline(d.title, 40)}]（預篩席判無關而${dec.status === 'decided' ? '第二席判相關、成立' : `判定小組判不了（${why}）`}，交摘要再判）`)

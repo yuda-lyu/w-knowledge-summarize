@@ -47,4 +47,6 @@ export {
     typeName, chunk, groupBy, vocabKeyOf, inputVocabProblemsOf, domainNeedsOf, noVerdict, benchPintOf, batchOption,
     // ── ⑨ 日誌契約:核心件(總組裝共用件之每輪序列、AI 調度層之事件、本機網路判斷)所發之字樣(本套件之契約以之組成)──
     CORE_LOG_KNOWN, CORE_LOG_MUST_SEE,
+    // ── ⑩ 產出鏈共用件(跨套件規格「知識套件之產出鏈」§5):produced 之組出與追加、套件版、提示詞指紋之輪次快取──
+    makeProduced, appendProduced, pkgIdOf, createPromptFpCache,
 } from 'w-knowledge-capture/src/WKnowledgeCapture.mjs'

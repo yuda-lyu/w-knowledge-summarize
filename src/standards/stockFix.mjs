@@ -42,6 +42,7 @@ import { syncFieldsOf, syncHashOf, recordPatchOf } from '../stores/noteSync.mjs'
 import { knownConceptOf } from '../stores/knownConcepts.mjs'
 import { noteHoldDeadlineOf, NOTE_HOLD_NEXT } from '../stores/noteHolds.mjs'
 import { patchNoteRecord } from '../stores/notePatch.mjs'
+import { NOTE_WRITE_STAGE, noteProducedOf, withProducedFront } from '../stores/noteProduced.mjs'
 
 /** 修不了者之待判物件(與筆記同步入口之筆記待判同一物件:同步重驗合格即結案) */
 const HOLD_OBJECT = 'note'
@@ -287,6 +288,7 @@ export async function planNoteStockFix(deps, opt = {}) {
  * @param {Object} [opt={}] 輸入設定物件
  * @param {String} [opt.at] 輸入處置時刻 ISO(帳列之 at、待判之登錄時刻;預設 clock.iso8() 或現在)
  * @param {String} [opt.ledgerFile] 輸入處置帳(JSONL)絕對路徑(未給為 deps.dirs.state 下之 STOCK_LEDGER_FILE)
+ * @param {String} [opt.stamp] 輸入產出鏈所記之輪次 stamp(14 碼;維運呼叫屬輪次外,未給＝null)
  * @returns {Promise} 回傳 Promise,resolve 回傳 { at,
  *   applied:[{ id, stds, titleChanged, contentChanged, consumed, conceptKeys:{ removed, added } }](供呼叫端連鎖下游),
  *   counts:{ 標準: 篇數, held?: 新登錄之待判數 }, held:[{ key, id, std }](新登錄之待判), alreadyHeld:Array(已有未結或已豁免之登錄鍵),
@@ -336,14 +338,19 @@ export async function applyNoteStockFix(deps, plan, opt = {}) {
                 stale.push(id)
                 continue
             }
+            // 產出鏈(stores/noteProduced):確定性修正(stage standards-fix、不呼叫 AI、輪次外 stamp 為 null——opt.stamp 給了者記之)隨處置寫入記錄與 md front matter 純量鍵;
+            //   兩者皆為處置所改之單位,入帳列之 before／after,回退時一併還原(處置前不存在者刪除)
+            const prod = noteProducedOf(rec, { stage: NOTE_WRITE_STAGE.stockFix, stamp: opt.stamp ?? null, nowIso: at })
+            const frontNew = prod ? withProducedFront(fix.front, prod.produced) : fix.front
             // 新 md 之全文與同步欄位寫前即定(帳列須先於記錄之寫入)
-            const text = mdText(fix.front, fix.body)
+            const text = mdText(frontNew, fix.body)
             const f = syncFieldsOf(mdOf(text))
             const patch = {
                 ...fix.recordPatch,
                 ...recordPatchOf(f),
                 ...(rec.syncHash ? { syncHash: syncHashOf(f) } : {}),
                 stdFixes: [...(isarr(rec.stdFixes) ? rec.stdFixes : []), ...fix.changes.map((c) => `存量 ${c.std}：${c.what}`.slice(0, 120))].slice(-20),
+                ...(prod ? prod.patch : {}),
             }
             // 帳列只記實際修改之單位(檔頭【處置帳】):md 之單位、記錄之非同步欄位(處置前不存在者不列於 before)
             const u = changedUnitsOf(md, mdOf(text))
@@ -351,7 +358,7 @@ export async function applyNoteStockFix(deps, plan, opt = {}) {
             const recBefore = Object.fromEntries(own.filter((k) => rec[k] !== undefined).map((k) => [k, rec[k]]))
             const recAfter = Object.fromEntries(own.map((k) => [k, patch[k]]))
             const stds = [...new Set(fix.changes.map((c) => c.std))]
-            writeMd(rec.file, fix.front, fix.body)
+            writeMd(rec.file, frontNew, fix.body)
             // 即記帳(其後之回驗或記錄寫入失敗亦可依帳回退);kca:處置前之 knowledgeChangedAt(連鎖斷言:形式修正不得寫內容變更時刻)
             log({
                 object: 'note', id, stds, changes: fix.changes, titleChanged: fix.titleChanged, contentChanged: fix.contentChanged, body: u.body,

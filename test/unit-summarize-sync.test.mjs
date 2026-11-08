@@ -410,4 +410,68 @@ describe('unit-summarize-sync', function() {
             assert.deepEqual([rep2.detail.stdFixed, readMd(e2.file()).front.title], [1, '動量因子之風險'])
         })
     })
+
+    // ══════════════════════════ 產出鏈(stores/noteProduced;跨套件之產出鏈規格 §3、§4;使用端需求見 Gitea #107)══════════════════════════
+    // 同步入口之確定性修正有寫回 md 者為一次改寫:記產出鏈(stage standards-fix、不呼叫 AI → seat／provider 皆 null、stamp＝呼叫端給之輪次 stamp〔stageSync 取 ctx.stamp〕)
+    //   並更新 md 之純量鍵;使用者之編修照實同步回記錄而本套件未改寫者,不是本套件之產出,不記
+    describe('產出鏈', function() {
+
+        const STAMP = '20261108200009'
+        const frontProduced = (file) => Object.fromEntries(Object.entries(readMd(file).front).filter(([k]) => k.startsWith('produced')))
+        const simp = (md) => ({ front: { ...md.front, title: '动量因子之风险' }, body: md.body.replace('動量於台股有效', '动量对美股有效') })
+
+        it('確定性修正有寫回:記錄 produced 為 standards-fix(seat／provider null、stamp＝opt.stamp、at＝clock.iso8())、歷史 1 筆;md 帶 produced_stamp／produced_stage;已有產出鏈者歷史 +1 且不殘留舊 promptFp', async () => {
+            const e = await env([NOTE()])
+            const old = { v: 1, stamp: '20261107100000', stage: 'summarize', seat: 'summarize.ai', provider: 'x:one', promptFp: '5118f8f40bf0dc40', pkg: 'w-knowledge-summarize@1.0.0', at: '2026-11-07T10:00:00+08:00' }
+            const n0 = await e.rec()
+            await e.notes.patch(n0.id, { produced: old, producedHistory: [old], producedHistoryDropped: 0 })
+            edit(e.file(), simp)
+            const r = await syncNotes(e.deps, { stamp: STAMP })
+            assert.deepEqual([r.changed, r.stdFixed], [1, 1])
+            const n = await e.rec()
+            assert.deepEqual(n.produced, { v: 1, stamp: STAMP, stage: 'standards-fix', seat: null, provider: null, pkg: n.produced.pkg, at: NOW })
+            assert.deepEqual(n.producedHistory, [old, n.produced])
+            assert.equal('promptFp' in n.produced, false)
+            assert.deepEqual(frontProduced(e.file()), { produced_stamp: STAMP, produced_stage: 'standards-fix' })
+            assert.equal(readMd(e.file()).front.title, '動量因子之風險')
+        })
+
+        it('舊筆記(無產出鏈)經確定性修正:從頭起算(歷史 1 筆),不回填前史;未給 stamp(輪次外之維運)→ stamp 為 null、md 省略 produced_stamp', async () => {
+            const e = await env([NOTE()])
+            assert.equal('produced' in (await e.rec()), false)
+            edit(e.file(), simp)
+            await syncNotes(e.deps)
+            const n = await e.rec()
+            assert.deepEqual([n.produced.stamp, n.producedHistory.length, n.producedHistoryDropped], [null, 1, 0])
+            assert.deepEqual(frontProduced(e.file()), { produced_stage: 'standards-fix' })
+        })
+
+        it('使用者之編修而未被確定性修正者:不記產出鏈(記錄與 md 之產出鏈鍵皆不動;knowledgeChangedAt 照寫);已有產出鏈者原樣', async () => {
+            const e = await env([NOTE(), NOTE({ title: '另一篇', concepts: ['另概念', '甲'] })])
+            const old = { v: 1, stamp: '20261107100000', stage: 'summarize', seat: 'summarize.ai', provider: 'x:one', pkg: 'w-knowledge-summarize@1.0.0', at: '2026-11-07T10:00:00+08:00' }
+            const n1 = await e.rec(1)
+            await e.notes.patch(n1.id, { produced: old, producedHistory: [old], producedHistoryDropped: 0 })
+            writeMd(e.file(1), { ...readMd(e.file(1)).front, produced_stamp: old.stamp, produced_stage: 'summarize', produced_provider: 'x:one' }, readMd(e.file(1)).body)
+            edit(e.file(0), (md) => ({ front: md.front, body: md.body.replace('動量於台股有效', '動量於美股亦有效') }))
+            edit(e.file(1), (md) => ({ front: md.front, body: md.body.replace('動量於台股有效', '動量於美股亦有效') }))
+            const front1 = frontProduced(e.file(1))
+            const r = await syncNotes(e.deps, { stamp: STAMP })
+            assert.deepEqual([r.changed, r.stdFixed], [2, 0])
+            const [a, b] = [await e.rec(0), await e.rec(1)]
+            assert.deepEqual([a.produced, a.producedHistory, !!a.knowledgeChangedAt], [undefined, undefined, true])
+            assert.deepEqual([b.produced, b.producedHistory, !!b.knowledgeChangedAt], [old, [old], true])
+            assert.deepEqual([frontProduced(e.file(0)), frontProduced(e.file(1))], [{}, front1])
+        })
+
+        it('stageSync 把 ctx.stamp 交 syncNotes(輪次內之確定性修正記該輪 stamp);ctx 無 stamp(輪次外)→ null', async () => {
+            const e = await env([NOTE()])
+            edit(e.file(), simp)
+            await stageSync().run({ deps: e.deps, log: e.log, set: () => {}, get: (k, d) => d, stamp: STAMP })
+            assert.equal((await e.rec()).produced.stamp, STAMP)
+            const e2 = await env([NOTE()])
+            edit(e2.file(), simp)
+            await stageSync().run({ deps: e2.deps, log: e2.log, set: () => {}, get: (k, d) => d })
+            assert.equal((await e2.rec()).produced.stamp, null)
+        })
+    })
 })

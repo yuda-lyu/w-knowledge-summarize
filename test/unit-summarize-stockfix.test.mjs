@@ -214,7 +214,12 @@ describe('unit-summarize-stockfix', function() {
             assert.ok(note.changes.every((c) => c.std === 'SS3' && typeof c.what === 'string'))
             assert.deepEqual([note.before.units['front:title'], note.after.units['front:title']], ['动量因子之风险', '動量因子之風險'])
             assert.ok(!('section:來源#0' in note.after.units), '未修改之段不記(來源章之原文標題保持簡體)')
-            assert.ok(Object.keys(note.after.units).every((u) => u in note.before.units), '修法不增刪單位')
+            // 產出鏈(stores/noteProduced):處置寫 standards-fix 之 produced——記錄三欄與 md 之純量鍵(不呼叫 AI、stamp 為 null → 只有 produced_stage)為處置新增之單位,
+            //   處置前不存在(不列於 before;回退時刪除)。修法本身(內容章、標題等)仍不增刪單位
+            const fixUnits = Object.keys(note.after.units).filter((u) => !u.startsWith('front:produced_'))
+            assert.ok(fixUnits.every((u) => u in note.before.units), '修法不增刪單位')
+            assert.deepEqual(Object.keys(note.after.units).filter((u) => u.startsWith('front:produced_')), ['front:produced_stage'])
+            assert.deepEqual(['produced', 'producedHistory', 'producedHistoryDropped'].filter((k) => k in note.after.record && !(k in note.before.record)), ['produced', 'producedHistory', 'producedHistoryDropped'])
             assert.deepEqual(['title', 'concepts', 'summary', 'syncHash'].filter((k) => k in note.after.record), [], '同步欄位不記(回退時以 md 重算)')
             assert.ok('stdFixes' in note.after.record && !('stdFixes' in note.before.record), '處置前不存在之 stdFixes 不列於 before(回退時刪除)')
             const hold = r.ledger.find((x) => x.object === 'hold')
@@ -485,6 +490,90 @@ describe('unit-summarize-stockfix', function() {
                 assert.deepEqual((await lm.notes.get('n3')).concepts, ['波動率(730)', '主動推論(Active Inference)', 'a', 'b', 'c', 'd', 'e'])
                 assert.deepEqual([(await lm.notes.get('n1')).caveats, Object.hasOwn(await lm.notes.get('n1'), 'stdFixes')], [['样本有限'], false], '處置前不存在之 stdFixes 刪除(LMDB 集合以 replace 寫整筆)')
                 assert.equal((await lm.holds.get(holdKey('note', 'n4', 'SS2'))).status, 'resolved')
+            }
+            finally {
+                await lm.notes?.close()
+                await lm.holds?.close()
+            }
+        })
+    })
+
+    // ══════════════════════════ 產出鏈(stores/noteProduced;跨套件之產出鏈規格 §3、§4;使用端需求見 Gitea #107)══════════════════════════
+    // 存量處置為確定性修正(stage standards-fix、不呼叫 AI → seat／provider 皆 null;stamp＝opt.stamp,維運呼叫未給＝null):隨處置寫記錄三欄與 md 之純量鍵,
+    //   兩者皆為處置所改之單位,入帳列之 before／after——回退時依帳還原(處置前不存在者刪除;處置前已有者還原為原值,含已不在新值中之 promptFp 與縮短之歷史)
+    describe('產出鏈', function() {
+
+        const STAMP = '20261108200009'
+        const OLD = { v: 1, stamp: '20261107100000', stage: 'summarize', seat: 'summarize.ai', provider: 'x:one', promptFp: '5118f8f40bf0dc40', pkg: 'w-knowledge-summarize@1.0.0', at: '2026-11-07T10:00:00+08:00' }
+        const frontProduced = (file) => Object.fromEntries(Object.entries(readMd(file).front).filter(([k]) => k.startsWith('produced')))
+        const withOld = (file) => {
+            const md = readMd(file)
+            writeMd(file, { ...md.front, produced_stamp: OLD.stamp, produced_stage: OLD.stage, produced_provider: OLD.provider }, md.body)
+        }
+        const OLD_FRONT = { produced_stamp: OLD.stamp, produced_stage: OLD.stage, produced_provider: OLD.provider }
+
+        it('套用:被處置之筆記記錄 produced 為 standards-fix(seat／provider null、stamp＝opt.stamp、at＝處置時刻)、歷史 1 筆;md 帶純量鍵(provider 為 null 省略);未被處置者(n4 合格)不動;回退後三欄刪除(處置前不存在)、md 之鍵移除', async () => {
+            const e = env()
+            const r = await applyNoteStockFix(e.deps, await planNoteStockFix(e.deps, {}), { at: AT, stamp: STAMP })
+            assert.deepEqual(r.errors, [])
+            for (const id of ['n1', 'n2', 'n3']) {
+                const n = await e.notes.get(id)
+                assert.deepEqual(n.produced, { v: 1, stamp: STAMP, stage: 'standards-fix', seat: null, provider: null, pkg: n.produced.pkg, at: AT }, id)
+                assert.match(n.produced.pkg, /^w-knowledge-summarize@\d+\.\d+\.\d+/)
+                assert.deepEqual([n.producedHistory, n.producedHistoryDropped], [[n.produced], 0], id)
+                assert.deepEqual(frontProduced(e.file(id)), { produced_stamp: STAMP, produced_stage: 'standards-fix' }, id)
+            }
+            const n4 = await e.notes.get('n4')
+            assert.deepEqual([Object.hasOwn(n4, 'produced'), Object.keys(frontProduced(e.file('n4')))], [false, []], '未被處置者不動')
+            const row = r.ledger.find((x) => x.object === 'note' && x.id === 'n1')
+            assert.deepEqual(Object.keys(row.after.units).filter((u) => u.startsWith('front:produced_')), ['front:produced_stamp', 'front:produced_stage'])
+            assert.deepEqual(Object.keys(row.after.record).filter((k) => k.startsWith('produced')), ['produced', 'producedHistory', 'producedHistoryDropped'])
+            const rb = await rollbackNoteStockFix(e.deps, readNoteStockLedger(e.ledger), { at: '2026-10-05T05:00:00+08:00' })
+            assert.deepEqual(rb.errors, [])
+            for (const id of ['n1', 'n2', 'n3']) {
+                const n = await e.notes.get(id)
+                assert.deepEqual(['produced', 'producedHistory', 'producedHistoryDropped'].filter((k) => k in n), [], `${id}:回退後刪除`)
+                assert.deepEqual(frontProduced(e.file(id)), {}, id)
+            }
+        })
+
+        it('未給 opt.stamp(維運呼叫屬輪次外):stamp 為 null、md 省略 produced_stamp', async () => {
+            const e = env()
+            await applyNoteStockFix(e.deps, await planNoteStockFix(e.deps, {}), { at: AT })
+            assert.equal((await e.notes.get('n1')).produced.stamp, null)
+            assert.deepEqual(frontProduced(e.file('n1')), { produced_stage: 'standards-fix' })
+        })
+
+        it('真 LMDB(集合 patch 為深合併):處置前已有產出鏈(帶 promptFp)者——處置後 produced 不殘留舊 promptFp、歷史 +1;回退後 produced 逐欄還原為原值(含 promptFp)、歷史縮回 1 筆(不殘留處置筆)、md 之三鍵還原;連鎖斷言無問題', async () => {
+            const lm = {}
+            const e = env({
+                notes: (rows) => {
+                    lm.notes = W.openCollection({ WOrm, path: `${TMP}/lmdb${seq}/db`, db: 'knowledge', cl: 'notes' })
+                    lm.rows = rows
+                    return lm.notes
+                },
+                holds: (lm.holds = W.openCollection({ WOrm, path: `${TMP}/lmdb-h${seq}/db`, db: 'knowledge', cl: 'holds' })),
+            })
+            try {
+                await lm.notes.insertNew(lm.rows)
+                await lm.notes.patch('n1', { produced: OLD, producedHistory: [OLD], producedHistoryDropped: 0 })
+                withOld(e.file('n1'))
+                const r = await applyNoteStockFix(e.deps, await planNoteStockFix(e.deps, {}), { at: AT, stamp: STAMP })
+                assert.deepEqual(r.errors, [])
+                const n = await lm.notes.get('n1')
+                assert.deepEqual(n.produced, { v: 1, stamp: STAMP, stage: 'standards-fix', seat: null, provider: null, pkg: n.produced.pkg, at: AT })
+                assert.equal('promptFp' in n.produced, false, '不殘留舊 promptFp')
+                assert.deepEqual(n.producedHistory, [OLD, n.produced])
+                assert.deepEqual(frontProduced(e.file('n1')), { produced_stamp: STAMP, produced_stage: 'standards-fix' }, 'md 之 produced_provider 移除')
+                assert.deepEqual(await verifyNoteStockChain(e.deps, r.ledger), { checked: r.ledger.length, problems: [] })
+                const rb = await rollbackNoteStockFix(e.deps, readNoteStockLedger(e.ledger), { at: '2026-10-05T05:00:00+08:00' })
+                assert.deepEqual(rb.errors, [])
+                const back = await lm.notes.get('n1')
+                assert.deepEqual([back.produced, back.producedHistory, back.producedHistoryDropped], [OLD, [OLD], 0], '還原為處置前之值(含 promptFp、歷史 1 筆)')
+                assert.deepEqual(frontProduced(e.file('n1')), OLD_FRONT)
+                // 處置前即無產出鏈者(n3):回退後三欄刪除
+                const n3 = await lm.notes.get('n3')
+                assert.deepEqual(['produced', 'producedHistory', 'producedHistoryDropped'].filter((k) => k in n3), [])
             }
             finally {
                 await lm.notes?.close()
