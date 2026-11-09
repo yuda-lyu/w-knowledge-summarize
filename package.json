@@ -1,16 +1,16 @@
 {
   "name": "w-knowledge-summarize",
-  "version": "1.0.11",
+  "version": "1.0.12",
   "main": "dist/w-knowledge-summarize.umd.js",
   "dependencies": {
-    "w-knowledge-capture": "^1.0.14",
-    "wsemi": "^1.9.52"
+    "w-knowledge-capture": "^1.0.15",
+    "wsemi": "^1.9.54"
   },
   "devDependencies": {
-    "w-data-pipeline": "^1.0.31",
-    "w-dispatch-ai": "^1.0.81",
-    "w-orm-lmdb": "^1.0.57",
-    "w-package-tools": "^1.1.23"
+    "w-data-pipeline": "^1.0.32",
+    "w-dispatch-ai": "^1.0.83",
+    "w-orm-lmdb": "^1.0.58",
+    "w-package-tools": "^1.1.24"
   },
   "scripts": {
     "test": "mocha --parallel \"test/*.test.mjs\" --timeout 180000",
