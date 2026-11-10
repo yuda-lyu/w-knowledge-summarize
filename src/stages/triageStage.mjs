@@ -24,15 +24,18 @@
 // 【時間:扣保留給後段之時間(core/stages/stageReserve)】opt.reserveMs 明給者優先、未給取每輪依賴 ctx.deps.reserveMs、皆未給為 0(由組裝者注入,本段不讀他工作
 //   之設定)。保留 > 0 時:開工前、批次調度每輪(wave)開工前、第二席確認之每批開工前,皆判「扣保留後剩餘 ≥ 該席位一次呼叫之估計(鏈首家之單次逾時)」,
 //   不成立 → 不開工(未預篩／待確認者原樣留池待下輪、不記次;日誌寫明,detail.deferred:true);每次 AI 呼叫以「剩餘−保留」封頂。容量(rounds、docsPerCall、
-//   parallel)不縮——時間不足是少做幾輪。保留為 0 時行為與未有此機制時完全相同。
+//   parallel)不縮——時間不足是少做幾輪。保留為 0 時不加一次呼叫之門檻(只看整輪是否逾期;已逾期者每次送出前即不送出,同調度層之略過)。
+//   守門閘(stageReserveGateOf)、一次呼叫之估計(captureCallMsOf)與每次 AI 呼叫之包裝(reservedAiCallOf)皆取抓取套件之同一份:每次送出前以該席位之估計
+//   進門,遞補鏈內(主席失敗後之嘗試之間)以續派門檻 min(該估計, 席位 minAttemptMs ?? 60 秒)判停——主席等滿逾時後遞補仍可派出;第二席確認之事前判定與
+//   延後歸因(confirmCut)由本段保留。
 
 import isobj from 'wsemi/src/isobj.mjs'
 import { decidePanel, needThird, PANEL_WHY, PANEL_WHY_LABELS } from '../core/standards/panel.mjs'
-import { defineMw, applyTaps, makeMsg, count, runChainOverMsgs, stdReport, stageFields, byRetryTierFifo, oneline } from '../core/capturePackage.mjs'
+import { defineMw, applyTaps, makeMsg, count, runChainOverMsgs, stdReport, stageFields, byRetryTierFifo, oneline, stageReserveGateOf, captureCallMsOf, reservedAiCallOf } from '../core/capturePackage.mjs'
 import { SUMMARIZE_DEFAULT, triageEnabledOf, summarizeFeatureProblems, summarizeSeatOf } from '../core/summarizeSettings.mjs'
 import { pickSummarizeVocab } from '../core/vocab/summarizeVocab.mjs'
 import { runAiBatchStage } from '../core/stages/aiBatchStage.mjs'
-import { summarizeCallMsOf, reserveFnOf, reserveGateOf } from '../core/stages/stageReserve.mjs'
+import { reserveFnOf } from '../core/stages/stageReserve.mjs'
 import { createTriageDomain } from '../domain/triageDomain.mjs'
 import { createMaterialPolicy } from '../stores/materialPolicy.mjs'
 import { SUMMARIZE_DOC_STATUS, SUMMARIZE_SKIP_KIND, TRIAGE_STATE, TRIAGE_SKIP_PREFIX } from '../stores/docStatus.mjs'
@@ -151,18 +154,35 @@ export function stageTriage(opt = {}) {
             const enabled = opt.enabled ?? triageEnabledOf(settings.summarize)
             if (!enabled) return stdReport({ detail: { disabled: true, processed: 0, relevant: 0, irrelevant: 0 } })
             const domain = opt.domain || ctx.deps.domains?.triage || createTriageDomain({ vocab: ctx.deps.vocab || pickSummarizeVocab(ctx.deps.data?.vocab), triageCharsPerDoc: settings.summarize.triage.charsPerDoc, longDocChars: settings.summarize.charsPerDoc })
-            // 時間預算(抓取套件之 budgetOf／reserveOf,經 core/stages/stageReserve):扣掉保留給後段之時間(檔頭【時間】;保留為 0 時等同整輪預算)；
-            //   開工與每輪(wave)開工前判「扣保留後剩餘 ≥ 一次呼叫之估計」,每次呼叫以「剩餘−保留」封頂;覆寫 callAI 者亦收第三參數
-            const gate = reserveGateOf(ctx, reserveFn(ctx))
+            // 時間預算(抓取套件之守門閘 stageReserveGateOf,經 core/capturePackage):扣掉保留給後段之時間(檔頭【時間】;保留為 0 時等同整輪預算)；
+            //   開工與每輪(wave)開工前判「扣保留後剩餘 ≥ 一次呼叫之估計」;每次呼叫經抓取套件之 reservedAiCallOf(進門、鏈內續派判停、以「剩餘−保留」封頂);
+            //   覆寫 callAI 者亦收第三參數
+            const gate = stageReserveGateOf(ctx, reserveFn(ctx))
             const secs = (ms) => Math.round(ms / 1000)
-            /** 該席位一次呼叫之估計(鏈首家之單次逾時);保留為 0 時恆 0(不加開工門檻) */
-            const callMsOf = (seat) => (gate.keep > 0 ? summarizeCallMsOf(settings, seat) : 0)
-            const triageMs = callMsOf(summarizeSeatOf(settings.summarize, 'triage'))
+            /** 該席位一次呼叫之估計(鏈首家之單次逾時,抓取套件之 captureCallMsOf);保留為 0 時恆 0(不加開工門檻) */
+            const callMsOf = (seat) => (gate.keep > 0 ? captureCallMsOf(settings, seat) : 0)
+            // 席位:summarize.triage.ai 未給即沿用摘要席位 summarize.ai(summarizeSeatOf;未設任何席位者為 undefined——覆寫 callAI 之測試環境可無席位設定)
+            const triageSeat = summarizeSeatOf(settings.summarize, 'triage')
+            const triageMs = callMsOf(triageSeat)
             const shouldStop = () => gate.shouldStop(triageMs)
             let deferred = false // 因扣保留後時間不足而未開工、提前結束或未做完(文件留池待下輪)
-            // 席位:summarize.triage.ai 未給即沿用摘要席位 summarize.ai(summarizeSeatOf;取值延後到真的要呼叫時:覆寫 callAI 之測試環境可無席位設定)
-            const baseCall = (p, c, o) => ai.callJson(p, c, { spec: summarizeSeatOf(settings.summarize, 'triage'), ...o })
-            const callAI = (p, c) => (opt.callAI || baseCall)(p, c, { shouldStop, budgetMs: gate.remainingMs(), acceptTruncated: true })
+            /**
+             * 扣保留之 AI 呼叫(抓取套件之 reservedAiCallOf;不得為 async):進門以 firstMs 判、遞補鏈內以 min(firstMs, 席位 minAttemptMs ?? 60 秒)判停、
+             *   budgetMs＝剩餘−保留。callOpt 帶 spec 供包裝取席位之 minAttemptMs;覆寫之 callAI 收到之 callOpt 與改前同——預篩主呼叫不帶 spec
+             *   (席位由正式呼叫補),確認席帶 spec 與 segment
+             * @param {Number} firstMs 輸入本次之進門門檻(該席位一次呼叫之估計;保留為 0 時 0)
+             * @param {String} [segment] 輸入覆寫之 callAI 收到之 segment(主呼叫不給)
+             * @param {Function} [onSend] 輸入確實送出(包裝放行)時之計數回調(進門被拒者不計)
+             * @returns {Function} 回傳 (prompt, check, callOpt) => 調度層之回傳
+             */
+            const reservedCallOf = (firstMs, segment, onSend) => reservedAiCallOf((p, c, o) => {
+                if (onSend) onSend()
+                if (!opt.callAI) return ai.callJson(p, c, o)
+                const { spec, ...rest } = o
+                return opt.callAI(p, c, segment ? { spec, segment, ...rest } : rest)
+            }, gate, { firstMs })
+            const triageCall = reservedCallOf(triageMs)
+            const callAI = (p, c) => triageCall(p, c, { spec: triageSeat, acceptTruncated: true })
             const st = { pending: SUMMARIZE_DOC_STATUS.pending, ...(opt.statuses || {}) }
             const triesField = 'triageTries'
             const maxTries = opt.maxTries ?? settings.summarize.triage.maxTries ?? SUMMARIZE_DEFAULT.triage.maxTries
@@ -274,10 +294,11 @@ export function stageTriage(opt = {}) {
                         if (!gate.expired()) confirmCut = true
                         return { ok: false, data: null, error: '扣保留時間後剩餘不足一次呼叫', providerId: '', attempts: 0, skipped: true, errors: [] }
                     }
-                    cf.confirmCalls++
                     const check = (d) => Array.isArray(d) && d.some((it) => domain.isValidItem(it, n))
-                    const stopNow = () => gate.shouldStop(ms)
-                    const res = opt.callAI ? opt.callAI(p, check, { spec, segment: 'triageConfirm', shouldStop: stopNow, budgetMs: gate.remainingMs(), acceptTruncated: true }) : ai.callJson(p, check, { spec, shouldStop: stopNow, budgetMs: gate.remainingMs(), acceptTruncated: true })
+                    // 經扣保留之包裝:進門以本席之估計、遞補鏈內以續派門檻判停(上之事前判定與下之延後歸因為本段所有);確實送出才計次
+                    const res = reservedCallOf(ms, 'triageConfirm', () => {
+                        cf.confirmCalls++
+                    })(p, check, { spec, acceptTruncated: true })
                     if (gate.keep <= 0) return res
                     // 呼叫中途預算用盡而被調度層略過者亦記為因保留而延後(此刻仍不成立才算;額度用盡等他因不算)
                     return Promise.resolve(res).then((x) => {

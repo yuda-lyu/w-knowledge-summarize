@@ -40,17 +40,21 @@
 //   之設定)。保留 > 0 時:開工前與批次調度每輪(wave)開工前判「扣保留後剩餘 ≥ 摘要席一次呼叫之估計(鏈首家之單次逾時)」,不成立 → 不開工／不再開輪
 //   (未取件者原樣留 raw 池待下輪;日誌寫明,detail.deferred:true);每次 AI 呼叫以「剩餘−保留」封頂。修補與忠實性覆核之每次送出前同判(各席各用自己之估計):
 //   不成立 → 同「額度／時間用盡」——本批不套用、不記 tries、文件留 raw(未核對之結果不落地、不當成已核對)。容量(rounds、docsPerCall、parallel)不縮——
-//   時間不足是少做幾輪。保留為 0 時行為與未有此機制時完全相同。
+//   時間不足是少做幾輪。保留為 0 時不加一次呼叫之門檻(只看整輪是否逾期;已逾期者每次送出前即不送出,同調度層之略過)。
+//   守門閘(stageReserveGateOf)、一次呼叫之估計(captureCallMsOf)與每次 AI 呼叫之包裝(reservedAiCallOf)皆取抓取套件之同一份:每次送出前以該席位之估計
+//   進門,遞補鏈內(主席失敗後之嘗試之間)以續派門檻 min(該估計, 席位 minAttemptMs ?? 60 秒)判停——主席等滿逾時後遞補仍可派出。各站特有之語意由本段保留:
+//   主呼叫於無待摘要者時之門檻歸 0、末次重試之避開(avoid)、修補之事前預判、修補與覆核之事前判定與延後歸因(reviewRefused);覆核之呼叫不包成 async
+//   (第一席同步拋出 → 執行器不呼叫第二席)。
 
 import isobj from 'wsemi/src/isobj.mjs'
 import {
     defineMw, applyTaps, makeMsg, count, runChainOverMsgs, stdReport, stageFields, saveClues, byRetryTierFifo, oneline, queueAge,
-    listHolds, putHold, resolveHold, holdKey, retryRequestedOf, createPromptFpCache,
+    listHolds, putHold, resolveHold, holdKey, retryRequestedOf, createPromptFpCache, stageReserveGateOf, captureCallMsOf, reservedAiCallOf,
 } from '../core/capturePackage.mjs'
 import { PANEL_WHY, PANEL_WHY_LABELS } from '../core/standards/panel.mjs'
 import { conceptVocabulary, tagSuspects } from '../core/vocab/conceptGroups.mjs'
 import { runAiBatchStage } from '../core/stages/aiBatchStage.mjs'
-import { summarizeCallMsOf, reserveFnOf, reserveGateOf } from '../core/stages/stageReserve.mjs'
+import { reserveFnOf } from '../core/stages/stageReserve.mjs'
 import { writeMd } from '../core/md/md.mjs'
 import { SS14_OBJECT, runFaithCheck, checkFaithChecks } from '../standards/faithCheck.mjs'
 import { gateNoteItem } from '../standards/noteGate.mjs'
@@ -444,17 +448,34 @@ export function stageSummarize(opt = {}) {
             const { stores, settings, ai, clock } = ctx.deps
             const log = ctx.log
             const domain = opt.domain || ctx.deps.domains.summarize
-            // 時間預算(抓取套件之 budgetOf／reserveOf,經 core/stages/stageReserve;預算單一擁有者):扣掉保留給後段之時間(檔頭【時間】;保留為 0 時等同整輪預算);
-            //   每次呼叫以「剩餘−保留」封頂、嘗試之間可中止;開工前與每輪(wave)開工前由 harness 以「扣保留後剩餘 ≥ 一次呼叫之估計」守門。
-            //   覆寫 callAI 者亦收到第三參數(shouldStop/budgetMs),不因覆寫而失去時間預算
-            const gate = reserveGateOf(ctx, reserveFn(ctx))
+            // 時間預算(抓取套件之守門閘 stageReserveGateOf,經 core/capturePackage;預算單一擁有者):扣掉保留給後段之時間(檔頭【時間】;保留為 0 時等同整輪預算);
+            //   每次呼叫經抓取套件之 reservedAiCallOf(進門、嘗試之間以續派門檻判停、以「剩餘−保留」封頂);開工前與每輪(wave)開工前由 harness 以
+            //   「扣保留後剩餘 ≥ 一次呼叫之估計」守門。覆寫 callAI 者亦收到第三參數(shouldStop/budgetMs),不因覆寫而失去時間預算
+            const gate = stageReserveGateOf(ctx, reserveFn(ctx))
             const secs = (ms) => Math.round(ms / 1000)
-            /** 該席位一次呼叫之估計(鏈首家之單次逾時);保留為 0 時恆 0(不加開工門檻) */
-            const callMsOf = (seat) => (gate.keep > 0 ? summarizeCallMsOf(settings, seat) : 0)
+            /** 該席位一次呼叫之估計(鏈首家之單次逾時,抓取套件之 captureCallMsOf);保留為 0 時恆 0(不加開工門檻) */
+            const callMsOf = (seat) => (gate.keep > 0 ? captureCallMsOf(settings, seat) : 0)
             const mainMs = callMsOf(settings.summarize?.ai)
-            // 無待摘要者(池空、或只取已預篩放行而皆未放行)時不加一次呼叫之門檻:只看整輪是否逾期(不因保留而讓空轉的批次調度回報 stopped、WARN)
+            // 無待摘要者(池空、或只取已預篩放行而皆未放行)時不加一次呼叫之門檻:只看整輪是否逾期(不因保留而讓空轉的批次調度回報 stopped、WARN);
+            //   摘要席之進門門檻(主呼叫與修補)同此
             let idle = false
-            const shouldStop = () => gate.shouldStop(idle ? 0 : mainMs)
+            const mainEnterMs = () => (idle ? 0 : mainMs)
+            const shouldStop = () => gate.shouldStop(mainEnterMs())
+            /**
+             * 扣保留之 AI 呼叫(抓取套件之 reservedAiCallOf;不得為 async——覆核之執行器依「第一席同步拋出即不呼叫第二席」):進門以 firstMs 判、
+             *   遞補鏈內以 min(firstMs, 席位 minAttemptMs ?? 60 秒)判停、budgetMs＝剩餘−保留。callOpt 帶 spec 供包裝取席位之 minAttemptMs;
+             *   覆寫之 callAI 收到之 callOpt 與改前同——主呼叫不帶 spec(席位由正式呼叫補),修補與覆核帶 spec 與 segment
+             * @param {Number} firstMs 輸入本次之進門門檻(該席位一次呼叫之估計;保留為 0 時 0)
+             * @param {String} [segment] 輸入覆寫之 callAI 收到之 segment(主呼叫不給)
+             * @param {Function} [onSend] 輸入確實送出(包裝放行)時之計數回調(進門被拒者不計)
+             * @returns {Function} 回傳 (prompt, check, callOpt) => 調度層之回傳
+             */
+            const reservedCallOf = (firstMs, segment, onSend) => reservedAiCallOf((p, c, o) => {
+                if (onSend) onSend()
+                if (!opt.callAI) return ai.callJson(p, c, o)
+                const { spec, ...rest } = o
+                return opt.callAI(p, c, segment ? { spec, segment, ...rest } : rest)
+            }, gate, { firstMs })
             let deferred = false // 因扣保留後時間不足而未開工、提前結束或本批不套用(文件留 raw 池待下輪)
             let reviewCut = false // 修補或忠實性覆核曾因扣保留後時間不足而拒絕送出(本批不套用、不記 tries)
             const st = { pending: SUMMARIZE_DOC_STATUS.pending, failed: SUMMARIZE_DOC_STATUS.failed, ...(opt.statuses || {}) }
@@ -467,15 +488,14 @@ export function stageSummarize(opt = {}) {
             // 末次重試避開曾對本批文件產出不合格結果之供應者(檔頭【納入閘】;避開後無條目則不避)
             const providersOf = (doc) => String(doc.summarizeProviders || '').split('|').filter(Boolean)
             const avoidOf = (batch) => [...new Set((batch || []).filter((d) => (d[triesField] || 0) >= maxTries - 1).flatMap(providersOf))]
-            const baseCall = (p, c, o) => ai.callJson(p, c, { spec: settings.summarize.ai, ...o })
             const callAI = (p, c, o2) => {
                 for (const d of o2?.batch || []) {
                     problemsByDoc.delete(d.id)
                     repairedByDoc.delete(d.id)
                 }
                 const avoid = avoidOf(o2?.batch)
-                // 陣列輸出:逐次截斷放行(檔頭)
-                return (opt.callAI || baseCall)(p, c, { shouldStop, budgetMs: gate.remainingMs(), acceptTruncated: true, ...(avoid.length ? { avoid } : {}) })
+                // 陣列輸出:逐次截斷放行(檔頭);避開(avoid)經包裝原樣轉交
+                return reservedCallOf(mainEnterMs())(p, c, { spec: settings.summarize.ai, acceptTruncated: true, ...(avoid.length ? { avoid } : {}) })
             }
 
             // 待判(檔頭【待判】):登錄、改判結案、終態轉使用者;未開 holds 集合 → 每輪 WARN 一次、略過登錄
@@ -654,9 +674,7 @@ export function stageSummarize(opt = {}) {
 
             // 欄位定向修補呼叫(檢定標準 SS2／SS4;檔頭):席位＝摘要席(同一供應者鏈);物件輸出,不給截斷放行
             const rc = { stdRepaired: 0, stdRepairFailed: 0 }
-            const callRepair = (prompt) => (opt.callAI
-                ? opt.callAI(prompt, checkRepairReply, { spec: settings.summarize?.ai, segment: 'summarizeRepair', shouldStop, budgetMs: gate.remainingMs() })
-                : ai.callJson(prompt, checkRepairReply, { spec: settings.summarize.ai, shouldStop, budgetMs: gate.remainingMs() }))
+            const callRepair = (prompt) => reservedCallOf(mainEnterMs(), 'summarizeRepair')(prompt, checkRepairReply, { spec: settings.summarize.ai })
             /**
              * 修補或忠實性覆核因扣保留後時間不足而拒絕送出:記旗標並寫日誌(同一種每輪至多一行);呼叫端據以中止(本批不套用、不記 tries、文件留 raw——
              *   未核對之結果不落地)。整輪已逾期者不算(屬一般截止,維持既有之中止語意)
@@ -743,9 +761,11 @@ export function stageSummarize(opt = {}) {
                             if (!gate.expired()) reviewRefused('摘要忠實性覆核', ms)
                             return { ok: false, data: null, error: '扣保留時間後剩餘不足一次呼叫', providerId: '', attempts: 0, skipped: true, errors: [] }
                         }
-                        fc.faithCalls++
-                        const stopNow = () => gate.shouldStop(ms)
-                        const res = opt.callAI ? opt.callAI(prompt, checkFaithChecks, { spec: seat, segment: 'summarizeFaith', shouldStop: stopNow, budgetMs: gate.remainingMs() }) : ai.callJson(prompt, checkFaithChecks, { spec: seat, shouldStop: stopNow, budgetMs: gate.remainingMs() })
+                        // 經扣保留之包裝(非 async:同步拋出原樣拋出):進門以本席之估計、遞補鏈內以續派門檻判停(上之事前判定與下之延後歸因為本段所有);
+                        //   確實送出才計次
+                        const res = reservedCallOf(ms, 'summarizeFaith', () => {
+                            fc.faithCalls++
+                        })(prompt, checkFaithChecks, { spec: seat })
                         if (gate.keep <= 0) return res
                         // 呼叫中時間用盡而被調度層略過者亦記為因保留而延後(此刻仍不成立才算;額度用盡等他因不算)
                         return Promise.resolve(res).then((x) => {

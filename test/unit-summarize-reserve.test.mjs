@@ -114,21 +114,25 @@ describe('unit-summarize-reserve', function() {
             assert.ok(r.log.lines.some((l) => /因時間提前結束於第 2\/4 輪/.test(l)), `另印提前結束於第幾輪:\n${r.log.lines.join('\n')}`)
         })
 
-        it('R3 每次呼叫以「剩餘−保留」封頂(budgetMs);呼叫內之 shouldStop 同以一次呼叫之估計判(剩餘−保留 < 6 分即真)', async () => {
+        it('R3 每次呼叫以「剩餘−保留」封頂(budgetMs);呼叫內(遞補鏈內)之 shouldStop 以續派門檻判——min(一次呼叫 6 分, 席位 minAttemptMs ?? 60 秒)＝60 秒,不以一次呼叫之估計判(邊界逐毫秒之案見 unit-summarize-reserved-call)', async () => {
             const r = await runSum({ total: 30 * MIN, perCallMs: 5 * MIN, depsReserve: 15 * MIN, parallel: 1, n: 4, rounds: 1 })
             assert.deepEqual(r.calls.map((c) => c.budgetMs), [15 * MIN], '30 分 − 保留 15 分')
-            assert.equal(r.calls[0].stopNow, false, '呼叫開始時剩餘−保留(15 分)≥ 一次呼叫(6 分)')
-            // 呼叫後:剩餘 25 分−保留 15 分＝10 分仍夠;再耗 5 分後 5 分 < 6 分
+            assert.equal(r.calls[0].stopNow, false, '呼叫開始時剩餘−保留(15 分)≥ 續派門檻')
+            // 呼叫中耗 10 分:剩餘−保留＝5 分 < 一次呼叫 6 分、≥ 續派門檻 60 秒 → 不中止(主席失敗後仍可派遞補);再耗 4 分:1 分 → 不中止;再耗 1 毫秒 → 中止
             const seen = []
             const vc = vclock(30 * MIN)
             const callAI = async (p, c, co) => {
                 vc.spend(10 * MIN)
                 seen.push(co.shouldStop())
+                vc.spend(4 * MIN)
+                seen.push(co.shouldStop())
+                vc.spend(1)
+                seen.push(co.shouldStop())
                 return { ok: true, data: JUDGE_OFF(2) }
             }
             const settings = resolveSummarizeSettings({ summarize: { triage: { enabled: false }, ai: SUM_SEAT }, ai: { parallel: 1 } })
             await stageSummarize({ domain: SUM_DOMAIN, docsPerBatch: 2, parallel: 1, rounds: 1, callAI }).run({ deps: { stores: { docs: memStore(rawDocs(2)), notes: memStore(), frontier: memStore() }, clock, settings, reserveMs: 15 * MIN }, log: recLog(), remainingMs: vc.remainingMs, expired: vc.expired })
-            assert.deepEqual(seen, [true], '耗 10 分後剩餘−保留＝5 分 < 6 分 → 呼叫內之中止判斷為真')
+            assert.deepEqual(seen, [false, false, true], '剩餘−保留 5 分、1 分 → 不中止;1 分−1 毫秒 → 中止')
         })
 
         it('R6 保留未給(或 0):行為與現版相同——不加一次呼叫門檻(剩餘 1 分仍開工)、budgetMs＝整輪剩餘、不附 deferred、不多日誌', async () => {

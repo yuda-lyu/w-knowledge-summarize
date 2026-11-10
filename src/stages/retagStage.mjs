@@ -10,7 +10,8 @@
 // 【時間】扣掉保留給後段之時間(opt.reserveMs,未給取每輪依賴之 deps.reserveMs;由組裝者注入,本段不讀他工作之設定)後剩不到 5 分即不開工
 //   (同步與守門照做),每次 AI 呼叫以
 //   「剩餘−保留」封頂;AI 每輪至多 summarize.retag.perRun 篇、每批 summarize.retag.notesPerCall 篇;機械每輪至多 summarize.retag.mechanicalPerRun 篇
-//   (分頁,下輪續)。
+//   (分頁,下輪續)。每次 AI 呼叫經抓取套件之 reservedAiCallOf(扣保留之 AI 呼叫之唯一包裝):進門門檻＝開工門檻 5 分;遞補鏈內(主席失敗後之嘗試之間)
+//   以續派門檻 min(5 分, 重標席 minAttemptMs ?? 60 秒)判停——主席等滿逾時後遞補仍可派出;本輪 AI 名額用盡(perRun)併入呼叫端之中止。
 // 【陣列輸出之呼叫逐次截斷放行】重標之輸出為逐篇之 JSON 陣列:每次呼叫給 acceptTruncated:true(調度層於輸出截斷時收前段完整項目,未涵蓋者
 //   記失敗、下批再判);逐次給、不在建構期開。
 // 【守門】類別／內容類型／證據等級自清單移除而未宣告去向 → 每輪 WARN「分類法守門：…」,資料不動。
@@ -21,7 +22,7 @@
 
 import path from 'path'
 import isobj from 'wsemi/src/isobj.mjs'
-import { stdReport, stageFields, rejectChainOpts, reserveOf, reserveMsOf, oneline, createPromptFpCache } from '../core/capturePackage.mjs'
+import { stdReport, stageFields, rejectChainOpts, reserveOf, reserveMsOf, oneline, createPromptFpCache, reservedAiCallOf } from '../core/capturePackage.mjs'
 import { runAiBatchStage } from '../core/stages/aiBatchStage.mjs'
 import { NOTE_WRITE_STAGE, noteProducedOf, withProducedFront } from '../stores/noteProduced.mjs'
 import { patchNoteRecord } from '../stores/notePatch.mjs'
@@ -251,7 +252,13 @@ export function stageRetag(opt = {}) {
             let mechLeft = mechCap
             let aiLeft = aiCap
             let aiCalls = 0
-            const baseCall = (p, c, o) => ai.callJson(p, c, { spec: summarizeSeatOf(settings.summarize, 'retag'), ...o })
+            // 扣保留之 AI 呼叫(抓取套件之 reservedAiCallOf;檔頭【時間】):進門門檻＝開工門檻、鏈內續派門檻 min(開工門檻, 席位 minAttemptMs ?? 60 秒)、
+            //   budgetMs＝剩餘−保留;callOpt 帶 spec 供包裝取席位之 minAttemptMs,覆寫之 callAI 收到之 callOpt 與改前同(不帶 spec;席位由正式呼叫補)
+            const retagCall = reservedAiCallOf((p, c, o) => {
+                if (!opt.callAI) return ai.callJson(p, c, o)
+                const { spec, ...rest } = o
+                return opt.callAI(p, c, rest)
+            }, sub, { firstMs: MIN_START_MS })
             // 產出鏈之席位(設定路徑;未設重標席位即沿用摘要席位)與提示詞指紋(重標角色之內建題組以現行詞彙與批量組出之提示詞;每輪只算一次,首次 AI 改寫時才算;
             //   算不出者省略)
             const seatLabel = settings.summarize?.retag?.ai ? 'summarize.retag.ai' : 'summarize.ai'
@@ -270,8 +277,8 @@ export function stageRetag(opt = {}) {
                 }
                 return fpMemo.v
             }
-            // 陣列輸出:逐次截斷放行(檔頭)
-            const callAI = (p, c) => (opt.callAI || baseCall)(p, c, { shouldStop: () => !timeOk(), budgetMs: sub.remainingMs(), acceptTruncated: true })
+            // 陣列輸出:逐次截斷放行(檔頭);本輪 AI 名額用盡(aiLeft)為呼叫端之中止,由包裝併入鏈內判停
+            const callAI = (p, c) => retagCall(p, c, { spec: summarizeSeatOf(settings.summarize, 'retag'), shouldStop: () => aiLeft <= 0, acceptTruncated: true })
             const done = []
 
             for (const job of [...state.jobs]) {

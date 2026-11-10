@@ -86,6 +86,7 @@ const SAMPLES = {
     p0int: { valid: [7, 8], invalid: [-1, 1.5, '5', NaN, null] },
     p0num: { valid: [0.5, 2.5], invalid: [-0.1, '1', NaN, Infinity, null] },
     ratio: { valid: [0.3, 0.7], invalid: [1.5, -0.1, '0.5', NaN, null] },
+    growth: { valid: [1.5, 4], invalid: [0.5, 0, -1, '2', NaN, Infinity, null] },
     bool: { valid: [true, false], invalid: ['true', 1, 0, null] },
     str: { valid: ['custom', 'custom2'], invalid: [1, null, ['x']] },
     strArr: { valid: [['a'], ['b', 'c']], invalid: ['a', [1], [null], null, {}] },

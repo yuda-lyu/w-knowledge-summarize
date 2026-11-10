@@ -305,6 +305,142 @@ describe('unit-summarize-retag', function() {
         })
     })
 
+    // 扣保留之 AI 呼叫一律經抓取套件之 reservedAiCallOf(跨套件之扣保留 AI 呼叫之單一包裝):進門門檻 5 分(同開工門檻)、鏈內續派門檻
+    //   min(5 分, 重標席 minAttemptMs ?? 60 秒)(改前鏈內亦以 5 分判:主席等滿逾時後遞補一律被中止);本輪 AI 名額(aiLeft)用盡併入呼叫端之中止;
+    //   覆寫之 callAI 收到之 callOpt 鍵不變(不含 spec、startMs、minAttemptMs)。時間以可控之 ctx 時鐘同步(先以足夠時間進門,再於呼叫中推進時鐘後呼叫
+    //   callOpt.shouldStop()),不用真實等待
+    describe('扣保留之 AI 呼叫(抓取套件 reservedAiCallOf):進門 5 分、鏈內續派門檻 min(5 分, 席位 minAttemptMs ?? 60 秒)、本輪名額併入呼叫端之中止', () => {
+        const KEEP = 600_000
+        const ADD = { ...BASE, categories: [...BASE.categories, '風控'] }
+        const settingsOf = (seat, parallel = 1) => resolveSummarizeSettings({ ai: { parallel }, summarize: { retag: { ai: seat } } })
+        /** n 篇落點類別(其他)之筆記,首輪只記錄;新增類別後皆入 AI 重判 */
+        const envOf = async (name, n) => {
+            const dir = `${TMP}/reserved-${name}`
+            const notes = seedRetagNotes(dir, BASE, Array.from({ length: n }, (_, i) => ({ title: `落點${i}`, category: '其他' })))
+            await runRetag({ notes, vocab: BASE, dir })
+            return { dir, notes }
+        }
+        /** 可控之 ctx 時鐘:剩餘毫秒數由測試直接設定 */
+        const ctl = (ms) => {
+            let left = ms
+            return {
+                remainingMs: () => left,
+                get: () => left,
+                set: (v) => {
+                    left = v
+                },
+            }
+        }
+        const titlesIn = (p) => [...p.matchAll(/^\d+\. 【(.+?)】/gm)].map((m) => m[1])
+        const answer = (p) => ({ ok: true, data: titlesIn(p).map((t, i) => ({ index: i + 1, category: '風控' })) })
+
+        it('鏈內:扣保留後剩餘＝續派門檻時 shouldStop 為 false、少 1 毫秒為 true——席位無 minAttemptMs → 60 秒、minAttemptMs 20 秒 → 20 秒、minAttemptMs 400 秒 → 以進門門檻 5 分為上限;budgetMs＝剩餘−保留;callOpt 鍵不變', async () => {
+            for (const [name, seat, step] of [['none', { use: 'x:r' }, 60_000], ['min20', { use: 'x:r', minAttemptMs: 20_000 }, 20_000], ['min400', { use: 'x:r', minAttemptMs: 400_000 }, 300_000]]) {
+                const e = await envOf(`chain-${name}`, 1)
+                const ck = ctl(KEEP + 400_000)
+                const seen = []
+                const callAI = async (p, c, co) => {
+                    const saved = ck.get()
+                    ck.set(KEEP + step)
+                    const at = co.shouldStop()
+                    ck.set(KEEP + step - 1)
+                    const below = co.shouldStop()
+                    ck.set(saved)
+                    seen.push({ keys: Object.keys(co).sort(), budgetMs: co.budgetMs, probe: [at, below] })
+                    return answer(p)
+                }
+                const r = await runRetag({ notes: e.notes, vocab: ADD, dir: e.dir, remainingMs: ck.remainingMs, callAI, opt: { reserveMs: KEEP }, deps: { settings: settingsOf(seat) } })
+                assert.equal(seen.length, 1, name)
+                assert.deepEqual(seen[0].keys, ['acceptTruncated', 'budgetMs', 'shouldStop'], `${name}:callOpt 鍵不變`)
+                assert.equal(seen[0].budgetMs, 400_000, `${name}:budgetMs＝剩餘−保留`)
+                assert.deepEqual(seen[0].probe, [false, true], `${name}:續派門檻 ${step}`)
+                assert.equal(r.r.detail.aiChanged, 1, name)
+            }
+        })
+
+        it('保留為 0(未給):進門仍為 5 分、鏈內續派門檻同為 min(5 分, 席位 minAttemptMs ?? 60 秒)＝60 秒(改前鏈內亦以 5 分判)', async () => {
+            const e = await envOf('chain-keep0', 1)
+            const ck = ctl(400_000)
+            const seen = []
+            const callAI = async (p, c, co) => {
+                const saved = ck.get()
+                ck.set(60_000)
+                const at = co.shouldStop()
+                ck.set(60_000 - 1)
+                const below = co.shouldStop()
+                ck.set(saved)
+                seen.push({ budgetMs: co.budgetMs, probe: [at, below] })
+                return answer(p)
+            }
+            const r = await runRetag({ notes: e.notes, vocab: ADD, dir: e.dir, remainingMs: ck.remainingMs, callAI, deps: { settings: settingsOf({ use: 'x:r' }) } })
+            assert.deepEqual(seen, [{ budgetMs: 400_000, probe: [false, true] }])
+            assert.equal(r.r.detail.aiChanged, 1)
+        })
+
+        it('內建調度層之路徑(未覆寫 callAI):callJson 收到 spec(重標席)、budgetMs(扣保留後剩餘,有限)、以續派門檻判之 shouldStop、acceptTruncated', async () => {
+            const e = await envOf('builtin', 1)
+            const ck = ctl(KEEP + 400_000)
+            const seat = { use: 'x:r', minAttemptMs: 20_000 }
+            const settings = settingsOf(seat)
+            const seen = []
+            const ai = {
+                callJson: (p, c, o) => {
+                    const saved = ck.get()
+                    ck.set(KEEP + 20_000)
+                    const at = o.shouldStop()
+                    ck.set(KEEP + 20_000 - 1)
+                    const below = o.shouldStop()
+                    ck.set(saved)
+                    seen.push({ spec: o.spec, keys: Object.keys(o).sort(), budgetMs: o.budgetMs, probe: [at, below] })
+                    return Promise.resolve(answer(p))
+                },
+            }
+            const r = await runRetag({ notes: e.notes, vocab: ADD, dir: e.dir, remainingMs: ck.remainingMs, opt: { reserveMs: KEEP }, deps: { settings, ai } })
+            assert.equal(seen.length, 1)
+            assert.deepEqual(seen[0].spec, settings.summarize.retag.ai, 'spec 為重標席')
+            assert.deepEqual(seen[0].keys, ['acceptTruncated', 'budgetMs', 'shouldStop', 'spec'])
+            assert.deepEqual([seen[0].budgetMs, seen[0].probe], [400_000, [false, true]])
+            assert.equal(r.r.detail.aiChanged, 1)
+        })
+
+        it('本輪名額(perRun)用盡併入呼叫端之中止:名額未盡時於呼叫中 shouldStop 為 false;名額用盡後(時間仍足)為 true', async () => {
+            const e = await envOf('aileft', 1)
+            const ck = ctl(KEEP + 400_000)
+            const cos = []
+            const during = []
+            const callAI = async (p, c, co) => {
+                cos.push(co)
+                during.push(co.shouldStop())
+                return answer(p)
+            }
+            const r = await runRetag({ notes: e.notes, vocab: ADD, dir: e.dir, remainingMs: ck.remainingMs, callAI, opt: { reserveMs: KEEP, perRun: 1 } })
+            assert.deepEqual([during, r.r.detail.aiJudged], [[false], 1])
+            assert.equal(cos[0].shouldStop(), true, '名額用盡(時間仍足)→ 中止')
+        })
+
+        it('進門逐次以 5 分判:同一輪兩批並行,第一批送出後扣保留後剩餘恰 5 分 → 第二批照送;少 1 毫秒 → 第二批不送出(該篇未判、不記失敗、工作待下輪)', async () => {
+            for (const [spend, sent] of [[100_000, 2], [100_001, 1]]) {
+                const e = await envOf(`enter-${sent}`, 2)
+                const ck = ctl(KEEP + 400_000)
+                const titles = []
+                const callAI = async (p, c, co) => {
+                    titles.push(...titlesIn(p))
+                    ck.set(ck.get() - spend) // 送出即耗時(同步推進)
+                    return answer(p)
+                }
+                const r = await runRetag({ notes: e.notes, vocab: ADD, dir: e.dir, remainingMs: ck.remainingMs, callAI, opt: { reserveMs: KEEP, batch: 1 }, deps: { settings: settingsOf({ use: 'x:r' }, 2) } })
+                assert.equal(titles.length, sent, `第一批耗 ${spend} 毫秒`)
+                const cats = (await e.notes.select()).map((n) => n.category).sort()
+                if (sent === 2) assert.deepEqual(cats, ['風控', '風控'])
+                else {
+                    assert.deepEqual([cats, r.r.detail.aiJudged, r.r.detail.failedBatches], [['其他', '風控'], 1, 0], '未送出者未判、不記失敗')
+                    const st = JSON.parse(fs.readFileSync(`${e.dir}/state/taxonomy.json`, 'utf8'))
+                    assert.deepEqual(st.jobs.map((j) => Object.keys(j.fails || {}).length), [0], '工作待下輪、無失敗計數')
+                }
+            }
+        })
+    })
+
     describe('維運(ops/taxonomyOps)', () => {
         it('status 唯讀預覽(不寫狀態檔);requeue 排入現行類別之重判(類別不在清單即拋);proposals 依篇數彙整 categoryRaw', async () => {
             const dir = `${TMP}/ops`

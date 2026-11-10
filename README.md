@@ -357,6 +357,7 @@ createKnowledgeSummarize({
 - 席位不在 `ai` 段:各子階段於 `callJson` 之 `callOpt.spec` 給(席位清單 `summarizeSeatsOf`、顯示名 `SUMMARIZE_SEAT_LABELS`;啟動期交調度層之 `validateSeats` 檢核,不可解析即拋)。判定小組之組成(兩組:預篩確認 SS5、忠實性覆核 SS14;成員、必填、投票組合、是否開啟)以 `summarizePanelsOf(settings)` 取——席位檢核工具與啟動期之同家警告同讀這一份,呼叫端不另寫。
 - **逐次截斷放行**:陣列輸出之呼叫點(預篩、預篩確認、摘要、重標)每次給 `acceptTruncated:true`——輸出被截斷時收前段完整項目,未涵蓋者記 tries 留佇列(部分接受);物件輸出之修補與忠實性覆核不給。建構期不開,故同一調度實例給多個工作共用時互不影響。
 - **避開**:摘要之末次重試給 `avoid`(曾對本批文件產出不合格結果之供應者);避開後無條目則不避。
+- **扣保留之 AI 呼叫**:預篩、預篩確認(SS5)、摘要、修補、忠實性覆核(SS14)、重標之每次呼叫一律經抓取套件之 `reservedAiCallOf`——送出前以該席位一次呼叫之估計進門(抓取套件之 `captureCallMsOf`;重標固定 5 分;未給保留時預篩與摘要為 0),遞補鏈內(主席失敗後之嘗試之間)以續派門檻 min(進門門檻, 席位 `minAttemptMs` ?? 60 秒)判停,`budgetMs`＝整輪剩餘−保留;重標之本輪 AI 名額用盡併入判停。守門閘:預篩與摘要取抓取套件之 `stageReserveGateOf`(保留為 0 時只看整輪是否逾期),重標維持 `reserveOf`(恆以 5 分為門檻)。整輪已逾期時每次送出前即不送出(同調度層之略過,不記失敗)。覆寫之 `callAI` 收到之 `callOpt` 鍵與以往相同;判定小組之呼叫次數(`confirmCalls`、`faithCalls`)只計確實送出者。
 - **免費池額度**(`ai.pools`)、**健康降序**(`ai.healthStreak`,預設 3)、**能力預篩**(`ai.providerLimits` 逐條目上限;內建調度層另計條目與 kind 之固有上限):事件各以 WARN 一行寫入當輪日誌(「供應商額度：」「供應商健康：」「供應商能力：」;注入 `cfg.aiAdapter` 時不接)。
 - **失敗預覽**:內建調度層之失敗形狀帶 `preview`(模型回覆之前 120 字),批次失敗之 WARN 附之。
 - **斷網不計**:本機網路判斷器(預設依 `capture.network` 建立;`cfg.netGuard` 置換、`null` 不判斷)確認不通時,整鏈皆敗之呼叫回 `skipped`——該批中止、不記 tries。
@@ -494,13 +495,13 @@ node <mocha 路徑>/bin/mocha.js --timeout 180000 test/<檔名>      # 單檔
 |---|---|---|
 | 核心與設定 | `unit-core`、`unit-settings`、`unit-vocab`、`unit-evidence`、`unit-ai-batch` | 本套件之核心件、設定與詞彙之逐鍵檢核、證據規則、批次 AI 機制 |
 | 模組 | `unit-summarize-{standards,domain,stores,holds,faith,repair,stages,retag,sync,ops}` | 筆記標準與納入閘、提示詞與 domain、筆記組裝與分類法、待判、忠實性覆核、修補、各子階段、維運 |
-| 時間(保留) | `unit-summarize-{reserve,reserve-gate}` | 預篩、第二席確認、摘要、修補、忠實性覆核扣保留給後段之時間(開工前與每輪開工前守門、呼叫以「剩餘−保留」封頂、不足時文件留池、保留未給行為不變;以注入之虛擬時鐘同步)；取值器、一次呼叫之估計與守門閘 |
+| 時間(保留) | `unit-summarize-{reserve,reserve-gate,reserved-call}` | 預篩、第二席確認、摘要、修補、忠實性覆核扣保留給後段之時間(開工前與每輪開工前守門、呼叫以「剩餘−保留」封頂、不足時文件留池、保留未給行為不變;以注入之虛擬時鐘同步)；取值器,與所依之抓取套件一次呼叫之估計、守門閘;六站經抓取套件 `reservedAiCallOf` 之接線(逐次進門、遞補鏈內之續派門檻、覆寫之 `callAI` 之鍵、覆核第一席同步拋出不呼叫第二席;接縫一案以真調度層與本機假端點驗遞補是否派出;重標之接線案在 `unit-summarize-retag`) |
 | 檢定標準 | `unit-summarize-{registry,audit,stockfix}` | 標準之登記(執行處之檔與函數存在、版本單一來源)、存量掃描(與新進閘同一判定、豁免、AI 標準只計待判、真 LMDB)、存量處置(預演／套用／回驗／回退、處置帳) |
 | 物件與組裝 | `unit-summarize-object`、`unit-summarize-assembly`、`unit-summarize-entry`、`unit-summarize-package` | 物件之子階段序列與固定格式摘要;總組裝之逐鍵檢核、domain 與提示詞、核心集合、網路判斷、去重身分、席位與調度層事件、保留時間;入口匯出;**套件邊界、依賴、發布面(不設 `exports` 與 `files`、`.npmignore`、`LICENSE`)、範例 `g.mjs` 離線可執行且 README 含其全文、發布內容不帶宿主之痕跡、預設領域中立、舊名、沿革與面向使用者之字樣**(判準取抓取套件之 `test/tools/historyMarks`,四套件同一份;不以名指下游之工作) |
 | 契約與流程 | `unit-summarize-log-contract`、`unit-flow-summarize`、`unit-summarize-contract`、`unit-summarize-material` | 日誌字樣、正則與 report 鍵對實際產出;真 LMDB 上兩輪之完整流程;筆記標準於各寫入入口之處置一致與還原閘之對外契約;素材退回抓取之往返 |
 | 評分 | `unit-summarize-bench`、`api-summarize-bench-ai` | 評分角色與題組;真 AI(`WK_LIVE_AI=1` 才跑) |
 
-- **固定埠**(≥8000、不隨機):8841 為無人監聽之埠(內建調度層之「整鏈皆敗」)、8842 為本機假 REST(截斷與失敗預覽);8843～8849 保留。
+- **固定埠**(≥8000、不隨機):8841 為無人監聽之埠(內建調度層之「整鏈皆敗」)、8842 為本機假 REST(截斷與失敗預覽)、8847 為本機假 REST(`unit-summarize-reserved-call` 之接縫案);8843～8846、8848～8849 保留。
 - **暫存**:各測試自建 `test/_tmp/<名>-<pid>`,測完刪除。
 - 測試中之 AI 一律為替身或本機假端點,不連外網、不燒額度。
 - **跨工作之原案不在本套件重現,改以本套件一側之契約測試驗其介面**:`unit-summarize-contract`(筆記標準於各寫入入口之處置一致——最高證據等級之要件於新進、修補後重閘、同步、還原、存量處置與掃描,正體與概念標籤於修補後重閘、人工匯入、還原與掃描;還原閘之對外契約)、`unit-summarize-material`(素材退回抓取之往返;抓取之件經測試專用之橋接 `test/tools/captureForTest.mjs`,套件程式碼不 import);領域中立掃描共用之詞表取抓取套件之 `test/tools/domainTerms.mjs`(經 `test/tools/captureForTest.mjs`;四套件同一份,自檢在抓取套件之 `unit-domain-terms`)。本套件 `test/tools/stageKit.mjs` 之子階段 ctx(`bagCtx`:以 Map 為底之 get／set,旗標可斷言)為下游之段測試同一份(經其 `summarizeForTest` 取用);題組檔(`bench/cases/*.json`)之說明文字(頂層 `note` 與各案 `why`)與原始碼同受沿革守門,材料與應然不掃。
@@ -555,6 +556,16 @@ const flow = createKnowledgeSummarize({
 })
 await flow.run()   //文件 noted 並回鏈 record.id;未達契約(欄位逾上限×容差、簡體、原文沒有之數字)者不納入、附回饋下輪重摘
 ```
+
+---
+
+## Breaking changes
+
+- **須搭配 w-knowledge-capture 1.0.18 以上**(其又須 w-dispatch-ai 1.0.86 以上;共用同一持久 store 之套件同一次升版,見抓取套件之 README〈Breaking changes〉)。
+- **刪除 `summarizeCallMsOf`、`reserveGateOf`**(`src/core/stages/stageReserve.mjs`;主入口與預設物件亦不再含,不留相容層):一次呼叫之估計改用抓取套件之 `captureCallMsOf`(單席之取值順序與結果相同,另收席位陣列取最大)、守門閘改用抓取套件之 `stageReserveGateOf`(`keep`／`remainingMs`／`expired`／`shouldStop` 之語意相同;無 `canStart`,以 `!shouldStop(ms)` 代之;另有 `cut(ms)`＝保留 > 0、整輪未逾期而扣保留後剩餘不足)。保留時間取值器 `reserveFnOf` 照舊。
+- **遞補鏈內之判停門檻**(預篩、預篩確認、摘要、修補、忠實性覆核、重標):以往與進門門檻相同(該席位一次呼叫之估計;重標 5 分),主席等滿逾時後之剩餘即小於它,遞補一律被中止;今為 min(進門門檻, 席位 `minAttemptMs` ?? 60 秒)——扣保留後剩餘不足一次呼叫而仍 ≥ 續派門檻時,主席失敗後照派遞補(預算仍以「剩餘−保留」封頂)。覆寫之 `callAI` 收到之 `shouldStop` 依此判。
+- **逐次進門**:同一輪並行之各批、判定小組之各席於送出前各判一次(以往只在每輪開工前判);前批送出後扣保留後剩餘已不足一次呼叫者,後批不送出(同調度層之略過:不記 tries、文件留池;重標該篇未判、不記失敗)。保留未給(0)時進門門檻為 0,唯整輪已逾期者每次送出前即不送出——以往仍交覆寫之 `callAI`(內建調度層則因預算已盡而略過,結果相同)。判定小組之呼叫次數(`confirmCalls`、`faithCalls`,預篩之 `stats.aiCalls` 含前者)只計確實送出者。
+- **重標**:本輪 AI 名額(`summarize.retag.perRun`)用盡併入呼叫內之判停。
 
 ---
 

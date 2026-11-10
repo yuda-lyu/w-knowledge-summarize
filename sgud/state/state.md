@@ -1,4 +1,4 @@
-# 現況（w-knowledge-summarize）— 2026-11-08
+# 現況（w-knowledge-summarize）— 2026-11-11
 
 > 只記現況，不寫過程（過程在 `../exp/`）。接續工作先讀本檔；完成一項功能或結束一輪工作即更新。
 > **路徑基準**：原始碼在 `src/`，下文與分檔所列檔案路徑除已標 `src/` 或 `test/` 者外皆相對 `src/`。
@@ -6,9 +6,9 @@
 
 ## 身分與位置
 
-- npm `w-knowledge-summarize`（`package.json` 版本 1.0.x）；主入口 `src/WKnowledgeSummarize.mjs`（具名匯出 273 個＋同組預設物件；2026-11-05 起含 `core/stages/stageReserve` 之 3 個，2026-11-08 起含產出鏈與選件之 9 個：`stores/noteProduced` 6、`stores/notePatch` 增 2、`ops/notesByProvenance` 1）、總組裝 `createKnowledgeSummarize`、執行期件 `createSummarizeRuntime`、物件 `summarizeObject.mjs`。
+- npm `w-knowledge-summarize`（`package.json` 版本 1.0.x）；主入口 `src/WKnowledgeSummarize.mjs`（具名匯出 271 個＋同組預設物件；`core/stages/stageReserve` 只剩 `reserveFnOf` 1 個〔2026-11-11 刪 `summarizeCallMsOf`、`reserveGateOf`，改取抓取套件之同一份〕，2026-11-08 起含產出鏈與選件之 9 個：`stores/noteProduced` 6、`stores/notePatch` 增 2、`ops/notesByProvenance` 1）、總組裝 `createKnowledgeSummarize`、執行期件 `createSummarizeRuntime`、物件 `summarizeObject.mjs`。
 - **佈局**（2026-11-01 比照自有套件重整）：`src/`（根層 5 檔＋`bench/ core/ domain/ ops/ stages/ standards/ stores/`）、`test/`（33 個 `*.test.mjs`＋`tools/` 12 檔＋`golden/`，皆隨 npm 包發布）、`toolg/`（`addVersion`／`modifyReadme`／`cleanFolder`／`gDocsExams`／`gDistRollup`）、`g.mjs`（離線範例）、`.editorconfig` 等根目錄範本檔；`dist/`、`docs/` 為發布流程產製物。`main` 指 `dist/w-knowledge-summarize.umd.js`，不設 `exports` 與 `files`；**不提供 `.npmignore`**（2026-11-02 起；使用者 2026-11-01 裁示：npm 包＝git 版控內容，依 `.gitignore`；本套件無外部執行檔、`test/`〔約 1.2MB〕與 `docs/`〔約 4.1MB〕皆 <10MB），`sgud/`、`test/`、`docs/` 皆隨包，`CLAUDE*.md`、`tmp`、`test/_tmp` 由 `.gitignore` 排除（下游以 `w-knowledge-summarize/src/…`、`w-knowledge-summarize/test/tools/…` 深層路徑取用）。
-- 依賴：`dependencies`＝`w-knowledge-capture` ^1.0.13（已安裝 1.0.13；只經 `src/core/capturePackage.mjs`，指定詞 `w-knowledge-capture/src/WKnowledgeCapture.mjs`；測試橋接取其 `test/tools/`；產出鏈共用件 `makeProduced`／`appendProduced`／`pkgIdOf`／`createPromptFpCache` 自 1.0.12 起）、`wsemi` ^1.9.52（已安裝 1.9.52）；`devDependencies`＝`w-data-pipeline` ^1.0.30、`w-dispatch-ai` ^1.0.81、`w-orm-lmdb` ^1.0.56（皆只測試取用）、`w-package-tools` ^1.1.23（`toolg/` 用，並帶入 mocha、jsdoc）。
+- 依賴：`dependencies`＝`w-knowledge-capture` ^1.0.18（已安裝 1.0.18；只經 `src/core/capturePackage.mjs`，指定詞 `w-knowledge-capture/src/WKnowledgeCapture.mjs`；測試橋接取其 `test/tools/`；產出鏈共用件 `makeProduced`／`appendProduced`／`pkgIdOf`／`createPromptFpCache` 自 1.0.12 起；扣保留之 `reservedAiCallOf`、`captureCallMsOf`（多席）、`stageReserveGateOf` 自 1.0.18 起）、`wsemi` ^1.9.55；`devDependencies`＝`w-data-pipeline` ^1.0.33、`w-dispatch-ai` ^1.0.86（已安裝 1.0.86；抓取套件 1.0.18 須之）、`w-orm-lmdb` ^1.0.59（皆只測試取用）、`w-package-tools` ^1.1.25（`toolg/` 用，並帶入 mocha、jsdoc）。
 - 被誰用：下游套件各經其 `core/summarizePackage.mjs` 取用本套件（深層路徑 `w-knowledge-summarize/src/…`）；使用端經其轉接檔取用。
 - 發布由使用者／主控處理；發布前確認與套件化重整已完成（見〈最近驗證〉）。
 
@@ -25,6 +25,7 @@
 
 | 日期 | 項 | 結果 |
 |---|---|---|
+| 2026-11-11 | 扣保留之 AI 呼叫六站改經抓取套件之 `reservedAiCallOf`（預篩、SS5 兩席、摘要、修補、SS14 三席、重標；刪 `summarizeCallMsOf`、`reserveGateOf`，改 `captureCallMsOf`、`stageReserveGateOf`；升 `w-knowledge-capture` 1.0.18、`w-dispatch-ai` 1.0.86；新增 `unit-summarize-reserved-call` 14 案、`unit-summarize-retag` 增 5 案，判定小組之呼叫次數改只計確實送出者，`unit-summarize-reserve` R3 改寫為續派門檻，`unit-summarize-reserve-gate` 改驗所依之抓取套件件，`unit-settings` 補 `growth` 樣本）後全套 | **805 ✓、0 ✗、5 pending**；修前（HEAD 碼＋HEAD 測試＋新依賴）784 ✓、2 ✗（`growth` 樣本，升版連帶）、5 pending；修前紅（新改測試對 HEAD 碼）19 ✗＋`reserve-gate` 載入即敗；變異 34 個（六站各改回舊寫法、逐席回退、包成 async、不帶 spec、進門門檻 0／他席估計／封頂 60 秒、內建路徑丟預算或 spec、名額不併入、計次移回包裝前）全數擊殺；外審 terra 1 份 8 條（屬實 6、部分屬實 2）；eslint 新檔 0 錯誤、既有檔錯誤數與 HEAD 相同 |
 | 2026-11-08 | 產出鏈 stage 登記（SUM-15 第二輪：人工匯入 `ingest`、重標之 AI 重判 `retag`、機械改名維持 `standards-fix`；`NOTE_WRITE_STAGE` 增 `retagMech`；`unit-flow-summarize-provenance` 增 P5 人工匯入與選件案）後全套 | **786 ✓、0 ✗、5 pending**（上一輪 785）；修前紅（對本輪改動前之工作樹）8 ✗／93 ✓；變異 10 個全數擊殺（含「AI 重標仍記 standards-fix」「匯入仍記 summarize」）；eslint 新檔 0 錯誤、既有檔錯誤數不變 |
 | 2026-11-08 | 筆記之產出鏈（SUM-15；新增 `stores/noteProduced`、`ops/notesByProvenance`；`stores/notePatch` 增深合併殘留之先清；摘要新建、人工匯入、重標、同步修正、存量處置接線；預篩確認之票 `triageVotes`；新增 `unit-summarize-provenance` 38 案、`unit-flow-summarize-provenance` 12 案，`unit-summarize-retag`／`-sync`／`-stockfix` 各增〈產出鏈〉組 5／4／3 案）後全套 | **785 ✓、0 ✗、5 pending**（改前 723 ✓；增 62 案；pending＝`api-summarize-bench-ai` 五角色）；修前紅：新檔對改動前之 HEAD 載入即敗（新模組缺失），對「HEAD＋只加輔助模組、不接站點」之半修版 31 ✗／112 ✓；變異 59 個全數擊殺、0 存活；L3 前後 diff（摘要新建 4、人工匯入 1）md 去掉 `produced_*` 行後逐位元組相同、記錄去掉產出鏈三欄後逐欄相同；既有測試只改三處斷言（皆新增欄位）；eslint 新檔 0 錯誤、既有檔錯誤數與 HEAD 相同；`npm pack` 內容與 `dist/`、`docs/` 未動 |
 | 2026-11-05 | 預篩（含第二席確認）、摘要（含修補、忠實性覆核）扣保留給後段之時間（SUM-14；新增 `core/stages/stageReserve`；新增 `unit-summarize-reserve` 27 案、`unit-summarize-reserve-gate` 12 案，`unit-summarize-log-contract` 增 1 案）後全套 | **723 ✓、0 ✗、5 pending**（改前 683 ✓；pending＝`api-summarize-bench-ai` 五角色）；修前碼（改動前之原始碼）對 `unit-summarize-reserve` 20 ✗／7 ✓（7 ✓＝保留未給行為不變與不誤報之守門案）；變異 58 個全數殺死、0 存活；保留未給之行為與提示詞不變（`unit-summarize-stages`、`unit-flow-summarize`、`unit-summarize-retag` 原案全綠） |
@@ -45,7 +46,7 @@
 | 預篩 triage（標題＋開頭片段；fail-open） | 落地 | SUM-01～03；`unit-summarize-stages`、`unit-flow-summarize` |
 | 摘要 summarize（依字數打包、納入閘、數字紮根、md 落地） | 落地 | STD-05、STD-02；`unit-summarize-material`、`unit-summarize-digest`、`unit-summarize-standards` |
 | 重標 retag（分類法同步：改名機械、新增／退役 AI 重判、守門） | 落地 | SUM-10～12；`unit-summarize-retag` |
-| 預篩、摘要扣保留給後段之時間（開工前與每輪開工前判「扣保留後剩餘 ≥ 該席位一次呼叫之估計」、呼叫以「剩餘−保留」封頂、不足時文件留池並附 `detail.deferred`；修補／覆核不足時本批不套用；保留未給行為不變） | 落地（2026-11-05；預篩主迴圈、第二席確認、摘要主段、修補、覆核；與重標同法） | SUM-14（規則帳本鐵則 12）；`unit-summarize-reserve`、`unit-summarize-reserve-gate`、`unit-summarize-log-contract` |
+| 預篩、摘要扣保留給後段之時間（開工前與每輪開工前判「扣保留後剩餘 ≥ 該席位一次呼叫之估計」、呼叫以「剩餘−保留」封頂、不足時文件留池並附 `detail.deferred`；修補／覆核不足時本批不套用；保留未給行為不變） | 落地（2026-11-05；預篩主迴圈、第二席確認、摘要主段、修補、覆核；與重標同法）；2026-11-11 起六站每次 AI 呼叫經抓取套件之 `reservedAiCallOf`（逐次進門、遞補鏈內以 min(進門門檻, 席位 `minAttemptMs` ?? 60 秒) 判停；守門閘、一次呼叫之估計取抓取套件之同一份） | SUM-14（規則帳本鐵則 12）；`unit-summarize-reserve`、`unit-summarize-reserve-gate`、`unit-summarize-reserved-call`、`unit-summarize-retag`〈扣保留之 AI 呼叫〉、`unit-summarize-log-contract` |
 | 筆記之產出鏈 produced（記錄加 `produced`／`producedHistory`／`producedHistoryDropped`，md front matter 只加純量鍵 `produced_stamp`／`produced_stage`／`produced_provider`；落筆記之站點〔摘要新建、人工匯入、分類法重標、同步修正、存量處置〕一律經 `stores/noteProduced`；`provider` 取該次呼叫之成交條目〔遞補者〕、成交條目未知者不寫；`promptFp` 取評比機制之指紋；依之選件 `notesByProvenance`〔純讀〕；預篩確認小組之票寫文件記錄 `triageVotes`） | 落地（2026-11-08；規格為跨套件之「知識套件之產出鏈」，使用端需求見 Gitea #107）；stage 依規格 §4：`summarize`（摘要新建）、`ingest`（人工匯入）、`retag`（重標之 AI 重判）、`standards-fix`（機械改名、同步修正、存量處置；2026-11-08 第二輪登記） | SUM-15（規則帳本鐵則 13）；`unit-summarize-provenance`、`unit-flow-summarize-provenance`、`unit-summarize-retag`／`-sync`／`-stockfix` 之〈產出鏈〉組 |
 | 同步 sync（筆記 md 之標題／概念／一句話重點變更偵測、過筆記標準） | 落地 | SUM-13；`unit-summarize-sync` |
 | 素材問題退回抓取（`summarize.refetch`） | 落地 | SUM-08；`unit-summarize-material` |
@@ -65,6 +66,7 @@
 - **SS14、SS4 之存量**須原文（使用端之原文回溯須使用者同意）。
 - **保留時間之已知特性（SUM-14，未動）**：每輪開工判斷只用該段主席位之一次呼叫估計，不預扣同批後續修補／覆核席之時間；開工後若覆核席不夠，該批主呼叫已耗而整批不套用（與整輪逾期同，下輪重做）。若實務上此情形常見，可改為開啟修補／覆核時以主席位＋覆核席估計之和為每輪門檻（待使用者視觀察裁示）。`dist/`、`docs/` 為發布流程產製物，本次未重建（`require(dist)` 之具名匯出待發布流程重建後與主入口 273 對齊）。
 - **產出鏈之已知限制與待裁示（SUM-15，2026-11-08）**：①修補與覆核之成交條目不入 `produced`（新建之 `provider` 為主呼叫之成交條目；修補回覆採用之欄位可能出自另一成交條目，單一 `produced` 無處容納；若須記，規格需定「摘要之多步形狀」）；②（已裁定，2026-11-08）stage 登記 `ingest`（人工匯入）與 `retag`（重標之 AI 重判）；機械改名維持 `standards-fix`；預篩、修補、覆核非筆記寫入點、規格不列；③使用者之編修經同步入口照實回記錄而本套件未改寫者不記產出鏈（已裁定採納）；④`ops/noteRestoreGate` 只回傳修正後之 md 與 recordPatch、由呼叫端落地，其回傳不含產出鏈（已裁定不動）；⑤自訂 `domain`（含自訂提示詞）之 `promptFp` 仍為內建角色＋現行詞彙之指紋（已裁定採納）；dist（UMD）下內建題組不隨包、`promptFp` 省略（抓取套件之限制）；⑥選件介面為 `notesByProvenance(deps, cond)`（`deps.stores.notes`；null 條件選該欄為 null 者、`history:true` 回符合之最近一筆、條件不合即拋；已裁定採納並寫入規格 §6）。
+- **扣保留之 AI 呼叫（SUM-14，2026-11-11）之餘項（設計未列，未動）**：①`core/stages/stageReserve.reserveFnOf` 與抓取套件之 `stageReserveFnOf` 語意相同（皆包抓取套件之 `reserveMsOf`），是否同刪改用之待裁示；②README §16「不做 AI 狀態落檔：…冷卻…皆在行程內」於抓取套件 1.0.18（連敗改由遞補層持久計數）後是否仍成立，屬抓取套件之語意，待其文件確認後再改；③`dist/`、`docs/` 為發布流程產製物，本次未重建（`require(dist)` 之具名匯出待重建後與主入口 271 對齊）。
 - **GEN-19／22 之守門缺口**：橋接 `test/tools/captureForTest.mjs` 之死轉出、與抓取套件 `test/tools` 同名之共用件手寫副本，本套件尚無自動守門案（規則帳本以人工盤點指令代之）；`test/tools/captureForTest.mjs` 檔頭註解已不再提及本 repo 無之 `unit-core-copies`（2026-11-02）。
 - **測試中的領域字樣（餘項）**：`unit-summarize-stores` 已於 2026-11-02 全檔中立化（素材問題理由樣本與 `knownConceptOf` 案之概念樣本改合成，判定不變；抓取套件 `domainTermsIn` 重掃全檔 0）。領域中立守門（`unit-summarize-package` ③、`unit-summarize-domain`）不掃測試檔，其餘測試檔以 `domainTermsIn` 逐檔掃仍有命中（`unit-core`、`-audit`、`-ops`、`-stages`、`-standards`、`-stockfix`、`-repair`、`-sync`、`-holds`、`-locale`、`-faith`、`-assembly`、`-contract`、`test/tools/quantRule.mjs`；`-domain`、`-package`、`-bench`、`-registry` 之命中屬領域中立守門之自檢，刻意含詞）；是否逐檔中立化待使用者裁示。
 

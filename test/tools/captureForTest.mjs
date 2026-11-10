@@ -21,7 +21,7 @@ export {
     validateBenchCases, loadBenchCases, planBench, BENCH_FAIL_KINDS, writeBenchReport, BENCH_BOARD_HEADER,
     requestRetry, waiveHold, STOCK_LEDGER_FILE,
     setConceptFold, conceptFoldsOf, RUNTIME_CFG_KEYS,
-    toTwKeepLinks, SCRIPT_NONE,
+    toTwKeepLinks, SCRIPT_NONE, budgetOf,
 } from 'w-knowledge-capture/src/WKnowledgeCapture.mjs'
 export { DOMAIN_TERMS, DOMAIN_TERM_RE, domainTermsIn } from 'w-knowledge-capture/test/tools/domainTerms.mjs'
 export { memStore } from 'w-knowledge-capture/test/tools/memStore.mjs'

@@ -11,9 +11,10 @@
 //   不列於本埠);本套件之 core/ 只放抓取套件沒有之模組(與其 core/ 不得有同相對路徑之檔)。
 
 export {
-    // ── ① 核心件:管線秩序、時間預算、判定形狀、正體(非本篇文字之片段、證據規則之比對前折疊)、語言設定(字形政策、輸出語言稱呼)、文字與概念鍵、小工具(含值之字串化、命令列之直接執行判定)──
+    // ── ① 核心件:管線秩序、時間預算(含扣保留之守門閘、一次 AI 呼叫之估計、扣保留之 AI 呼叫之唯一包裝)、判定形狀、正體(非本篇文字之片段、證據規則之比對前折疊)、
+    //   語言設定(字形政策、輸出語言稱呼)、文字與概念鍵、小工具(含值之字串化、命令列之直接執行判定)──
     defineMw, applyTaps, rejectChainOpts, makeMsg, count, runChainOverMsgs, stdReport,
-    budgetOf, reserveOf, reserveMsOf,
+    reserveOf, reserveMsOf, stageReserveGateOf, captureCallMsOf, reservedAiCallOf,
     STATUS, result, fromProblems,
     withoutForeignSpans, toTw,
     DEFAULT_LANG, SCRIPT_NA_DETAIL, resolveLocale, scriptOf, scriptApplies,
