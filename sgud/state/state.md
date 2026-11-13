@@ -70,6 +70,11 @@
 - **GEN-19／22 之守門缺口**：橋接 `test/tools/captureForTest.mjs` 之死轉出、與抓取套件 `test/tools` 同名之共用件手寫副本，本套件尚無自動守門案（規則帳本以人工盤點指令代之）；`test/tools/captureForTest.mjs` 檔頭註解已不再提及本 repo 無之 `unit-core-copies`（2026-11-02）。
 - **測試中的領域字樣（餘項）**：`unit-summarize-stores` 已於 2026-11-02 全檔中立化（素材問題理由樣本與 `knownConceptOf` 案之概念樣本改合成，判定不變；抓取套件 `domainTermsIn` 重掃全檔 0）。領域中立守門（`unit-summarize-package` ③、`unit-summarize-domain`）不掃測試檔，其餘測試檔以 `domainTermsIn` 逐檔掃仍有命中（`unit-core`、`-audit`、`-ops`、`-stages`、`-standards`、`-stockfix`、`-repair`、`-sync`、`-holds`、`-locale`、`-faith`、`-assembly`、`-contract`、`test/tools/quantRule.mjs`；`-domain`、`-package`、`-bench`、`-registry` 之命中屬領域中立守門之自檢，刻意含詞）；是否逐檔中立化待使用者裁示。
 
+## 瀏覽器之啟動改經 w-playwright(2026-11-13,主控;排程第 442 項)
+
+- 本套件打包 w-knowledge-capture 之原始碼,其抓取階梯經 w-fetch-web 啟動 Chromium;w-fetch-web 1.0.44 起一律經自有套件 `w-playwright`(合併 `--disable-features` 以免 Chromium 每次啟動以錯誤密碼登入 Windows、10 次即鎖帳號).
+- 改動:`toolg/gDistRollup.mjs` 之 globals／external 由 `'playwright'` 改 `'w-playwright'`(各 1 處);`dependencies` 不另宣告 `w-playwright`(依本套件帳本之依賴對帳:`src/` 未直接匯入者不列;經 w-knowledge-capture 之依賴取得,同原 playwright 之作法);w-knowledge-capture 隨發布升至最新.
+
 ## 需使用者決定者
 
 - 見上〈已知缺口與待辦〉末項（其餘測試檔之領域字樣是否中立化）。
