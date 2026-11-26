@@ -1,15 +1,15 @@
 {
   "name": "w-knowledge-summarize",
-  "version": "1.0.50",
+  "version": "1.0.51",
   "main": "dist/w-knowledge-summarize.umd.js",
   "dependencies": {
-    "w-knowledge-capture": "^1.0.55",
-    "wsemi": "^1.9.81"
+    "w-knowledge-capture": "^1.0.56",
+    "wsemi": "^1.9.82"
   },
   "devDependencies": {
-    "w-data-pipeline": "^1.0.59",
-    "w-dispatch-ai": "^1.0.120",
-    "w-orm-lmdb": "^1.0.88",
+    "w-data-pipeline": "^1.0.60",
+    "w-dispatch-ai": "^1.0.121",
+    "w-orm-lmdb": "^1.0.89",
     "w-package-tools": "^1.1.32"
   },
   "scripts": {
